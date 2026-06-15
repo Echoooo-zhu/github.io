@@ -1,0 +1,2802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="习惯打卡">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>生活习惯打卡</title>
+<style>
+/* ═══════════════════════════════════════════════════════
+   iOS 26 Liquid Glass Design System
+   Glassmorphism 2.0 — Multi-layer Depth
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* Glass surface tints */
+  --glass-primary: rgba(255,255,255,0.58);
+  --glass-secondary: rgba(255,255,255,0.42);
+  --glass-tertiary: rgba(255,255,255,0.28);
+  --glass-header: rgba(242,244,250,0.72);
+  --glass-input: rgba(0,0,0,0.04);
+  --glass-input-focus: rgba(0,0,0,0.07);
+  --glass-selected: rgba(0,122,255,0.11);
+
+  /* Border — thin luminous edges */
+  --edge-primary: rgba(255,255,255,0.55);
+  --edge-secondary: rgba(255,255,255,0.35);
+  --edge-subtle: rgba(0,0,0,0.06);
+  --edge-accent: rgba(0,122,255,0.18);
+
+  /* Text */
+  --text: rgba(0,0,0,0.88);
+  --text-secondary: rgba(0,0,0,0.52);
+  --text-tertiary: rgba(0,0,0,0.28);
+  --text-on-glass: rgba(0,0,0,0.82);
+
+  /* Accent colors — vibrant but translucent */
+  --accent: #007AFF;
+  --accent-glass: rgba(0,122,255,0.82);
+  --danger: #FF3B30;
+  --danger-glass: rgba(255,59,48,0.10);
+  --warning: #FF9500;
+  --success: #34C759;
+  --purple: #AF52DE;
+
+  /* Radius — dynamic feel */
+  --r-lg: 26px;
+  --r-md: 20px;
+  --r-sm: 16px;
+  --r-xs: 12px;
+
+  /* Typography */
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+
+  /* Ambient light gradient */
+  --ambient-stops: #E6EAF2, #EBEDF4, #EEEBF4, #EAEEF3, #E4E8F1;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ═══════════════ Body — Ambient light background ═══════════════ */
+body {
+  font-family: var(--font);
+  color: var(--text);
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 0 16px 60px;
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 10%, rgba(180,200,240,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 75% 50%, rgba(200,180,230,0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 20% 85%, rgba(170,210,230,0.22) 0%, transparent 55%),
+    linear-gradient(172deg, #E8ECF5 0%, #EDEEF6 20%, #F0EEF7 45%, #ECF0F5 70%, #E7EBF3 100%);
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-overflow-scrolling: touch;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════ Sticky Header — Deep frosted glass ═══════════════ */
+.sticky-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin: 0 -16px;
+  padding: 0 16px;
+  background: var(--glass-header);
+  backdrop-filter: saturate(200%) blur(32px);
+  -webkit-backdrop-filter: saturate(200%) blur(32px);
+  border-bottom: 0.5px solid rgba(255,255,255,0.4);
+}
+
+.app-header {
+  padding: 22px 0 14px;
+  text-align: center;
+}
+.app-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.4px;
+  text-shadow: 0 0.5px 0 rgba(255,255,255,0.6);
+}
+.app-header .date {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 5px;
+  font-weight: 500;
+}
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.username {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 4px 12px;
+  background: var(--glass-tertiary);
+  border-radius: 100px;
+  border: 0.5px solid var(--edge-secondary);
+  margin-top: 6px;
+  white-space: nowrap;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Name Modal */
+.name-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+.name-modal-overlay.show { display: flex; }
+.name-modal {
+  background: var(--glass-primary);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border-radius: var(--r-lg);
+  border: 0.5px solid var(--edge-primary);
+  padding: 28px 24px 24px;
+  width: calc(100% - 64px);
+  max-width: 320px;
+  text-align: center;
+}
+.name-modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.name-modal-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; }
+.name-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 0.5px solid var(--edge-subtle);
+  border-radius: var(--r-sm);
+  background: var(--glass-input);
+  color: var(--text);
+  text-align: center;
+  outline: none;
+  transition: all 210ms ease-out;
+  font-family: var(--font);
+}
+.name-input:focus { background: var(--glass-input-focus); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,122,255,0.12); }
+
+/* Tab Navigation — glass pill row */
+.tab-nav {
+  display: flex;
+  padding: 4px 0 8px;
+  gap: 2px;
+}
+.tab-nav button {
+  flex: 1;
+  padding: 10px 4px 8px;
+  border: none;
+  background: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+  letter-spacing: 0.1px;
+  transition: color 210ms ease-out;
+  border-radius: 0;
+}
+.tab-nav button.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+.tab-nav button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2.5px;
+  background: var(--accent);
+  border-radius: 1.5px;
+  box-shadow: 0 0 6px rgba(0,122,255,0.25);
+}
+.tab-nav .tab-icon {
+  display: block;
+  margin-bottom: 3px;
+}
+.tab-nav .tab-icon svg,
+.tab-nav .tab-icon .icon-svg {
+  display: block;
+  margin: 0 auto;
+  width: 22px;
+  height: 22px;
+  color: var(--text-secondary);
+  transition: color 210ms ease-out;
+}
+.tab-nav button.active .tab-icon svg,
+.tab-nav button.active .tab-icon .icon-svg {
+  color: var(--accent);
+}
+
+/* ═══════════════ Unified Icon System ═══════════════ */
+.icon-svg {
+  display: inline-block;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+.icon-svg-lg {
+  width: 28px;
+  height: 28px;
+}
+.icon-svg-md {
+  width: 24px;
+  height: 24px;
+}
+.empty-state .icon-svg {
+  width: 48px;
+  height: 48px;
+  color: var(--text-tertiary);
+  opacity: 0.6;
+  margin-bottom: 10px;
+}
+
+/* Content */
+.tab-content { display: none; }
+.tab-content.active { display: block; padding-top: 16px; }
+
+/* ═══════════════ Glass Card — Core surface ═══════════════ */
+.card {
+  background: var(--glass-primary);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-radius: var(--r-lg);
+  border: 0.5px solid var(--edge-primary);
+  padding: 20px;
+  margin-bottom: 16px;
+  /* Light edge glow — no harsh shadow */
+  box-shadow:
+    0 0 0 0.5px rgba(255,255,255,0.6) inset,
+    0 1px 2px rgba(0,0,0,0.03),
+    0 4px 12px rgba(0,0,0,0.04);
+  transition: transform 210ms ease-out, box-shadow 210ms ease-out;
+}
+/* Subtle hover lift on desktop */
+@media (hover: hover) {
+  .card:hover {
+    box-shadow:
+      0 0 0 0.5px rgba(255,255,255,0.7) inset,
+      0 1px 3px rgba(0,0,0,0.04),
+      0 6px 18px rgba(0,0,0,0.06);
+  }
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: -0.2px;
+  color: var(--text-on-glass);
+}
+
+/* ═══════════════ Inputs — Glass-etched fields ═══════════════ */
+.input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  align-items: flex-end;
+}
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.input-group label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.input-group input,
+.input-group select {
+  padding: 14px 16px;
+  border: 0.5px solid var(--edge-subtle);
+  border-radius: var(--r-sm);
+  font-size: 17px;
+  color: var(--text);
+  background: var(--glass-input);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background 210ms ease-out, border-color 210ms ease-out, box-shadow 210ms ease-out;
+}
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  background: var(--glass-input-focus);
+  border-color: rgba(0,122,255,0.25);
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.06);
+}
+
+/* ═══════════════ Buttons — Glass + accent ═══════════════ */
+.btn {
+  padding: 14px 22px;
+  border: none;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 210ms ease-out;
+  touch-action: manipulation;
+  min-height: 48px;
+  letter-spacing: -0.2px;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.btn:active {
+  transform: scale(0.965);
+  transition: transform 80ms ease-out;
+}
+.btn-primary {
+  background: var(--accent-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: white;
+  border: 0.5px solid rgba(255,255,255,0.2);
+  box-shadow: 0 2px 8px rgba(0,122,255,0.2), 0 0 0 0.5px rgba(0,122,255,0.12);
+}
+.btn-outline {
+  background: var(--glass-selected);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--accent);
+  font-weight: 500;
+  border: 0.5px solid var(--edge-accent);
+}
+.full-width { width: 100%; }
+
+/* ═══════════════ Weight Today Boxes ═══════════════ */
+.weight-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.weight-box {
+  text-align: center;
+  padding: 18px 8px;
+  border-radius: var(--r-md);
+  background: var(--glass-secondary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid var(--edge-secondary);
+}
+.weight-box .label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.weight-box .value {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--text);
+}
+.weight-box .unit {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.weight-box .bmi {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* ═══════════════ Tags ═══════════════ */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.tag {
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 0.5px solid var(--edge-subtle);
+  cursor: pointer;
+  background: var(--glass-secondary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 210ms ease-out;
+}
+.tag.selected {
+  background: var(--glass-selected);
+  border-color: var(--edge-accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ═══════════════ Period ═══════════════ */
+.period-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 16px 0;
+}
+.cycle-ring { position: relative; width: 140px; height: 140px; }
+.cycle-ring canvas { position: absolute; top: 0; left: 0; }
+.cycle-info {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.cycle-info .days { font-size: 40px; font-weight: 700; color: var(--danger); letter-spacing: -1px; }
+.cycle-info .sub { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+.period-stats { display: flex; flex-direction: column; gap: 10px; }
+.period-stat { display: flex; justify-content: space-between; font-size: 14px; min-width: 130px; }
+.period-stat .stat-val { font-weight: 600; }
+
+/* ═══════════════ Exercise Grid ═══════════════ */
+.exercise-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.exercise-type-item {
+  text-align: center;
+  padding: 14px 6px;
+  border-radius: var(--r-sm);
+  border: 0.5px solid var(--edge-subtle);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 210ms ease-out;
+  background: var(--glass-secondary);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.exercise-type-item .icon-svg {
+  display: block;
+  margin: 0 auto 6px;
+  width: 26px;
+  height: 26px;
+  color: var(--text);
+  transition: color 210ms ease-out;
+}
+.exercise-type-item.selected .icon-svg {
+  color: var(--accent);
+}
+.exercise-type-item.selected {
+  background: var(--glass-selected);
+  border-color: var(--edge-accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.exercise-type-item:active { transform: scale(0.95); transition: transform 80ms ease-out; }
+
+.intensity-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.intensity-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 100px;
+  border: 0.5px solid var(--edge-subtle);
+  background: var(--glass-secondary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 210ms ease-out;
+}
+.intensity-btn.selected {
+  background: var(--glass-selected);
+  border-color: var(--edge-accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.intensity-btn:active { transform: scale(0.95); transition: transform 80ms ease-out; }
+
+/* ═══════════════ Dashboard Stats ═══════════════ */
+
+/* ═══ 总运动摘要 ═══ */
+.exercise-summary {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+  padding: 4px 0;
+}
+.ex-hl {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--success);
+  margin: 0 2px;
+  vertical-align: -1px;
+}
+
+/* ═══ 运动日历 ═══ */
+.ex-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.ex-calendar .ex-day-header {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 10px;
+  padding: 4px 0;
+}
+.ex-calendar .ex-cell {
+  position: relative;
+  padding: 8px 0;
+  border-radius: 8px;
+  cursor: default;
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 500;
+  transition: background 210ms ease-out;
+}
+.ex-calendar .ex-cell.dim {
+  color: var(--text-tertiary);
+}
+.ex-calendar .ex-cell.today {
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+}
+.ex-calendar .ex-cell.today::after {
+  content: '';
+  display: none;
+}
+.ex-calendar .ex-cell.has-exercise {
+  font-weight: 600;
+}
+.ex-calendar .ex-cell.has-exercise::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.7);
+}
+.ex-calendar .ex-cell.today.has-exercise::before {
+  top: 2px;
+  right: 4px;
+}
+
+/* ═══ 今日vs昨日对比 ═══ */
+.compare-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.compare-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.compare-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  min-width: 28px;
+}
+.compare-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+.compare-val-today {
+  font-size: 22px;
+  color: var(--accent);
+}
+.compare-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.compare-bar {
+  height: 100%;
+  background: var(--success);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+  letter-spacing: 0.3px;
+}
+.edit-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; height: 26px;
+  line-height: 1;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: var(--glass-tertiary);
+  transition: all 210ms ease-out;
+  margin-left: 4px;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.edit-initial:active { background: var(--accent); color: white; transform: scale(0.92); transition: transform 80ms ease-out; }
+
+/* ═══════════════ Weight Overview Card ═══════════════ */
+.weight-overview-card {
+  background: var(--glass-secondary);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-radius: var(--r-lg);
+  border: 0.5px solid var(--edge-secondary);
+  padding: 16px 14px;
+  margin-bottom: 10px;
+}
+.wo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.wo-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.wo-more {
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 500;
+}
+.wo-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warning);
+  margin-bottom: 12px;
+}
+.wo-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 2px;
+}
+.wo-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 62px;
+  -webkit-tap-highlight-color: transparent;
+}
+.wo-side-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.wo-side-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.wo-side-date {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+.wo-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.wo-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+.wo-ring svg { display: block; }
+.wo-ring-inner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 104px;
+}
+.wo-current-label {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  margin-bottom: 1px;
+}
+.wo-current-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+.wo-ring-divider {
+  width: 24px;
+  height: 1px;
+  background: var(--edge-subtle);
+  margin: 5px auto;
+}
+.wo-remain-label {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  line-height: 1.2;
+}
+.wo-remain-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--danger);
+  line-height: 1.2;
+}
+.wo-latest {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 0.5px solid var(--edge-subtle);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.wo-latest-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wo-latest-icon { font-size: 16px; }
+.wo-latest-date { color: var(--text-tertiary); font-size: 11px; min-width: 70px; }
+.wo-latest-value { font-weight: 700; color: var(--text); font-size: 14px; }
+.wo-latest-empty { text-align: center; color: var(--text-tertiary); font-size: 11px; }
+
+.chart-container {
+  position: relative;
+  height: 220px;
+  margin: 4px 0;
+}
+.chart-container canvas { width: 100% !important; }
+
+/* ═══════════════ Filter Bar — Glass pills ═══════════════ */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.filter-btn {
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 0.5px solid var(--edge-subtle);
+  background: var(--glass-tertiary);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 210ms ease-out;
+  min-height: 34px;
+  touch-action: manipulation;
+}
+.filter-btn.active {
+  background: var(--glass-selected);
+  border-color: var(--edge-accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.filter-btn:active { transform: scale(0.94); transition: transform 80ms ease-out; }
+
+/* Filter Navigation */
+.filter-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 4px 0;
+}
+.nav-arrow {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 0.5px solid var(--edge-subtle);
+  background: var(--glass-secondary);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  font-size: 20px;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  font-weight: 400;
+  transition: all 210ms ease-out;
+}
+.nav-arrow:active {
+  transform: scale(0.92);
+  background: rgba(0,122,255,0.08);
+  transition: transform 80ms ease-out;
+}
+.nav-label {
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 120px;
+  text-align: center;
+  letter-spacing: -0.2px;
+}
+@media (hover: hover) {
+  .nav-arrow:hover { background: rgba(0,122,255,0.06); }
+}
+
+/* ═══════════════ History List ═══════════════ */
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+  font-size: 14px;
+}
+.history-item:last-child { border-bottom: none; }
+.history-item .hi-info { flex: 1; min-width: 0; }
+.history-item .hi-date { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+.history-item .hi-actions { display: flex; gap: 0; flex-shrink: 0; }
+.history-item .hi-edit {
+  color: var(--accent);
+  background: none; border: none;
+  font-size: 15px; cursor: pointer;
+  padding: 8px 10px; min-width: 40px; min-height: 40px;
+  touch-action: manipulation;
+  transition: transform 210ms ease-out;
+  border-radius: 50%;
+}
+.history-item .hi-delete {
+  color: var(--danger);
+  background: none; border: none;
+  font-size: 18px; cursor: pointer;
+  padding: 6px 10px; min-width: 40px; min-height: 40px;
+  touch-action: manipulation;
+  transition: transform 210ms ease-out;
+  border-radius: 50%;
+}
+.history-item .hi-edit:active,
+.history-item .hi-delete:active { transform: scale(0.85); transition: transform 80ms ease-out; }
+
+/* ═══════════════ Record Group (weight/exercise list) ═══════════════ */
+.record-group {
+  padding: 14px 0;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+}
+.record-group:last-child { border-bottom: none; }
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.record-header .date-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+.record-header .weekday-tag {
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.record-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 6px 0 6px 2px;
+  line-height: 1.5;
+}
+.record-detail.empty {
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+.record-detail .detail-main {
+  flex: 1;
+  min-width: 0;
+}
+.record-detail .detail-sub {
+  display: block;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.record-detail + .record-detail {
+  border-top: 0.5px dashed rgba(0,0,0,0.06);
+  padding-top: 6px;
+}
+.record-detail .hi-edit {
+  color: var(--accent);
+  background: none; border: none;
+  font-size: 15px; cursor: pointer;
+  padding: 4px 8px; min-width: 36px; min-height: 36px;
+  touch-action: manipulation;
+  transition: transform 210ms ease-out;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.record-detail .hi-edit:active,
+.record-detail .hi-delete:active { transform: scale(0.85); transition: transform 80ms ease-out; }
+
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+.record-detail .hi-delete {
+  color: var(--danger);
+  background: none; border: none;
+  font-size: 18px; cursor: pointer;
+  padding: 4px 8px; min-width: 36px; min-height: 36px;
+  touch-action: manipulation;
+  transition: transform 210ms ease-out;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.record-header .hi-edit {
+  color: var(--accent);
+  background: none; border: none;
+  font-size: 15px; cursor: pointer;
+  padding: 4px 8px; min-width: 36px; min-height: 36px;
+  touch-action: manipulation;
+  transition: transform 210ms ease-out;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.record-header .hi-edit:active { transform: scale(0.85); transition: transform 80ms ease-out; }
+
+/* ═══════════════ Empty State ═══════════════ */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+.empty-state .empty-icon { font-size: 44px; margin-bottom: 10px; opacity: 0.45; }
+.empty-state .empty-text { font-size: 14px; font-weight: 500; }
+
+/* ═══════════════ Toast ═══════════════ */
+.toast {
+  position: fixed;
+  top: 16px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(28,28,30,0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 100px;
+  border: 0.5px solid rgba(255,255,255,0.15);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 210ms ease-out, transform 210ms ease-out;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(4px); }
+
+/* ═══════════════ Mini Calendar ═══════════════ */
+.mini-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px; text-align: center;
+  font-size: 12px; margin-top: 12px;
+}
+.mini-calendar .day-header {
+  color: var(--text-secondary);
+  font-weight: 600; padding: 4px 0;
+  font-size: 10px;
+}
+.mini-calendar .day-cell {
+  padding: 8px 0; border-radius: 8px;
+  cursor: pointer; transition: background 210ms ease-out;
+  font-weight: 500;
+}
+.mini-calendar .day-cell.empty { cursor: default; }
+.mini-calendar .day-cell.today { font-weight: 700; background: var(--glass-secondary); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 0.5px solid var(--edge-secondary); }
+.mini-calendar .day-cell.period { background: rgba(255,59,48,0.18); color: var(--danger); font-weight: 600; }
+.mini-calendar .day-cell.period.predicted { background: rgba(255,59,48,0.10); color: rgba(255,59,48,0.55); font-weight: 500; border: 1px dashed rgba(255,59,48,0.25); }
+.mini-calendar .day-cell.fertile { background: rgba(52,199,89,0.16); color: #1B6E2D; font-weight: 600; }
+.mini-calendar .day-cell.fertile.predicted { background: rgba(52,199,89,0.08); color: rgba(27,110,45,0.5); font-weight: 500; border: 1px dashed rgba(52,199,89,0.2); }
+.mini-calendar .day-cell.ovulation { background: rgba(255,149,0,0.20); color: #C93400; font-weight: 600; }
+.mini-calendar .day-cell.ovulation.predicted { background: rgba(255,149,0,0.10); color: rgba(201,52,0,0.5); font-weight: 500; border: 1px dashed rgba(255,149,0,0.2); }
+
+.period-symptoms {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 10px 0;
+}
+.symptom-tag {
+  padding: 7px 14px; border-radius: 100px;
+  font-size: 12px; font-weight: 500;
+  border: 0.5px solid var(--edge-subtle);
+  cursor: pointer;
+  background: var(--glass-secondary);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 210ms ease-out;
+}
+.symptom-tag.selected {
+  background: var(--danger-glass);
+  border-color: rgba(255,59,48,0.2);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.flow-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.flow-btn {
+  flex: 1; padding: 12px; border-radius: 100px;
+  border: 0.5px solid var(--edge-subtle);
+  background: var(--glass-secondary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: center;
+  transition: all 210ms ease-out;
+}
+.flow-btn.selected {
+  background: var(--glass-selected);
+  border-color: var(--edge-accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.flow-btn:active { transform: scale(0.95); transition: transform 80ms ease-out; }
+
+.period-date-row { display: flex; gap: 12px; align-items: center; }
+.period-date-row .to-label { color: var(--text-secondary); font-size: 13px; font-weight: 500; }
+
+/* ═══════════════ Responsive ═══════════════ */
+@media (max-width: 374px) {
+  .weight-dual { grid-template-columns: 1fr; }
+  .exercise-type-grid { grid-template-columns: repeat(3, 1fr); }
+  .tab-nav button { font-size: 11px; padding: 10px 2px; }
+  .tab-nav .tab-icon { font-size: 22px; }
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+}
+
+/* ═══════════════ Scrollbar — Subtle glass ═══════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="sticky-header">
+<div class="app-header">
+  <div class="header-row">
+    <div><h1>生活习惯打卡</h1><div class="date" id="headerDate"></div></div>
+    <span class="username" id="usernameDisplay" onclick="promptSetUsername()"></span>
+  </div>
+</div>
+<div class="tab-nav">
+  <button class="active" data-tab="dashboard"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span>数据</button>
+  <button data-tab="weight"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M12 7a5 5 0 0 1 0 10"/></svg></span>体重</button>
+  <button data-tab="exercise"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-4 2-5-3-2 2-3h4l2 3-2 5 3 4"/></svg></span>运动</button>
+  <button data-tab="period"><span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>月经</button>
+</div>
+</div>
+
+<!-- Weight Tab -->
+<div class="tab-content" id="tab-weight">
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <span>体重记录</span>
+      <span id="weightBadge" style="font-size:12px;color:var(--text-secondary);font-weight:500;"></span>
+    </div>
+    <div class="input-group" style="margin-bottom:12px;">
+      <label>日期</label>
+      <input type="date" id="weightDate" max="" onchange="checkWeightDate()">
+    </div>
+    <div class="input-row">
+      <div class="input-group"><label>晨重 (空腹)</label><input type="number" id="morningWeight" placeholder="kg" step="0.1" min="30" max="200"></div>
+      <div class="input-group"><label>晚重 (睡前)</label><input type="number" id="eveningWeight" placeholder="kg" step="0.1" min="30" max="200"></div>
+    </div>
+    <button class="btn btn-primary full-width" onclick="saveWeight()">保存体重</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">最近记录</div>
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="周" onclick="setWeightFilter('周',this)">周</button>
+      <button class="filter-btn" data-filter="月" onclick="setWeightFilter('月',this)">月</button>
+      <button class="filter-btn" data-filter="年" onclick="setWeightFilter('年',this)">年</button>
+      <button class="filter-btn" data-filter="总" onclick="setWeightFilter('总',this)">总</button>
+    </div>
+    <div class="filter-nav" id="weightFilterNav" style="display:none;">
+      <button class="nav-arrow" onclick="shiftWeightFilter(-1)">‹</button>
+      <span class="nav-label" id="weightFilterLabel"></span>
+      <button class="nav-arrow" onclick="shiftWeightFilter(1)">›</button>
+    </div>
+    <div id="weightRecent"></div>
+  </div>
+</div>
+
+<!-- Period Tab -->
+<div class="tab-content" id="tab-period">
+  <div class="card">
+    <div class="card-title">周期概览</div>
+    <div class="period-visual">
+      <div class="cycle-ring">
+        <canvas id="cycleRing" width="140" height="140"></canvas>
+        <div class="cycle-info"><div class="days" id="cycleDays">--</div><div class="sub">当前周期</div></div>
+      </div>
+      <div class="period-stats">
+        <div class="period-stat"><span>平均周期</span><span class="stat-val" id="avgCycle">-- 天</span></div>
+        <div class="period-stat"><span>平均经期</span><span class="stat-val" id="avgPeriod">-- 天</span></div>
+        <div class="period-stat"><span>预测下次</span><span class="stat-val" id="predictNext">--</span></div>
+        <div class="period-stat"><span>已记录</span><span class="stat-val" id="totalPeriods">-- 次</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <span>日历</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="nav-arrow" onclick="shiftPeriodCalendar(-1)" style="width:28px;height:28px;font-size:16px;">‹</button>
+        <span id="periodCalendarLabel" style="font-size:13px;font-weight:600;min-width:80px;text-align:center;"></span>
+        <button class="nav-arrow" onclick="shiftPeriodCalendar(1)" style="width:28px;height:28px;font-size:16px;">›</button>
+      </div>
+    </div>
+    <div class="mini-calendar" id="miniCalendar"></div>
+    <div style="display:flex;gap:14px;font-size:11px;margin-top:8px;font-weight:500;">
+      <span style="color:var(--danger);">● 经期</span>
+      <span style="color:#248A3D;">● 易孕期</span>
+      <span style="color:#C93400;">● 排卵日</span>
+    </div>
+    <div id="periodCalendarHint" style="display:none;font-size:10px;color:var(--text-tertiary);margin-top:6px;text-align:center;">虚线边框为预测数据，仅供参考</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">记录经期</div>
+    <div class="period-date-row" style="margin-bottom:12px;">
+      <div class="input-group"><label>开始日期</label><input type="date" id="periodStart"></div>
+      <span class="to-label">至</span>
+      <div class="input-group"><label>结束日期</label><input type="date" id="periodEnd"></div>
+    </div>
+    <label style="font-size:12px;color:var(--text-secondary);font-weight:500;">流量</label>
+    <div class="flow-row">
+      <button class="flow-btn" data-flow="light" onclick="selectFlow(this)">少量</button>
+      <button class="flow-btn" data-flow="medium-flow" onclick="selectFlow(this)">正常</button>
+      <button class="flow-btn" data-flow="heavy" onclick="selectFlow(this)">较多</button>
+    </div>
+    <label style="font-size:12px;color:var(--text-secondary);font-weight:500;">症状</label>
+    <div class="period-symptoms" id="periodSymptoms">
+      <span class="symptom-tag" data-symptom="腹痛" onclick="this.classList.toggle('selected')">腹痛</span>
+      <span class="symptom-tag" data-symptom="腰酸" onclick="this.classList.toggle('selected')">腰酸</span>
+      <span class="symptom-tag" data-symptom="头痛" onclick="this.classList.toggle('selected')">头痛</span>
+      <span class="symptom-tag" data-symptom="乏力" onclick="this.classList.toggle('selected')">乏力</span>
+      <span class="symptom-tag" data-symptom="情绪波动" onclick="this.classList.toggle('selected')">情绪波动</span>
+      <span class="symptom-tag" data-symptom="乳房胀痛" onclick="this.classList.toggle('selected')">乳房胀痛</span>
+      <span class="symptom-tag" data-symptom="食欲变化" onclick="this.classList.toggle('selected')">食欲变化</span>
+      <span class="symptom-tag" data-symptom="无" onclick="this.classList.toggle('selected')">无</span>
+    </div>
+    <button class="btn btn-primary full-width" onclick="savePeriod()">保存经期记录</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">历史记录</div>
+    <div id="periodHistory"></div>
+  </div>
+</div>
+
+<!-- Exercise Tab -->
+<div class="tab-content" id="tab-exercise">
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <span>运动记录</span>
+      <span id="exerciseBadge" style="font-size:12px;color:var(--text-secondary);font-weight:500;"></span>
+    </div>
+    <div class="input-group" style="margin-bottom:12px;">
+      <label>日期</label>
+      <input type="date" id="exerciseDate" max="" onchange="checkExerciseDate()">
+    </div>
+    <label style="font-size:12px;color:var(--text-secondary);font-weight:500;">类型</label>
+    <div class="exercise-type-grid" id="exerciseTypes">
+      <div class="exercise-type-item" data-type="跑步" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="5" r="3"/><path d="M9 21l3-4 1-4-3-2 4-3 3 3 1 4"/></svg></span>跑步</div>
+      <div class="exercise-type-item" data-type="快走" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M10 21l2-6 3-2-1-3-4 2-2 5"/></svg></span>快走</div>
+      <div class="exercise-type-item" data-type="跳绳" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8c0-3 3-5 8-5s8 2 8 5-3 5-8 5-8-2-8-5z"/><path d="M12 13v8"/><path d="M8 21h8"/><path d="M4 8v4M20 8v4"/></svg></span>跳绳</div>
+      <div class="exercise-type-item" data-type="瑜伽" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3c0 1.5 1 2 2 3l-3 8h8l-3-8c1-1 2-1.5 2-3a3 3 0 0 0-3-3z"/><path d="M7 21h10"/></svg></span>瑜伽</div>
+      <div class="exercise-type-item" data-type="力量" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5v14M18 5v14M3 8h3M18 8h3M3 16h3M18 16h3"/></svg></span>力量</div>
+      <div class="exercise-type-item" data-type="游泳" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M2 16h20M2 8h20M6 4a4 4 0 0 1 4 4M14 4a4 4 0 0 0-4 4"/></svg></span>游泳</div>
+      <div class="exercise-type-item" data-type="骑行" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h-3l-3 7h6m0 0l-2-7h-4l-3 7H7"/></svg></span>骑行</div>
+      <div class="exercise-type-item" data-type="其他" onclick="selectExerciseType(this)"><span class="icon-svg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>其他</div>
+    </div>
+    <label style="font-size:12px;color:var(--text-secondary);font-weight:500;">强度</label>
+    <div class="intensity-row">
+      <button class="intensity-btn" data-intensity="low" onclick="selectIntensity(this)">低</button>
+      <button class="intensity-btn" data-intensity="medium" onclick="selectIntensity(this)">中</button>
+      <button class="intensity-btn" data-intensity="high" onclick="selectIntensity(this)">高</button>
+    </div>
+    <label style="font-size:12px;color:var(--text-secondary);font-weight:500;">时长</label>
+    <div class="input-row" style="margin-bottom:12px;">
+      <div class="input-group"><input type="number" id="exerciseHours" placeholder="小时" min="0" max="24" value="0"></div>
+      <div class="input-group"><input type="number" id="exerciseMinutes" placeholder="分钟" min="0" max="59" value="30"></div>
+    </div>
+    <div class="input-group" style="margin-bottom:14px;">
+      <label>备注 <span style="font-weight:400;text-transform:none;">（选填）</span></label>
+      <input type="text" id="exerciseNote" placeholder="户外跑5公里、帕梅拉HIT…" maxlength="100">
+    </div>
+    <button class="btn btn-primary full-width" onclick="saveExercise()">保存运动</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">最近记录</div>
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="周" onclick="setExerciseFilter('周',this)">周</button>
+      <button class="filter-btn" data-filter="月" onclick="setExerciseFilter('月',this)">月</button>
+      <button class="filter-btn" data-filter="年" onclick="setExerciseFilter('年',this)">年</button>
+      <button class="filter-btn" data-filter="总" onclick="setExerciseFilter('总',this)">总</button>
+    </div>
+    <div class="filter-nav" id="exerciseFilterNav" style="display:none;">
+      <button class="nav-arrow" onclick="shiftExerciseFilter(-1)">‹</button>
+      <span class="nav-label" id="exerciseFilterLabel"></span>
+      <button class="nav-arrow" onclick="shiftExerciseFilter(1)">›</button>
+    </div>
+    <div id="exerciseHistory"></div>
+  </div>
+</div>
+
+<!-- Dashboard Tab -->
+<div class="tab-content active" id="tab-dashboard">
+
+  <!-- ═══ 体重概览卡片 — 环形进度 ═══ -->
+  <div class="weight-overview-card" id="weightOverviewCard">
+    <div class="wo-header">
+      <span class="wo-title">体重</span>
+      <span class="wo-more" onclick="switchToWeightTab()">更多记录 ›</span>
+    </div>
+    <div class="wo-subtitle" id="woSubtitle">减重第 -- 天</div>
+    <div class="wo-body">
+      <div class="wo-side" style="cursor:pointer;" onclick="editInitialWeight()" title="点击修改初始体重">
+        <div class="wo-side-val" id="woInitial">--</div>
+        <div class="wo-side-label">初始体重(kg) <svg class="icon-svg" style="width:10px;height:10px;vertical-align:middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <div class="wo-side-date" id="woInitialDate"></div>
+      </div>
+      <div class="wo-center">
+        <div class="wo-ring">
+          <svg viewBox="0 0 120 120" width="120" height="120">
+            <circle class="ring-bg" cx="60" cy="60" r="52" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="8"/>
+            <circle class="ring-progress" id="woRingProgress" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 327" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="wo-ring-inner">
+            <div class="wo-current-label">当前(kg)</div>
+            <div class="wo-current-val" id="woCurrent">--</div>
+            <div class="wo-ring-divider"></div>
+            <div class="wo-remain-label">还需减重(kg)</div>
+            <div class="wo-remain-val" id="woRemain">--</div>
+          </div>
+        </div>
+      </div>
+      <div class="wo-side" style="cursor:pointer;" onclick="editTargetWeight()" title="点击修改目标体重">
+        <div class="wo-side-val" id="woTarget">--</div>
+        <div class="wo-side-label">目标体重(kg) <svg class="icon-svg" style="width:10px;height:10px;vertical-align:middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        <div class="wo-side-date" id="woTargetDate"></div>
+      </div>
+    </div>
+    <div class="wo-latest" id="woLatest"></div>
+  </div>
+
+  <!-- ═══ 体重趋势 ═══ -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <span>体重趋势</span>
+      <div style="display:flex;gap:2px;">
+        <button class="filter-btn active" id="wtTrend30" onclick="setWeightTrendMode('30')" style="font-size:11px;padding:4px 10px;">近30天</button>
+        <button class="filter-btn" id="wtTrendAll" onclick="setWeightTrendMode('all')" style="font-size:11px;padding:4px 10px;">总趋势</button>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="weightChart"></canvas></div>
+  </div>
+
+  <!-- ═══ 总运动摘要 ═══ -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <span style="display:flex;align-items:center;gap:6px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#34C759"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#34C759"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#34C759" opacity="0.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#34C759" opacity="0.5"/></svg>
+        总运动
+      </span>
+      <span style="font-size:16px;color:var(--accent);cursor:pointer;" onclick="switchToExerciseTab()" title="前往运动记录">›</span>
+    </div>
+    <div class="exercise-summary" id="exerciseSummary">本月累计运动 -- 天，最近连续运动 -- 天</div>
+  </div>
+
+  <!-- ═══ 运动日历 ═══ -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <span style="display:flex;align-items:center;gap:6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="18" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        运动日历
+      </span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="nav-arrow" onclick="shiftExerciseCalendar(-1)" style="width:28px;height:28px;font-size:14px;">‹</button>
+        <span id="exerciseCalLabel" style="font-size:13px;font-weight:600;min-width:70px;text-align:center;"></span>
+        <button class="nav-arrow" onclick="shiftExerciseCalendar(1)" style="width:28px;height:28px;font-size:14px;">›</button>
+      </div>
+    </div>
+    <div class="ex-calendar" id="exCalendar"></div>
+  </div>
+
+  <!-- ═══ 今日 vs 昨日 ═══ -->
+  <div class="card">
+    <div class="card-title" style="display:flex;align-items:center;gap:6px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round"/><path d="M7 17l4-7 3 4 4-6" stroke="var(--success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      运动时长
+    </div>
+    <div class="compare-hint" id="compareHint">--</div>
+    <div class="compare-row">
+      <span class="compare-label">今日</span>
+      <span class="compare-val compare-val-today" id="compareToday">0 分钟</span>
+    </div>
+    <div class="compare-row" style="margin-top:8px;">
+      <span class="compare-label">昨天</span>
+      <div class="compare-bar-wrap">
+        <div class="compare-bar" id="compareBar" style="width:0%"></div>
+      </div>
+      <span class="compare-val" id="compareYesterday">0 分钟</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="btn btn-outline full-width" onclick="exportToExcel()">导出 Excel (.xlsx)</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="name-modal-overlay" id="nameModal">
+  <div class="name-modal">
+    <div class="name-modal-title">你好，怎么称呼？</div>
+    <div class="name-modal-sub">设置你的昵称，显示在右上角</div>
+    <input type="text" class="name-input" id="nameInput" placeholder="输入昵称" maxlength="12" autocomplete="off">
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="dismissNameModal()">稍后再说</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveUsername()">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Storage ───
+var STORAGE_KEY = 'habit_tracker_data';
+
+var SEED_WEIGHTS = [
+  { date: "2026-05-17", morning: 60.7, evening: 61.6, bmi: 25.3 },
+  { date: "2026-05-18", morning: 61.2, evening: 60.9, bmi: 25.5 },
+  { date: "2026-05-19", morning: 60.5, evening: 61.4, bmi: 25.2 },
+  { date: "2026-05-20", morning: 60.9, evening: 60.9, bmi: 25.3 },
+  { date: "2026-05-21", morning: 60.3, evening: 60.7, bmi: 25.1 },
+  { date: "2026-05-22", morning: 60.0, evening: 61.1, bmi: 25.0 },
+  { date: "2026-05-23", morning: 60.2, evening: 60.6, bmi: 25.1 },
+  { date: "2026-05-24", morning: 60.0, evening: 60.7, bmi: 25.0 },
+  { date: "2026-05-25", morning: 60.2, evening: 60.6, bmi: 25.1 },
+  { date: "2026-05-26", morning: 59.9, evening: 60.9, bmi: 24.9 },
+  { date: "2026-05-27", morning: 60.5, evening: null, bmi: 25.2 }
+];
+
+function loadData() {
+  var raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    var d = JSON.parse(raw);
+    if (!d.weights || d.weights.length === 0) { d.weights = SEED_WEIGHTS; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+    if (!Array.isArray(d.periods)) d.periods = [];
+    if (!Array.isArray(d.exercises)) d.exercises = [];
+    if (typeof d.initialWeight !== 'number') d.initialWeight = 62.3;
+    if (typeof d.targetWeight !== 'number') d.targetWeight = 50;
+    return d;
+  }
+  return { weights: SEED_WEIGHTS, periods: [], exercises: [], initialWeight: 62.3, targetWeight: 50 };
+}
+
+function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+var data = loadData();
+
+// ─── Username ───
+function loadUsername() {
+  return localStorage.getItem('habit_tracker_username') || '';
+}
+function saveUsernameToStorage(name) {
+  localStorage.setItem('habit_tracker_username', name);
+}
+var USER_ICON_SVG = '<svg class="icon-svg" style="width:14px;height:14px;vertical-align:-2px;margin-right:2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+function displayUsername() {
+  var name = loadUsername();
+  var el = document.getElementById('usernameDisplay');
+  if (name) {
+    el.textContent = name;
+    el.style.display = '';
+  } else {
+    el.innerHTML = USER_ICON_SVG;
+    el.style.display = '';
+  }
+}
+function promptSetUsername() {
+  var name = loadUsername();
+  document.getElementById('nameInput').value = name || '';
+  document.getElementById('nameModal').classList.add('show');
+  setTimeout(function(){ document.getElementById('nameInput').focus(); }, 300);
+}
+function dismissNameModal() {
+  document.getElementById('nameModal').classList.remove('show');
+  if (!loadUsername()) {
+    document.getElementById('usernameDisplay').innerHTML = USER_ICON_SVG;
+  }
+}
+function saveUsername() {
+  var name = document.getElementById('nameInput').value.trim();
+  if (!name) { showToast('请输入昵称'); return; }
+  saveUsernameToStorage(name);
+  document.getElementById('nameModal').classList.remove('show');
+  displayUsername();
+  showToast('你好，' + name + '！');
+}
+// Show name modal on first visit
+(function() {
+  if (!loadUsername()) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('nameModal').classList.add('show');
+      });
+    } else {
+      document.getElementById('nameModal').classList.add('show');
+    }
+  }
+})();
+displayUsername();
+
+// ─── Utilities ───
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmtDate(d) { return d.replace(/-/g, '/'); }
+function daysBetween(a, b) { return Math.round((new Date(b) - new Date(a)) / 86400000); }
+
+var WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+function weekdayInfo(dateStr) {
+  var d = new Date(dateStr);
+  var idx = d.getDay(); // 0=周日 6=周六
+  return { label: WEEKDAYS[idx], isWeekend: idx === 0 || idx === 6 };
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
+function calcBMI(weight) { var h = 1.55; return (weight / (h * h)).toFixed(1); }
+function bmiLabel(bmi) {
+  bmi = parseFloat(bmi);
+  if (bmi < 18.5) return '偏瘦';
+  if (bmi < 24) return '正常';
+  if (bmi < 28) return '偏胖';
+  return '肥胖';
+}
+
+// ─── Tab Navigation ───
+(function() {
+  function setupTabs() {
+    var buttons = document.querySelectorAll('.tab-nav button');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function() {
+        var btns = document.querySelectorAll('.tab-nav button');
+        for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+        var contents = document.querySelectorAll('.tab-content');
+        for (var k = 0; k < contents.length; k++) contents[k].classList.remove('active');
+        this.classList.add('active');
+        var tabId = this.getAttribute('data-tab');
+        var tabEl = document.getElementById('tab-' + tabId);
+        if (tabEl) tabEl.classList.add('active');
+        if (tabId === 'dashboard') renderDashboard();
+      });
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupTabs);
+  } else {
+    setupTabs();
+  }
+})();
+
+document.getElementById('headerDate').textContent =
+  new Date().toLocaleDateString('zh-CN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+// ═══════════════ FILTER LOGIC ═══════════════
+
+function getMonthRange(offset) {
+  var now = new Date();
+  var m = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  return {
+    year: m.getFullYear(),
+    month: m.getMonth(),
+    label: m.getFullYear() + '年' + (m.getMonth() + 1) + '月'
+  };
+}
+
+function getWeekRange(offset) {
+  var now = new Date();
+  var day = now.getDay() || 7;
+  var monday = new Date(now);
+  monday.setDate(now.getDate() - day + 1 + offset * 7);
+  monday.setHours(0, 0, 0, 0);
+  var sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+  return {
+    start: monday,
+    end: sunday,
+    label: monday.getMonth() + 1 + '/' + monday.getDate() + ' – ' + (sunday.getMonth() + 1) + '/' + sunday.getDate()
+  };
+}
+
+function getYearRange(offset) {
+  var now = new Date();
+  var y = now.getFullYear() + offset;
+  return { year: y, label: y + '年' };
+}
+
+// 数据起始日期（统一边界）
+var DATA_EPOCH = '2026-05-15';
+
+// 生成某段时间内所有日期
+function allDatesInRange(startDate, endDate) {
+  var dates = [];
+  var cur = new Date(startDate);
+  var end = new Date(endDate);
+  while (cur <= end) {
+    dates.push(cur.toISOString().split('T')[0]);
+    cur.setDate(cur.getDate() + 1);
+  }
+  return dates;
+}
+
+function getFilterLabel(filter, offset) {
+  if (filter === '周') return getWeekRange(offset).label;
+  if (filter === '月') return getMonthRange(offset).label;
+  if (filter === '年') return getYearRange(offset).label;
+  return '';
+}
+
+function getFilterDateRange(filter, offset) {
+  var today = new Date().toISOString().split('T')[0];
+  if (filter === '周') {
+    var wr = getWeekRange(offset);
+    var wkStart = wr.start.toISOString().split('T')[0];
+    var wkEnd = wr.end.toISOString().split('T')[0];
+    var start = wkStart < DATA_EPOCH ? DATA_EPOCH : wkStart;
+    var end = wkEnd > today ? today : wkEnd;
+    return { start: start, end: end };
+  }
+  if (filter === '月') {
+    var mr = getMonthRange(offset);
+    var monthStart = mr.year + '-' + String(mr.month + 1).padStart(2, '0') + '-01';
+    var lastDay = new Date(mr.year, mr.month + 1, 0).getDate();
+    var mEnd = mr.year + '-' + String(mr.month + 1).padStart(2, '0') + '-' + String(lastDay).padStart(2, '0');
+    var start2 = monthStart < DATA_EPOCH ? DATA_EPOCH : monthStart;
+    var end2 = mEnd > today ? today : mEnd;
+    return { start: start2, end: end2 };
+  }
+  if (filter === '年') {
+    var yr = getYearRange(offset);
+    var yStart = yr.year + '-01-01';
+    var yEnd = yr.year + '-12-31';
+    var start3 = yStart < DATA_EPOCH ? DATA_EPOCH : yStart;
+    var end3 = yEnd > today ? today : yEnd;
+    return { start: start3, end: end3 };
+  }
+  if (filter === '总') {
+    return { start: DATA_EPOCH, end: today };
+  }
+  // fallback: 最近30天
+  var d = new Date();
+  d.setDate(d.getDate() - 29);
+  return { start: d.toISOString().split('T')[0], end: today };
+}
+
+// ═══════════════ WEIGHT ═══════════════
+var weightFilter = '周';
+var weightFilterOffset = 0;
+var weightEditing = false;
+
+function renderWeightFilterNav() {
+  var nav = document.getElementById('weightFilterNav');
+  if (!nav) return;
+  if (weightFilter === '总' || weightFilter === '周') {
+    nav.style.display = 'none';
+    return;
+  }
+  nav.style.display = 'flex';
+  document.getElementById('weightFilterLabel').textContent = getFilterLabel(weightFilter, weightFilterOffset);
+}
+
+function setWeightFilter(f, btn) {
+  weightFilter = f;
+  weightFilterOffset = 0;
+  var btns = document.querySelectorAll('#tab-weight .filter-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  renderWeightFilterNav();
+  renderWeightRecent();
+}
+
+function shiftWeightFilter(delta) {
+  weightFilterOffset += delta;
+  renderWeightFilterNav();
+  renderWeightRecent();
+}
+
+function saveWeight() {
+  var mw = parseFloat(document.getElementById('morningWeight').value);
+  var ew = parseFloat(document.getElementById('eveningWeight').value);
+  if (!mw && !ew) { showToast('请至少输入一个体重值'); return; }
+  var date = document.getElementById('weightDate').value || today();
+  var record = {
+    date: date,
+    morning: mw || null,
+    evening: ew || null,
+    bmi: mw ? parseFloat(calcBMI(mw)) : null
+  };
+
+  if (weightEditing) {
+    var ei = -1;
+    for (var i = 0; i < data.weights.length; i++) { if (data.weights[i].date === weightEditing) { ei = i; break; } }
+    if (ei >= 0) data.weights[ei] = record;
+    weightEditing = false;
+  } else {
+    var existing = -1;
+    for (var i = 0; i < data.weights.length; i++) { if (data.weights[i].date === date) { existing = i; break; } }
+    if (existing >= 0) data.weights[existing] = record;
+    else data.weights.push(record);
+  }
+
+  data.weights.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+  saveData(data);
+  renderWeightRecent();
+  showToast(date !== today() ? '已补卡 ' + fmtDate(date) : '体重已保存');
+  resetWeightForm();
+}
+
+function resetWeightForm() {
+  document.getElementById('morningWeight').value = '';
+  document.getElementById('eveningWeight').value = '';
+  var wd = document.getElementById('weightDate');
+  wd.value = today();
+  wd.max = today();
+  document.getElementById('weightBadge').textContent = '';
+  document.querySelector('#tab-weight .btn-primary').textContent = '保存体重';
+  weightEditing = false;
+}
+
+function editWeight(date) {
+  var w = null;
+  for (var i = 0; i < data.weights.length; i++) { if (data.weights[i].date === date) { w = data.weights[i]; break; } }
+  if (!w) return;
+  weightEditing = date;
+  document.getElementById('weightDate').value = w.date;
+  document.getElementById('morningWeight').value = w.morning || '';
+  document.getElementById('eveningWeight').value = w.evening || '';
+  document.getElementById('weightBadge').textContent = '编辑中';
+  document.getElementById('weightBadge').style.color = 'var(--primary)';
+  document.querySelector('#tab-weight .btn-primary').textContent = '更新体重';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function checkWeightDate() {
+  var date = document.getElementById('weightDate').value;
+  var badge = document.getElementById('weightBadge');
+  if (!date) { badge.textContent = ''; return; }
+  if (weightEditing) {
+    badge.textContent = '编辑中';
+    badge.style.color = 'var(--primary)';
+    return;
+  }
+  var exists = false;
+  for (var i = 0; i < data.weights.length; i++) { if (data.weights[i].date === date) { exists = true; break; } }
+  if (exists) { badge.textContent = '该日已有记录，保存将覆盖'; badge.style.color = 'var(--warning)'; }
+  else if (date !== today()) { badge.textContent = '补卡模式'; badge.style.color = 'var(--primary)'; }
+  else { badge.textContent = ''; }
+}
+
+function renderWeightRecent() {
+  var container = document.getElementById('weightRecent');
+  if (!container) return;
+
+  // 根据筛选条件确定日期范围
+  var range = getFilterDateRange(weightFilter, weightFilterOffset);
+  var dates = allDatesInRange(range.start, range.end);
+  if (!dates.length) {
+    container.innerHTML = '<div class="empty-state"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M12 7a5 5 0 0 1 0 10"/></svg><div class="empty-text">该时段暂无数据</div></div>';
+    return;
+  }
+
+  // 建立日期→记录索引
+  var weightMap = {};
+  for (var j = 0; j < data.weights.length; j++) {
+    weightMap[data.weights[j].date] = data.weights[j];
+  }
+
+  // 倒序（最近在前）
+  dates.reverse();
+
+  container.innerHTML = dates.map(function(date) {
+    var w = weightMap[date];
+    var wi = weekdayInfo(date);
+    var wdColor = wi.isWeekend ? '#FF3B30' : 'var(--text-secondary)';
+    var dateLabel = '<span class="date-label">' + fmtDate(date) + '<span class="weekday-tag" style="color:' + wdColor + '">' + wi.label + '</span></span>';
+
+    if (!w) {
+      return '<div class="record-group">' +
+        '<div class="record-header">' +
+        dateLabel +
+        '<button class="hi-edit" onclick="startWeightForDate(\'' + date + '\')"><svg class=\"icon-svg\" style=\"width:16px;height:16px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/></svg></button>' +
+        '</div>' +
+        '<div class="record-detail empty">暂无记录</div>' +
+        '</div>';
+    }
+
+    var morning = w.morning ? w.morning + 'kg' : '--';
+    var evening = w.evening ? w.evening + 'kg' : '--';
+    var diff = (w.morning && w.evening) ? (w.evening - w.morning).toFixed(1) : null;
+    var diffStr = diff ? (diff > 0 ? '+' + diff : diff) : '';
+    var bmiStr = w.bmi ? 'BMI ' + w.bmi + ' (' + bmiLabel(w.bmi) + ')' : '';
+    return '<div class="record-group">' +
+      '<div class="record-header">' +
+      dateLabel +
+      '<button class="hi-edit" onclick="editWeight(\'' + w.date + '\')"><svg class=\"icon-svg\" style=\"width:16px;height:16px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/></svg></button>' +
+      '</div>' +
+      '<div class="record-detail"><div class="detail-main">' +
+      '晨 ' + morning + ' | 晚 ' + evening + (diffStr ? ' | 差 ' + diffStr + 'kg' : '') + ' | ' + bmiStr +
+      '</div></div>' +
+      '</div>';
+  }).join('');
+}
+
+function startWeightForDate(date) {
+  weightEditing = false;
+  document.getElementById('weightDate').value = date;
+  document.getElementById('morningWeight').value = '';
+  document.getElementById('eveningWeight').value = '';
+  document.getElementById('weightBadge').textContent = '补卡模式';
+  document.getElementById('weightBadge').style.color = 'var(--primary)';
+  document.querySelector('#tab-weight .btn-primary').textContent = '保存体重';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════ PERIOD ═══════════════
+var periodState = { flow: 'medium-flow', symptoms: [] };
+var periodCalendarOffset = 0; // 日历月份偏移，0=当前月
+
+function selectFlow(btn) {
+  var btns = document.querySelectorAll('.flow-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].className = 'flow-btn';
+  var flow = btn.dataset.flow;
+  btn.classList.add('selected');
+  periodState.flow = flow;
+}
+
+function savePeriod() {
+  var start = document.getElementById('periodStart').value;
+  var end = document.getElementById('periodEnd').value;
+  if (!start) { showToast('请选择开始日期'); return; }
+  if (!end) { showToast('请选择结束日期'); return; }
+  if (new Date(end) < new Date(start)) { showToast('结束日期不能早于开始日期'); return; }
+
+  var symptoms = [];
+  var tags = document.querySelectorAll('#periodSymptoms .symptom-tag.selected');
+  for (var i = 0; i < tags.length; i++) symptoms.push(tags[i].dataset.symptom);
+
+  data.periods.push({ start: start, end: end, flow: periodState.flow, symptoms: symptoms });
+  data.periods.sort(function(a, b) { return new Date(b.start) - new Date(a.start); });
+  saveData(data);
+  renderPeriodAll();
+  showToast('经期已记录');
+  document.getElementById('periodStart').value = '';
+  document.getElementById('periodEnd').value = '';
+  var fbs = document.querySelectorAll('.flow-btn');
+  for (var j = 0; j < fbs.length; j++) fbs[j].className = 'flow-btn';
+  var sts = document.querySelectorAll('#periodSymptoms .symptom-tag.selected');
+  for (var k = 0; k < sts.length; k++) sts[k].classList.remove('selected');
+  periodState = { flow: 'medium-flow', symptoms: [] };
+}
+
+function deletePeriod(idx) {
+  data.periods.splice(idx, 1);
+  saveData(data);
+  renderPeriodAll();
+  showToast('已删除');
+}
+
+function getPeriodDaysInMonth(year, month) {
+  var days = [];
+  for (var i = 0; i < data.periods.length; i++) {
+    var p = data.periods[i];
+    var start = new Date(p.start);
+    var end = new Date(p.end);
+    var d = new Date(start);
+    while (d <= end) {
+      if (d.getFullYear() === year && d.getMonth() === month) days.push(d.getDate());
+      d.setDate(d.getDate() + 1);
+    }
+  }
+  return days;
+}
+
+function getFertileDays(lastPeriodStart, cycleLength) {
+  if (!cycleLength || cycleLength <= 0) return { fertile: [], ovulation: null };
+  var fertileStart = new Date(lastPeriodStart);
+  var ovulationDay = cycleLength - 14;
+  fertileStart.setDate(fertileStart.getDate() + ovulationDay - 5);
+  var fertileEnd = new Date(lastPeriodStart);
+  fertileEnd.setDate(fertileEnd.getDate() + ovulationDay);
+  var fertile = [];
+  var d = new Date(fertileStart);
+  while (d <= fertileEnd) { fertile.push(d.getDate()); d.setDate(d.getDate() + 1); }
+  var ov = new Date(lastPeriodStart);
+  ov.setDate(ov.getDate() + ovulationDay);
+  return { fertile: fertile, ovulation: ov.getDate() };
+}
+
+function renderPeriodAll() {
+  renderCycleRing();
+  renderMiniCalendar();
+  renderPeriodHistory();
+  renderPeriodStats();
+}
+
+function renderPeriodStats() {
+  if (data.periods.length < 1) {
+    document.getElementById('avgCycle').textContent = '-- 天';
+    document.getElementById('avgPeriod').textContent = '-- 天';
+    document.getElementById('predictNext').textContent = '--';
+    document.getElementById('totalPeriods').textContent = '0 次';
+    return;
+  }
+  var lengths = data.periods.map(function(p) { return daysBetween(p.start, p.end) + 1; });
+  var sum = 0;
+  for (var i = 0; i < lengths.length; i++) sum += lengths[i];
+  document.getElementById('avgPeriod').textContent = Math.round(sum / lengths.length) + ' 天';
+
+  var sorted = [].concat(data.periods).sort(function(a, b) { return new Date(a.start) - new Date(b.start); });
+  var cycles = [];
+  for (var j = 1; j < sorted.length; j++) cycles.push(daysBetween(sorted[j-1].start, sorted[j].start));
+  var avgCycleLen = cycles.length ? Math.round(cycles.reduce(function(a,b){return a+b;},0) / cycles.length) : 28;
+  document.getElementById('avgCycle').textContent = avgCycleLen + ' 天';
+
+  if (cycles.length > 0 && data.periods.length > 0) {
+    var lastStart = new Date(data.periods[0].start);
+    var nextStart = new Date(lastStart);
+    nextStart.setDate(nextStart.getDate() + avgCycleLen);
+    document.getElementById('predictNext').textContent = nextStart.toLocaleDateString('zh-CN', { month:'short', day:'numeric' });
+  } else {
+    document.getElementById('predictNext').textContent = '数据不足';
+  }
+  document.getElementById('totalPeriods').textContent = data.periods.length + ' 次';
+
+  if (data.periods.length > 0) {
+    var ls = new Date(data.periods[0].start);
+    document.getElementById('cycleDays').textContent = daysBetween(ls.toISOString().split('T')[0], today()) + 1;
+  }
+}
+
+function renderCycleRing() {
+  var canvas = document.getElementById('cycleRing');
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 140, 140);
+  var cx = 70, cy = 70, r = 60, sw = 8;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = '#E5E5EA';
+  ctx.lineWidth = sw;
+  ctx.stroke();
+
+  if (data.periods.length < 1) return;
+
+  var sorted = [].concat(data.periods).sort(function(a,b){ return new Date(a.start) - new Date(b.start); });
+  var cycles = [];
+  for (var i = 1; i < sorted.length; i++) cycles.push(daysBetween(sorted[i-1].start, sorted[i].start));
+  var cycleLength = cycles.length ? Math.round(cycles.reduce(function(a,b){return a+b;},0) / cycles.length) : 28;
+
+  var lastStart = new Date(data.periods[0].start);
+  var daysSince = daysBetween(lastStart.toISOString().split('T')[0], today());
+  var currentDay = Math.min(daysSince + 1, cycleLength);
+  var progress = currentDay / cycleLength;
+
+  var lens = data.periods.map(function(p){ return daysBetween(p.start, p.end) + 1; });
+  var sum = 0;
+  for (var k = 0; k < lens.length; k++) sum += lens[k];
+  var periodLen = Math.round(sum / lens.length);
+  var periodRatio = periodLen / cycleLength;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + periodRatio * Math.PI * 2);
+  ctx.strokeStyle = '#FF3B30';
+  ctx.lineWidth = sw;
+  ctx.stroke();
+
+  var fs = (cycleLength - 14 - 5) / cycleLength;
+  var fe = (cycleLength - 14) / cycleLength;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - 2, -Math.PI / 2 + fs * Math.PI * 2, -Math.PI / 2 + fe * Math.PI * 2);
+  ctx.strokeStyle = '#34C759';
+  ctx.lineWidth = 5;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 2, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2);
+  ctx.strokeStyle = '#007AFF';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([4, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function shiftPeriodCalendar(delta) {
+  periodCalendarOffset += delta;
+  renderMiniCalendar();
+}
+
+function getPeriodCalendarLabel() {
+  var now = new Date();
+  var target = new Date(now.getFullYear(), now.getMonth() + periodCalendarOffset, 1);
+  return target.getFullYear() + '年' + (target.getMonth() + 1) + '月';
+}
+
+function renderMiniCalendar() {
+  var container = document.getElementById('miniCalendar');
+  var now = new Date();
+  var year = now.getFullYear(), month = now.getMonth() + periodCalendarOffset;
+  // Normalize month overflow
+  var targetDate = new Date(year, month, 1);
+  year = targetDate.getFullYear();
+  month = targetDate.getMonth();
+  var firstDay = new Date(year, month, 1).getDay();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var todayDate = now.getDate();
+  var isCurrentMonth = (periodCalendarOffset === 0);
+
+  // Update label
+  document.getElementById('periodCalendarLabel').textContent = getPeriodCalendarLabel();
+
+  // Past or current: get actual period days
+  var periodDays = [];
+  if (periodCalendarOffset <= 0) {
+    periodDays = getPeriodDaysInMonth(year, month);
+  }
+
+  // Predict fertile/ovulation for this month (work for past, current, future)
+  var fertileDays = [], ovulationDay = null;
+  if (data.periods.length > 0) {
+    var sorted = [].concat(data.periods).sort(function(a,b){ return new Date(a.start) - new Date(b.start); });
+    var cycles = [];
+    for (var i = 1; i < sorted.length; i++) cycles.push(daysBetween(sorted[i-1].start, sorted[i].start));
+    var avgCycle = cycles.length ? Math.round(cycles.reduce(function(a,b){return a+b;},0)/cycles.length) : 28;
+
+    // For future months, predict the next period
+    var lastPeriod = new Date(data.periods[0].start);
+
+    if (periodCalendarOffset <= 0) {
+      // Current or past: predict the current cycle's next period
+      var np = new Date(lastPeriod);
+      np.setDate(np.getDate() + avgCycle);
+      if (np.getMonth() === month && np.getFullYear() === year) {
+        var ovDay = avgCycle - 14;
+        var fs = new Date(lastPeriod);
+        fs.setDate(fs.getDate() + ovDay - 5);
+        var fe2 = new Date(lastPeriod);
+        fe2.setDate(fe2.getDate() + ovDay);
+        var d = new Date(fs);
+        while (d <= fe2) {
+          if (d.getFullYear() === year && d.getMonth() === month) fertileDays.push(d.getDate());
+          d.setDate(d.getDate() + 1);
+        }
+        var ov = new Date(lastPeriod);
+        ov.setDate(ov.getDate() + ovDay);
+        if (ov.getFullYear() === year && ov.getMonth() === month) ovulationDay = ov.getDate();
+      }
+    } else {
+      // Future months: predict periods by extrapolating average cycle
+      var predictedStart = new Date(lastPeriod);
+      predictedStart.setDate(predictedStart.getDate() + avgCycle * periodCalendarOffset);
+      // If the predicted start falls in this month
+      if (predictedStart.getMonth() === month && predictedStart.getFullYear() === year) {
+        var predEnd = new Date(predictedStart);
+        var avgPeriodLen = Math.round(data.periods.map(function(p){return daysBetween(p.start,p.end)+1;}).reduce(function(a,b){return a+b;},0) / data.periods.length);
+        predEnd.setDate(predEnd.getDate() + avgPeriodLen - 1);
+        // Mark predicted period days
+        var pd = new Date(predictedStart);
+        while (pd <= predEnd) {
+          if (pd.getFullYear() === year && pd.getMonth() === month) periodDays.push(pd.getDate());
+          pd.setDate(pd.getDate() + 1);
+        }
+        // Predicted fertile & ovulation
+        var ovDay = avgCycle - 14;
+        var fs = new Date(predictedStart);
+        fs.setDate(fs.getDate() + ovDay - 5);
+        var fe2 = new Date(predictedStart);
+        fe2.setDate(fe2.getDate() + ovDay);
+        var fd = new Date(fs);
+        while (fd <= fe2) {
+          if (fd.getFullYear() === year && fd.getMonth() === month) fertileDays.push(fd.getDate());
+          fd.setDate(fd.getDate() + 1);
+        }
+        var ov = new Date(predictedStart);
+        ov.setDate(ov.getDate() + ovDay);
+        if (ov.getFullYear() === year && ov.getMonth() === month) ovulationDay = ov.getDate();
+      }
+    }
+  }
+
+  var html = '<div class="day-header">日</div><div class="day-header">一</div><div class="day-header">二</div><div class="day-header">三</div><div class="day-header">四</div><div class="day-header">五</div><div class="day-header">六</div>';
+  for (var j = 0; j < firstDay; j++) html += '<div class="day-cell empty"></div>';
+  for (var d2 = 1; d2 <= daysInMonth; d2++) {
+    var cls = 'day-cell';
+    if (isCurrentMonth && d2 === todayDate) cls += ' today';
+    var isPredicted = periodCalendarOffset > 0;
+    if (periodDays.indexOf(d2) >= 0) cls += ' period' + (isPredicted ? ' predicted' : '');
+    if (d2 === ovulationDay) cls += ' ovulation' + (isPredicted ? ' predicted' : '');
+    else if (fertileDays.indexOf(d2) >= 0) cls += ' fertile' + (isPredicted ? ' predicted' : '');
+    html += '<div class="' + cls + '">' + d2 + '</div>';
+  }
+  container.innerHTML = html;
+  // Show prediction hint for future months
+  var hint = document.getElementById('periodCalendarHint');
+  if (hint) hint.style.display = periodCalendarOffset > 0 ? 'block' : 'none';
+}
+
+function renderPeriodHistory() {
+  var container = document.getElementById('periodHistory');
+  if (!data.periods.length) {
+    container.innerHTML = '<div class="empty-state"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg><div class="empty-text">暂无经期记录</div></div>';
+    return;
+  }
+  var flowLabels = { light: '少量', 'medium-flow': '正常', heavy: '较多' };
+  container.innerHTML = data.periods.map(function(p, i) {
+    var len = daysBetween(p.start, p.end) + 1;
+    var symptoms = p.symptoms ? p.symptoms.join('、') : '';
+    return '<div class="history-item">' +
+      '<div class="hi-info"><div>' + fmtDate(p.start) + ' ~ ' + fmtDate(p.end) + ' (' + len + '天)</div>' +
+      '<div class="hi-date">' + (flowLabels[p.flow] || p.flow) + (symptoms ? ' | ' + symptoms : '') + '</div></div>' +
+      '<button class="hi-delete" onclick="deletePeriod(' + i + ')">×</button></div>';
+  }).join('');
+}
+
+// ═══════════════ EXERCISE ═══════════════
+var exerciseFilter = '周';
+var exerciseFilterOffset = 0;
+var exerciseState = { type: null, intensity: null };
+var exerciseEditingIdx = -1;
+
+function renderExerciseFilterNav() {
+  var nav = document.getElementById('exerciseFilterNav');
+  if (!nav) return;
+  if (exerciseFilter === '总' || exerciseFilter === '周') {
+    nav.style.display = 'none';
+    return;
+  }
+  nav.style.display = 'flex';
+  document.getElementById('exerciseFilterLabel').textContent = getFilterLabel(exerciseFilter, exerciseFilterOffset);
+}
+
+function setExerciseFilter(f, btn) {
+  exerciseFilter = f;
+  exerciseFilterOffset = 0;
+  var btns = document.querySelectorAll('#tab-exercise .filter-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  renderExerciseFilterNav();
+  renderExerciseHistory();
+}
+
+function shiftExerciseFilter(delta) {
+  exerciseFilterOffset += delta;
+  renderExerciseFilterNav();
+  renderExerciseHistory();
+}
+
+function selectExerciseType(item) {
+  var items = document.querySelectorAll('.exercise-type-item');
+  for (var i = 0; i < items.length; i++) items[i].classList.remove('selected');
+  item.classList.add('selected');
+  exerciseState.type = item.dataset.type;
+}
+
+function selectIntensity(btn) {
+  var btns = document.querySelectorAll('.intensity-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].className = 'intensity-btn';
+  btn.classList.add('selected');
+  exerciseState.intensity = btn.dataset.intensity;
+}
+
+function saveExercise() {
+  if (!exerciseState.type) { showToast('请选择运动类型'); return; }
+  if (!exerciseState.intensity) { showToast('请选择运动强度'); return; }
+  var hours = parseInt(document.getElementById('exerciseHours').value) || 0;
+  var minutes = parseInt(document.getElementById('exerciseMinutes').value) || 0;
+  var duration = hours * 60 + minutes;
+  if (duration < 1) { showToast('请输入有效时长'); return; }
+
+  var date = document.getElementById('exerciseDate').value || today();
+  var note = document.getElementById('exerciseNote').value.trim() || null;
+  var record = { date: date, type: exerciseState.type, intensity: exerciseState.intensity, duration: duration, note: note };
+
+  if (exerciseEditingIdx >= 0) {
+    data.exercises[exerciseEditingIdx] = record;
+    exerciseEditingIdx = -1;
+  } else {
+    data.exercises.push(record);
+  }
+  data.exercises.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+  saveData(data);
+  renderExerciseHistory();
+  showToast(date !== today() ? '已补卡 ' + fmtDate(date) : '运动已记录');
+  resetExerciseForm();
+}
+
+function resetExerciseForm() {
+  document.getElementById('exerciseHours').value = '0';
+  document.getElementById('exerciseMinutes').value = '30';
+  document.getElementById('exerciseNote').value = '';
+  var ed = document.getElementById('exerciseDate');
+  ed.value = today();
+  ed.max = today();
+  var items = document.querySelectorAll('.exercise-type-item');
+  for (var i = 0; i < items.length; i++) items[i].classList.remove('selected');
+  var btns = document.querySelectorAll('.intensity-btn');
+  for (var j = 0; j < btns.length; j++) btns[j].className = 'intensity-btn';
+  document.getElementById('exerciseBadge').textContent = '';
+  document.querySelector('#tab-exercise .btn-primary').textContent = '保存运动';
+  exerciseState = { type: null, intensity: null };
+  exerciseEditingIdx = -1;
+}
+
+function editExercise(idx) {
+  var e = data.exercises[idx];
+  if (!e) return;
+  exerciseEditingIdx = idx;
+  exerciseState.type = e.type;
+  exerciseState.intensity = e.intensity;
+  document.getElementById('exerciseDate').value = e.date;
+  document.getElementById('exerciseHours').value = Math.floor(e.duration / 60);
+  document.getElementById('exerciseMinutes').value = e.duration % 60;
+  document.getElementById('exerciseNote').value = e.note || '';
+  document.getElementById('exerciseBadge').textContent = '编辑中';
+  document.getElementById('exerciseBadge').style.color = 'var(--primary)';
+  document.querySelector('#tab-exercise .btn-primary').textContent = '更新运动';
+  var items = document.querySelectorAll('.exercise-type-item');
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].dataset.type === e.type) items[i].classList.add('selected');
+    else items[i].classList.remove('selected');
+  }
+  var btns = document.querySelectorAll('.intensity-btn');
+  for (var j = 0; j < btns.length; j++) {
+    btns[j].className = 'intensity-btn';
+    if (btns[j].dataset.intensity === e.intensity) btns[j].classList.add('selected');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function checkExerciseDate() {
+  var date = document.getElementById('exerciseDate').value;
+  var badge = document.getElementById('exerciseBadge');
+  if (!date) { badge.textContent = ''; return; }
+  if (exerciseEditingIdx >= 0) {
+    badge.textContent = '编辑中';
+    badge.style.color = 'var(--primary)';
+    return;
+  }
+  if (date !== today()) { badge.textContent = '补卡模式'; badge.style.color = 'var(--primary)'; }
+  else { badge.textContent = ''; }
+}
+
+function renderExerciseHistory() {
+  var container = document.getElementById('exerciseHistory');
+  if (!container) return;
+
+  // 根据筛选条件确定日期范围
+  var range = getFilterDateRange(exerciseFilter, exerciseFilterOffset);
+  var dates = allDatesInRange(range.start, range.end);
+  if (!dates.length) {
+    container.innerHTML = '<div class="empty-state"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-4 2-5-3-2 2-3h4l2 3-2 5 3 4"/></svg><div class="empty-text">该时段暂无数据</div></div>';
+    return;
+  }
+
+  // 建立日期→记录索引（一个日期可能有多条运动）
+  var exerciseMap = {};
+  for (var j = 0; j < data.exercises.length; j++) {
+    var e = data.exercises[j];
+    if (!exerciseMap[e.date]) exerciseMap[e.date] = [];
+    exerciseMap[e.date].push({ record: e, idx: j });
+  }
+
+  // 倒序（最近在前）
+  dates.reverse();
+
+  var intensities = { low: '低', medium: '中', high: '高' };
+  container.innerHTML = dates.map(function(date) {
+    var entries = exerciseMap[date];
+    var wi = weekdayInfo(date);
+    var wdColor = wi.isWeekend ? '#FF3B30' : 'var(--text-secondary)';
+    var dateLabel = '<span class="date-label">' + fmtDate(date) + '<span class="weekday-tag" style="color:' + wdColor + '">' + wi.label + '</span></span>';
+
+    // 无记录
+    if (!entries || !entries.length) {
+      return '<div class="record-group">' +
+        '<div class="record-header">' +
+        dateLabel +
+        '<button class="hi-edit" onclick="startExerciseForDate(\'' + date + '\')"><svg class=\"icon-svg\" style=\"width:16px;height:16px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/></svg></button>' +
+        '</div>' +
+        '<div class="record-detail empty">暂无记录</div>' +
+        '</div>';
+    }
+
+    // 多条记录合并到同一日期下
+    var detailRows = entries.map(function(entry) {
+      var e = entry.record;
+      var h = Math.floor(e.duration / 60);
+      var m = e.duration % 60;
+      var durStr = h > 0 ? (m > 0 ? h + '小时' + m + '分' : h + '小时') : m + '分';
+      return '<div class="record-detail">' +
+        '<div class="detail-main">' + e.type + ' · ' + durStr +
+        '<span class="detail-sub">' + intensities[e.intensity] + '强度' + (e.note ? ' · ' + e.note : '') + '</span></div>' +
+        '<div class="detail-actions">' +
+        '<button class="hi-edit" onclick="editExercise(' + entry.idx + ')"><svg class=\"icon-svg\" style=\"width:16px;height:16px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/><path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/></svg></button>' +
+        '<button class="hi-delete" onclick="deleteExercise(' + entry.idx + ')">×</button>' +
+        '</div></div>';
+    }).join('');
+
+    return '<div class="record-group">' +
+      '<div class="record-header">' +
+      dateLabel +
+      '</div>' +
+      detailRows +
+      '</div>';
+  }).join('');
+}
+
+function deleteExercise(idx) {
+  if (idx < 0 || idx >= data.exercises.length) return;
+  data.exercises.splice(idx, 1);
+  saveData(data);
+  renderExerciseHistory();
+  showToast('运动记录已删除');
+}
+
+function startExerciseForDate(date) {
+  exerciseEditingIdx = -1;
+  document.getElementById('exerciseDate').value = date;
+  exerciseState = { type: null, intensity: null };
+  var items = document.querySelectorAll('.exercise-type-item');
+  for (var i = 0; i < items.length; i++) items[i].classList.remove('selected');
+  var btns = document.querySelectorAll('.intensity-btn');
+  for (var j = 0; j < btns.length; j++) btns[j].className = 'intensity-btn';
+  document.getElementById('exerciseHours').value = '0';
+  document.getElementById('exerciseMinutes').value = '30';
+  document.getElementById('exerciseNote').value = '';
+  document.getElementById('exerciseBadge').textContent = '补卡模式';
+  document.getElementById('exerciseBadge').style.color = 'var(--primary)';
+  document.querySelector('#tab-exercise .btn-primary').textContent = '保存运动';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════ DASHBOARD ═══════════════
+var weightChartInst = null;
+var weightTrendMode = '30';
+var exCalendarOffset = 0;
+
+function getCheckinDays() {
+  var days = {};
+  for (var i = 0; i < data.weights.length; i++) days[data.weights[i].date] = true;
+  for (var j = 0; j < data.exercises.length; j++) days[data.exercises[j].date] = true;
+  for (var k = 0; k < data.periods.length; k++) {
+    var start = new Date(data.periods[k].start);
+    var end = new Date(data.periods[k].end);
+    var d = new Date(start);
+    while (d <= end) { days[d.toISOString().split('T')[0]] = true; d.setDate(d.getDate() + 1); }
+  }
+  var result = [];
+  for (var key in days) { if (days.hasOwnProperty(key)) result.push(key); }
+  return result.sort();
+}
+
+function calcStreak() {
+  var checkinDays = getCheckinDays();
+  if (!checkinDays.length) return 0;
+  checkinDays.sort(function(a,b){ return new Date(b) - new Date(a); });
+  var todayDate = today();
+  var streak = 0;
+  var checkDate = new Date(todayDate);
+  for (var i = 0; i < checkinDays.length; i++) {
+    var dateStr = checkDate.toISOString().split('T')[0];
+    if (checkinDays.indexOf(dateStr) >= 0) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else if (i === 0 && dateStr === todayDate) {
+      checkDate.setDate(checkDate.getDate() - 1);
+      i--;
+      continue;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function renderDashboard() {
+  if (typeof Chart === 'undefined') {
+    showToast('图表组件加载中，请稍后再试');
+    return;
+  }
+
+  var now = new Date();
+  var tn = today();
+
+  // ═══ 总运动摘要 ═══
+  var thisMonth = getMonthRange(0);
+  var ms = new Date(thisMonth.year, thisMonth.month, 1);
+  var me = new Date(thisMonth.year, thisMonth.month + 1, 1);
+  var monthExDays = {};
+  for (var i = 0; i < data.exercises.length; i++) {
+    var ed = new Date(data.exercises[i].date);
+    if (ed >= ms && ed < me) monthExDays[data.exercises[i].date] = true;
+  }
+  var monthExCount = 0;
+  for (var k in monthExDays) { if (monthExDays.hasOwnProperty(k)) monthExCount++; }
+  var streak = calcStreak();
+  document.getElementById('exerciseSummary').innerHTML = '本月累计运动 <b class="ex-hl">' + monthExCount + '</b> 天，最近连续运动 <b class="ex-hl">' + streak + '</b> 天';
+
+  // ═══ 体重概览卡片 ═══
+  var latestMorning = null;
+  var latestDate = '';
+  for (var j = 0; j < data.weights.length; j++) {
+    if (data.weights[j].morning && data.weights[j].date > latestDate) {
+      latestMorning = data.weights[j];
+      latestDate = data.weights[j].date;
+    }
+  }
+  var latestMorningVal = latestMorning ? latestMorning.morning : null;
+  var firstWeightDate = data.weights.length > 0 ? data.weights[data.weights.length - 1].date : null;
+
+  var dietDays = 0;
+  if (firstWeightDate) {
+    dietDays = Math.floor((new Date() - new Date(firstWeightDate)) / 86400000) + 1;
+  }
+  document.getElementById('woSubtitle').textContent = '减重第 ' + (dietDays || '--') + ' 天';
+  document.getElementById('woInitial').textContent = data.initialWeight ? data.initialWeight.toFixed(1) : '--';
+  document.getElementById('woInitialDate').textContent = firstWeightDate || '--';
+  document.getElementById('woTarget').textContent = data.targetWeight ? data.targetWeight.toFixed(1) : '--';
+  document.getElementById('woTargetDate').textContent = '--';
+
+  var totalToLose = data.initialWeight - data.targetWeight;
+  if (latestMorningVal && totalToLose > 0) {
+    document.getElementById('woCurrent').textContent = latestMorningVal.toFixed(1);
+    var lost = data.initialWeight - latestMorningVal;
+    var remain = latestMorningVal - data.targetWeight;
+    remain = Math.max(0, remain);
+    document.getElementById('woRemain').textContent = remain.toFixed(1);
+    var pct = Math.min(1, Math.max(0, lost / totalToLose));
+    var circumference = 2 * Math.PI * 52;
+    var dash = pct * circumference;
+    var ring = document.getElementById('woRingProgress');
+    ring.setAttribute('stroke-dasharray', dash + ' ' + circumference);
+    ring.setAttribute('stroke', lost >= 0 ? 'var(--success)' : 'var(--danger)');
+  } else {
+    document.getElementById('woCurrent').textContent = '--';
+    document.getElementById('woRemain').textContent = '--';
+    var ring2 = document.getElementById('woRingProgress');
+    ring2.setAttribute('stroke-dasharray', '0 327');
+  }
+
+  var latestEl = document.getElementById('woLatest');
+  if (latestMorning) {
+    var d = new Date(latestMorning.date);
+    var timeLabel = d.getMonth() + 1 + '/' + d.getDate() + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+    latestEl.innerHTML = '<div class="wo-latest-row"><svg class="icon-svg" style="width:18px;height:18px;color:var(--text-secondary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M12 7a5 5 0 0 1 0 10"/></svg><span class="wo-latest-date">最新记录 ' + timeLabel + '</span><span class="wo-latest-value">' + latestMorningVal + ' kg</span></div>';
+  } else {
+    latestEl.innerHTML = '<div class="wo-latest-empty">暂无体重记录</div>';
+  }
+
+  try { renderWeightChart(); } catch(e) {}
+  renderExerciseCalendar(0);
+  updateExerciseComparison();
+}
+
+function editInitialWeight() {
+  inlineEditWeight('woInitial', 'initialWeight', '初始体重');
+}
+function editTargetWeight() {
+  inlineEditWeight('woTarget', 'targetWeight', '目标体重');
+}
+function inlineEditWeight(elId, dataKey, label) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var curVal = data[dataKey] || '';
+  var origText = el.textContent;
+  el.innerHTML = '<input type="number" id="inlineWeightInput" value="' + curVal + '" step="0.1" min="30" max="300" inputmode="decimal" style="width:62px;font-size:18px;padding:2px 4px;border:1px solid var(--accent);border-radius:8px;text-align:center;font-family:var(--font);background:white;color:var(--text);font-weight:700;">';
+  var input = document.getElementById('inlineWeightInput');
+  input.focus();
+  input.select();
+  function commit() {
+    var raw = input.value.trim();
+    if (!raw) { el.textContent = origText; return; }
+    var num = parseFloat(raw);
+    if (isNaN(num) || num <= 0 || num > 300) { showToast('请输入有效的体重数值 (30-300kg)'); el.textContent = origText; return; }
+    data[dataKey] = num;
+    saveData(data);
+    renderDashboard();
+    showToast(label + '已更新为 ' + num + 'kg');
+  }
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { input.blur(); }
+    if (e.key === 'Escape') { el.textContent = origText; }
+  });
+}
+
+function switchToWeightTab() {
+  var btns = document.querySelectorAll('.tab-nav button');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  var contents = document.querySelectorAll('.tab-content');
+  for (var j = 0; j < contents.length; j++) contents[j].classList.remove('active');
+  var weightBtn = document.querySelector('.tab-nav button[data-tab="weight"]');
+  if (weightBtn) weightBtn.classList.add('active');
+  var weightTab = document.getElementById('tab-weight');
+  if (weightTab) weightTab.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchToExerciseTab() {
+  var btns = document.querySelectorAll('.tab-nav button');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  var contents = document.querySelectorAll('.tab-content');
+  for (var j = 0; j < contents.length; j++) contents[j].classList.remove('active');
+  var exBtn = document.querySelector('.tab-nav button[data-tab="exercise"]');
+  if (exBtn) exBtn.classList.add('active');
+  var exTab = document.getElementById('tab-exercise');
+  if (exTab) exTab.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setWeightTrendMode(mode) {
+  weightTrendMode = mode;
+  document.getElementById('wtTrend30').classList.toggle('active', mode === '30');
+  document.getElementById('wtTrendAll').classList.toggle('active', mode === 'all');
+  try { renderWeightChart(); } catch(e) {}
+}
+
+function renderWeightChart() {
+  if (typeof Chart === 'undefined') return;
+  var canvas = document.getElementById('weightChart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  if (weightChartInst) weightChartInst.destroy();
+
+  var filtered = [];
+  if (weightTrendMode === 'all') {
+    filtered = data.weights.slice();
+  } else {
+    for (var i = 0; i < data.weights.length; i++) {
+      if (daysBetween(data.weights[i].date, today()) <= 30) filtered.push(data.weights[i]);
+    }
+  }
+  filtered.sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+
+  var emptyEl = canvas.parentElement.querySelector('.empty-state');
+  if (!filtered.length) {
+    if (weightChartInst) { weightChartInst.destroy(); weightChartInst = null; }
+    canvas.style.display = 'none';
+    if (!emptyEl) {
+      emptyEl = document.createElement('div');
+      emptyEl.className = 'empty-state';
+      emptyEl.innerHTML = '<div class="empty-text">暂无数据</div>';
+      canvas.parentElement.appendChild(emptyEl);
+    }
+    return;
+  }
+  canvas.style.display = '';
+  if (emptyEl) emptyEl.remove();
+
+  var labelFn = weightTrendMode === 'all'
+    ? function(w){ return w.date.slice(2); }
+    : function(w){ return w.date.slice(5); };
+
+  weightChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: filtered.map(labelFn),
+      datasets: [
+        {
+          label: '晨重', data: filtered.map(function(w){ return w.morning; }),
+          borderColor: '#007AFF', backgroundColor: 'rgba(0,122,255,0.06)',
+          tension: 0.4, fill: false, pointRadius: 3, pointHoverRadius: 5, spanGaps: true
+        },
+        {
+          label: '晚重', data: filtered.map(function(w){ return w.evening; }),
+          borderColor: '#FF9500', backgroundColor: 'rgba(255,149,0,0.06)',
+          tension: 0.4, fill: false, pointRadius: 3, pointHoverRadius: 5, spanGaps: true
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 16, font: { size: 12, family: "-apple-system" }, usePointStyle: true } }
+      },
+      scales: {
+        y: { ticks: { callback: function(v){ return v.toFixed(1) + 'kg'; }, font: { size: 11 } }, grid: { color: '#F2F2F7' } },
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function renderExerciseCalendar(delta) {
+  exCalendarOffset += delta;
+  var container = document.getElementById('exCalendar');
+  var labelEl = document.getElementById('exerciseCalLabel');
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth() + exCalendarOffset;
+  var targetDate = new Date(year, month, 1);
+  year = targetDate.getFullYear();
+  month = targetDate.getMonth();
+
+  labelEl.textContent = year + '年' + (month + 1) + '月';
+
+  var todayStr = today();
+  var firstDay = new Date(year, month, 1).getDay();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var prevMonthDays = new Date(year, month, 0).getDate();
+
+  var exDates = {};
+  for (var i = 0; i < data.exercises.length; i++) {
+    var ed = new Date(data.exercises[i].date);
+    if (ed.getFullYear() === year && ed.getMonth() === month) {
+      exDates[ed.getDate()] = true;
+    }
+  }
+
+  var headers = ['日','一','二','三','四','五','六'];
+  var html = '';
+  for (var h = 0; h < 7; h++) {
+    html += '<div class="ex-day-header">' + headers[h] + '</div>';
+  }
+
+  for (var p = firstDay - 1; p >= 0; p--) {
+    var pd = prevMonthDays - p;
+    html += '<div class="ex-cell dim">' + pd + '</div>';
+  }
+
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = year + '-' + String(month + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    var cls = 'ex-cell';
+    if (exDates[d]) cls += ' has-exercise';
+    if (dateStr === todayStr) cls += ' today';
+    html += '<div class="' + cls + '">' + d + '</div>';
+  }
+
+  var totalCells = firstDay + daysInMonth;
+  var remaining = (7 - (totalCells % 7)) % 7;
+  for (var n = 1; n <= remaining; n++) {
+    html += '<div class="ex-cell dim">' + n + '</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function shiftExerciseCalendar(delta) {
+  renderExerciseCalendar(delta);
+}
+
+function updateExerciseComparison() {
+  var tn = today();
+  var yd = new Date(); yd.setDate(yd.getDate() - 1);
+  var ydStr = yd.toISOString().split('T')[0];
+
+  var todayDur = 0, yesterdayDur = 0;
+  for (var i = 0; i < data.exercises.length; i++) {
+    var e = data.exercises[i];
+    if (e.date === tn) todayDur += (e.duration || 0);
+    if (e.date === ydStr) yesterdayDur += (e.duration || 0);
+  }
+
+  document.getElementById('compareToday').textContent = todayDur + ' 分钟';
+  document.getElementById('compareYesterday').textContent = yesterdayDur + ' 分钟';
+
+  var hintEl = document.getElementById('compareHint');
+  if (todayDur === 0 && yesterdayDur === 0) {
+    hintEl.textContent = '最近两天暂无运动记录';
+  } else if (todayDur < yesterdayDur) {
+    hintEl.textContent = '今天到目前为止，运动时长比昨天少';
+  } else if (todayDur > yesterdayDur) {
+    hintEl.textContent = '今天运动时长已超过昨天，继续保持！';
+  } else {
+    hintEl.textContent = '今天运动时长与昨天持平';
+  }
+
+  var maxDur = Math.max(todayDur, yesterdayDur, 1);
+  var bar = document.getElementById('compareBar');
+  bar.style.width = (yesterdayDur / maxDur * 100) + '%';
+}
+
+// ─── Excel Export ───
+function exportToExcel() {
+  if (typeof XLSX === 'undefined') { showToast('Excel 组件加载中，请稍后再试'); return; }
+  var wb = XLSX.utils.book_new();
+
+  var weightRows = [['日期', '晨重(kg)', '晚重(kg)', '早晚差(kg)', 'BMI', 'BMI状态']];
+  var sw = [].concat(data.weights).sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+  for (var i = 0; i < sw.length; i++) {
+    var w = sw[i];
+    var diff = (w.morning && w.evening) ? (w.evening - w.morning).toFixed(1) : '';
+    weightRows.push([w.date, w.morning || '', w.evening || '', diff, w.bmi || '', w.bmi ? bmiLabel(w.bmi) : '']);
+  }
+  var ws1 = XLSX.utils.aoa_to_sheet(weightRows);
+  ws1['!cols'] = [{wch:12},{wch:12},{wch:12},{wch:12},{wch:8},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws1, '体重记录');
+
+  var periodRows = [['开始日期', '结束日期', '持续天数', '流量', '症状']];
+  var sp = [].concat(data.periods).sort(function(a,b){ return new Date(a.start) - new Date(b.start); });
+  var flowLabels = { light: '少量', 'medium-flow': '正常', heavy: '较多' };
+  for (var j = 0; j < sp.length; j++) {
+    periodRows.push([sp[j].start, sp[j].end, daysBetween(sp[j].start, sp[j].end) + 1, flowLabels[sp[j].flow] || sp[j].flow, (sp[j].symptoms || []).join('、')]);
+  }
+  var ws2 = XLSX.utils.aoa_to_sheet(periodRows);
+  ws2['!cols'] = [{wch:12},{wch:12},{wch:10},{wch:8},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, ws2, '月经记录');
+
+  var exerciseRows = [['日期', '运动类型', '强度', '时长(分钟)', '时长(可读)', '备注']];
+  var se = [].concat(data.exercises).sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+  var intLabels = { low: '低', medium: '中', high: '高' };
+  for (var k = 0; k < se.length; k++) {
+    var e = se[k];
+    var h = Math.floor(e.duration / 60), m = e.duration % 60;
+    exerciseRows.push([e.date, e.type, intLabels[e.intensity] || e.intensity, e.duration, (h > 0 ? (m > 0 ? h + '小时' + m + '分' : h + '小时') : m + '分'), e.note || '']);
+  }
+  var ws3 = XLSX.utils.aoa_to_sheet(exerciseRows);
+  ws3['!cols'] = [{wch:12},{wch:12},{wch:8},{wch:12},{wch:14},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, ws3, '运动记录');
+
+  XLSX.writeFile(wb, '生活习惯打卡_' + today() + '.xlsx');
+  showToast('导出成功');
+}
+
+// ─── Init ───
+function init() {
+  var ts = today();
+  var wde = document.getElementById('weightDate');
+  var ede = document.getElementById('exerciseDate');
+  if (wde) { wde.value = ts; wde.max = ts; }
+  if (ede) { ede.value = ts; ede.max = ts; }
+  renderWeightFilterNav();
+  renderExerciseFilterNav();
+  renderWeightRecent();
+  renderPeriodAll();
+  renderExerciseHistory();
+}
+
+var IMPORT_DATA = {"weights":[{"date":"2026-05-17","morning":60.7,"evening":61.6,"bmi":25.3},{"date":"2026-05-18","morning":61.2,"evening":60.9,"bmi":25.5},{"date":"2026-05-19","morning":60.5,"evening":61.4,"bmi":25.2},{"date":"2026-05-20","morning":60.9,"evening":60.9,"bmi":25.3},{"date":"2026-05-21","morning":60.3,"evening":60.7,"bmi":25.1},{"date":"2026-05-22","morning":60,"evening":61.1,"bmi":25},{"date":"2026-05-23","morning":60.2,"evening":60.6,"bmi":25.1},{"date":"2026-05-24","morning":60,"evening":60.7,"bmi":25},{"date":"2026-05-25","morning":60.2,"evening":60.6,"bmi":25.1},{"date":"2026-05-26","morning":59.9,"evening":60.9,"bmi":24.9},{"date":"2026-05-27","morning":60.5,"evening":null,"bmi":25.2},{"date":"2026-05-28","morning":60,"evening":60.2,"bmi":25},{"date":"2026-05-29","morning":59.5,"evening":60.3,"bmi":24.8},{"date":"2026-05-30","morning":null,"evening":60,"bmi":null},{"date":"2026-05-31","morning":null,"evening":60,"bmi":null},{"date":"2026-06-01","morning":59.6,"evening":60.2,"bmi":24.8},{"date":"2026-06-02","morning":59.7,"evening":60.3,"bmi":24.8},{"date":"2026-06-03","morning":59.6,"evening":59.9,"bmi":24.8},{"date":"2026-06-04","morning":59.5,"evening":60,"bmi":24.8},{"date":"2026-06-05","morning":59.5,"evening":60.3,"bmi":24.8},{"date":"2026-06-06","morning":null,"evening":60.4,"bmi":null},{"date":"2026-06-07","morning":59.9,"evening":60.2,"bmi":24.9},{"date":"2026-06-08","morning":59.7,"evening":60.2,"bmi":24.8},{"date":"2026-06-09","morning":59.4,"evening":60.2,"bmi":24.7},{"date":"2026-06-10","morning":59.5,"evening":null,"bmi":24.8}],"periods":[{"start":"2026-03-01","end":"2026-03-04","flow":"medium-flow","symptoms":["腰酸","乏力"]},{"start":"2026-03-31","end":"2026-04-03","flow":"medium-flow","symptoms":["腰酸","乏力"]},{"start":"2026-04-28","end":"2026-05-01","flow":"medium-flow","symptoms":["腰酸","情绪波动"]},{"start":"2026-05-27","end":"2026-05-30","flow":"medium-flow","symptoms":["腰酸","乏力","情绪波动","食欲变化"]}],"exercises":[{"date":"2026-06-01","type":"快走","intensity":"high","duration":210,"note":"仙湖植物园-怡景，11.11公里"},{"date":"2026-06-01","type":"瑜伽","intensity":"low","duration":10,"note":"早晨空腹核心训练"},{"date":"2026-06-01","type":"瑜伽","intensity":"low","duration":24,"note":"睡前拉伸"},{"date":"2026-06-02","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹核心运动"},{"date":"2026-06-03","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹核心运动"},{"date":"2026-06-03","type":"快走","intensity":"high","duration":150,"note":"雪竹径公园-贝尔路地铁站，10.5公里"},{"date":"2026-06-03","type":"瑜伽","intensity":"low","duration":20,"note":"运动后拉伸"},{"date":"2026-06-04","type":"力量","intensity":"low","duration":5,"note":"小哑铃一组4个动作"},{"date":"2026-06-04","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹核心训练"},{"date":"2026-06-04","type":"快走","intensity":"high","duration":120,"note":"孖岭-梅林水库-孖岭，9公里"},{"date":"2026-06-05","type":"瑜伽","intensity":"low","duration":20,"note":"早晨空腹腰腹训练"},{"date":"2026-06-06","type":"瑜伽","intensity":"low","duration":10,"note":"站姿核心训练1组"},{"date":"2026-06-06","type":"瑜伽","intensity":"medium","duration":30,"note":"拉伸及腰腹运动"},{"date":"2026-06-06","type":"快走","intensity":"high","duration":130,"note":"塘朗山公园，11公里"},{"date":"2026-06-07","type":"快走","intensity":"high","duration":150,"note":"淘金山绿道-翠湖文体公园-东湖公园，10公里"},{"date":"2026-06-07","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹腰腹训练"},{"date":"2026-06-07","type":"力量","intensity":"low","duration":15,"note":"小哑铃训练5个动作*30个*2组"},{"date":"2026-06-07","type":"瑜伽","intensity":"low","duration":30,"note":"睡前拉伸"},{"date":"2026-06-08","type":"瑜伽","intensity":"low","duration":20,"note":"早晨空腹腰腹训练"},{"date":"2026-06-08","type":"力量","intensity":"medium","duration":30,"note":"小哑铃手臂训练"},{"date":"2026-06-09","type":"瑜伽","intensity":"low","duration":30,"note":"早晨空腹腰腹训练"},{"date":"2026-06-09","type":"快走","intensity":"medium","duration":90,"note":"分段步行13000步"},{"date":"2026-06-09","type":"瑜伽","intensity":"medium","duration":40,"note":"小哑铃+腰腹训练"}],"initialWeight":62.3,"targetWeight":50};
+
+
+// ─── Data Import ───
+function importHistoryData() {
+  var btn = document.getElementById("importBtn");
+  btn.disabled = true;
+  btn.textContent = "正在导入...";
+
+  // Merge with existing data (keep any new records user already added)
+  var existing = null;
+  try {
+    existing = JSON.parse(localStorage.getItem("habit_tracker_data"));
+  } catch(e) {}
+
+  if (!existing || !existing.weights || existing.weights.length <= 11) {
+    // Fresh install or only seed data — sort newest-first then store
+    IMPORT_DATA.weights.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+    IMPORT_DATA.exercises.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+    IMPORT_DATA.periods.sort(function(a,b){ return new Date(b.start) - new Date(a.start); });
+    localStorage.setItem("habit_tracker_data", JSON.stringify(IMPORT_DATA));
+    showToast("导入完成！正在刷新...");
+    setTimeout(function(){ location.reload(); }, 800);
+  } else {
+    // Has user data already — merge by date
+    var wMap = {}, pMap = {}, eSet = new Set();
+    IMPORT_DATA.weights.forEach(function(w){ wMap[w.date] = w; });
+    IMPORT_DATA.periods.forEach(function(p){ pMap[p.start] = p; });
+    IMPORT_DATA.exercises.forEach(function(e){ eSet.add(e.date + "|" + e.type + "|" + e.duration); });
+
+    // Add imported weights that don't exist
+    existing.weights.forEach(function(w){ wMap[w.date] = w; });
+    existing.weights = Object.values(wMap).sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+
+    // Add imported periods that don't exist
+    existing.periods.forEach(function(p){ if (!pMap[p.start]) pMap[p.start] = p; });
+    existing.periods = Object.values(pMap).sort(function(a,b){ return new Date(b.start) - new Date(b.start); });
+
+    // Add imported exercises that don't exist
+    existing.exercises.forEach(function(e){ eSet.add(e.date + "|" + e.type + "|" + e.duration); });
+    var existSet = new Set();
+    IMPORT_DATA.exercises.forEach(function(e){
+      if (!eSet.has(e.date + "|" + e.type + "|" + e.duration)) {
+        existSet.add(e.date + "|" + e.type + "|" + e.duration);
+        existing.exercises.push(e);
+      }
+    });
+    existing.exercises.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+
+    localStorage.setItem("habit_tracker_data", JSON.stringify(existing));
+    showToast("导入完成！已合并数据，正在刷新...");
+    setTimeout(function(){ location.reload(); }, 800);
+  }
+}
+
+init();
+</script>
+
+<script async src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"
+  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'"></script>
+<script async src="https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+  onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'"></script>
+</body>
+</html>
