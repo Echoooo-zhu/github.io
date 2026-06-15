@@ -6,305 +6,144 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="工具箱">
-<meta property="og:title" content="工具箱">
-<meta property="og:description" content="便捷访问的私人工具体验馆">
 <title>工具箱</title>
 <style>
 
-/* ======== Variables ======== */
 :root {
   --bg: #F9F7F4;
   --card: #FFFFFF;
   --text: #3A3734;
-  --text-secondary: #8C8985;
-  --text-hint: #B8B5B0;
+  --text2: #8C8985;
+  --text3: #B8B5B0;
   --border: #E8E5E1;
-  --accent: #C17D5A;
-  --accent-light: #F5EDE7;
-  --accent-dark: #9C6243;
-  --green: #689F63;
-  --green-light: #EFF6ED;
-  --purple: #7B6F9E;
-  --purple-light: #F2EFF8;
-  --radius: 14px;
-  --radius-sm: 10px;
   --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
-  --shadow-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
-  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --safe-bottom: env(safe-area-inset-bottom, 16px);
+  --safe-b: env(safe-area-inset-bottom, 16px);
 }
 
-/* ======== Reset ======== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
-  height: 100%;
-  background: var(--bg);
+  height: 100%; background: var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
-  color: var(--text);
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-text-size-adjust: 100%;
+  color: var(--text); font-size: 15px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%; overflow-x: hidden;
 }
-body { overflow-x: hidden; }
 
 /* ======== Home View ======== */
-.home-view {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 0 16px;
-  padding-bottom: var(--safe-bottom);
+#home {
+  min-height: 100vh; display: flex; flex-direction: column;
+  padding: 0 16px; padding-bottom: var(--safe-b);
 }
+#home.hidden { display: none; }
 
-/* Header */
-.header {
-  padding: 32px 4px 8px;
-}
-.header-time {
-  font-size: 13px;
-  color: var(--text-secondary);
-  letter-spacing: 0.3px;
-}
-.header-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--text);
-  margin-top: 6px;
-  letter-spacing: 0.5px;
-}
-.header-sub {
-  font-size: 14px;
-  color: var(--text-hint);
-  margin-top: 4px;
-  font-weight: 400;
-}
+.header { padding: 32px 4px 8px; }
+.header-time { font-size: 13px; color: var(--text2); letter-spacing: 0.3px; }
+.header-title { font-size: 28px; font-weight: 600; color: var(--text); margin-top: 6px; letter-spacing: 0.5px; }
+.header-sub { font-size: 14px; color: var(--text3); margin-top: 4px; }
 
-/* Tool Grid */
-.tool-grid {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px 0 24px;
-}
+.tool-list { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 12px 0 24px; }
 
-/* Tool Card */
 .tool-card {
-  display: flex;
-  align-items: center;
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 18px 16px;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  transition: transform var(--transition), box-shadow var(--transition);
-  user-select: none;
-  -webkit-user-select: none;
-  position: relative;
-  overflow: hidden;
+  display: flex; align-items: center; background: var(--card); border-radius: 14px;
+  padding: 18px 16px; box-shadow: var(--shadow); cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s; user-select: none;
+  -webkit-user-select: none; -webkit-touch-callout: none;
 }
-.tool-card:active {
-  transform: scale(0.985);
-  box-shadow: var(--shadow-hover);
-}
-.tool-card.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-.tool-card.placeholder {
-  opacity: 0.35;
-  cursor: default;
-  pointer-events: none;
-}
+.tool-card:active { transform: scale(0.985); }
+.tool-card.off { opacity: 0.35; pointer-events: none; }
 
-/* Card Icon */
 .tool-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
-  margin-right: 14px;
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0; margin-right: 14px;
 }
-.tool-icon.habit { background: var(--purple-light); }
-.tool-icon.jijhang { background: var(--green-light); }
-.tool-icon.placeholder { background: #F2F2F2; color: var(--text-hint); }
+.tool-icon.habit { background: #EFEAF6; color: #7B6F9E; }
+.tool-icon.jijhang { background: #E6F4EA; color: #5A9E5F; }
+.tool-icon.soon { background: #EEEDED; color: #B8B5B0; }
 
-/* Card Content */
-.tool-content { flex: 1; min-width: 0; }
-.tool-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 3px;
-  letter-spacing: 0.3px;
-}
-.tool-desc {
-  font-size: 13px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.tool-body { flex: 1; min-width: 0; }
+.tool-name { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 3px; letter-spacing: 0.3px; }
+.tool-desc { font-size: 13px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Card Arrow */
 .tool-arrow {
-  width: 8px;
-  height: 8px;
-  border-top: 2px solid var(--text-hint);
-  border-right: 2px solid var(--text-hint);
-  transform: rotate(45deg);
-  flex-shrink: 0;
-  margin-left: 8px;
-  transition: transform var(--transition), border-color var(--transition);
-}
-.tool-card:active .tool-arrow {
-  transform: rotate(45deg) translateX(3px) translateY(-3px);
-  border-color: var(--accent);
+  width: 8px; height: 8px; border-top: 2px solid #C0BDB8;
+  border-right: 2px solid #C0BDB8; transform: rotate(45deg); flex-shrink: 0; margin-left: 8px;
 }
 
-/* Section Title */
 .section-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-hint);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 20px 4px 4px;
+  font-size: 13px; font-weight: 600; color: var(--text3);
+  letter-spacing: 1px; padding: 20px 4px 4px;
 }
 
-/* Footer */
-.footer {
-  text-align: center;
-  padding: 12px 0 20px;
-  font-size: 12px;
-  color: var(--text-hint);
-  letter-spacing: 0.2px;
-}
+.footer { text-align: center; padding: 12px 0 20px; font-size: 12px; color: var(--text3); }
 
-/* ======== Tool View (iframe overlay) ======== */
-.tool-view {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--bg);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+/* ======== Tool Overlay ======== */
+#toolOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #F5F5F5; z-index: 9999;
+  display: none; flex-direction: column;
 }
-.tool-view.active {
-  transform: translateY(0);
-}
+#toolOverlay.show { display: flex; }
 
-/* Tool Header */
-.tool-header {
-  display: flex;
-  align-items: center;
-  height: 50px;
-  padding: 0 12px;
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
+.tool-top {
+  display: flex; align-items: center; height: 48px; padding: 0 8px;
+  background: #FFF; border-bottom: 1px solid #E0E0E0; flex-shrink: 0; gap: 8px;
+}
+.tool-back-btn {
+  width: 36px; height: 36px; border-radius: 8px; display: flex;
+  align-items: center; justify-content: center; font-size: 18px;
+  color: #3A3734; cursor: pointer; border: none; background: none;
   flex-shrink: 0;
-  gap: 10px;
 }
-.tool-back {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--text);
-  cursor: pointer;
-  transition: background var(--transition);
-  flex-shrink: 0;
-  border: none;
-  background: none;
-}
-.tool-back:active { background: rgba(0,0,0,0.05); }
-.tool-header-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  flex: 1;
-  text-align: center;
-  padding-right: 36px; /* offset for centered title */
+.tool-back-btn:active { background: rgba(0,0,0,0.05); }
+.tool-top-name {
+  font-size: 16px; font-weight: 600; color: #3A3734;
+  flex: 1; text-align: center; padding-right: 44px;
 }
 
-/* Tool iframe */
-.tool-iframe-wrap {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
+.tool-body-wrap { flex: 1; position: relative; overflow: hidden; }
+.tool-body-wrap iframe {
+  width: 100%; height: 100%; border: none; display: block;
 }
-.tool-iframe-wrap iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
+.tool-loading {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  text-align: center; color: #B8B5B0; font-size: 14px;
 }
-
-/* Loading */
-.loading-indicator {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: var(--text-hint);
-  font-size: 14px;
-}
-.loading-spinner {
-  width: 28px;
-  height: 28px;
-  border: 3px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  margin: 0 auto 12px;
+.tool-spinner {
+  width: 28px; height: 28px; border: 3px solid #E0E0E0;
+  border-top-color: #C17D5A; border-radius: 50%; margin: 0 auto 12px;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ======== Responsive ======== */
 @media (min-width: 640px) {
-  .home-view { max-width: 480px; margin: 0 auto; }
+  #home { max-width: 480px; margin: 0 auto; }
 }
 
 </style>
 </head>
 <body>
 
-<!-- ======== Home View ======== -->
-<div class="home-view" id="homeView">
+<!-- ======== Home ======== -->
+<div id="home">
   <div class="header">
     <div class="header-time" id="headerTime"></div>
     <h1 class="header-title">工具箱</h1>
     <p class="header-sub">私人工具体验馆</p>
   </div>
 
-  <div class="tool-grid">
-    <!-- 减重打卡 -->
-    <div class="tool-card" onclick="openTool('habit')">
+  <div class="tool-list">
+    <div class="tool-card" data-tool="habit">
       <div class="tool-icon habit">&#x2696;</div>
-      <div class="tool-content">
+      <div class="tool-body">
         <div class="tool-name">减重打卡</div>
         <div class="tool-desc">每日晨重、三餐及运动记录</div>
       </div>
       <div class="tool-arrow"></div>
     </div>
-
-    <!-- 极简记账 -->
-    <div class="tool-card" onclick="openTool('jijhang')">
+    <div class="tool-card" data-tool="jijhang">
       <div class="tool-icon jijhang">&#x1F4B0;</div>
-      <div class="tool-content">
+      <div class="tool-body">
         <div class="tool-name">极简记账</div>
         <div class="tool-desc">随手记录收支，轻松管理财务</div>
       </div>
@@ -314,126 +153,119 @@ body { overflow-x: hidden; }
 
   <div class="section-title">更多工具</div>
   <div style="display:flex;flex-direction:column;gap:12px;padding-bottom:12px;">
-    <div class="tool-card placeholder">
-      <div class="tool-icon placeholder" style="background:#EBF0F5;color:#8CA5BD;">?</div>
-      <div class="tool-content">
+    <div class="tool-card off">
+      <div class="tool-icon soon">+</div>
+      <div class="tool-body">
         <div class="tool-name">即将上线</div>
         <div class="tool-desc">更多实用工具开发中</div>
       </div>
-      <div class="tool-arrow" style="opacity:0.2"></div>
     </div>
   </div>
 
   <div class="section-title">关于</div>
-  <div style="padding: 0 4px 24px; font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
+  <div style="padding:0 4px 24px;font-size:13px;color:var(--text2);line-height:1.8;">
     本页收集个人常用的便捷小工具，所有数据存储在浏览器本地，不会上传到任何服务器。
   </div>
 
   <div class="footer">Echo's Toolbox &copy; 2026</div>
 </div>
 
-<!-- ======== Tool View ======== -->
-<div class="tool-view" id="toolView">
-  <div class="tool-header">
-    <button class="tool-back" onclick="closeTool()" aria-label="返回">
+<!-- ======== Tool Overlay ======== -->
+<div id="toolOverlay">
+  <div class="tool-top">
+    <button class="tool-back-btn" id="btnClose" aria-label="返回">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M12 5L7 10L12 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    <span class="tool-header-title" id="toolTitle"></span>
+    <span class="tool-top-name" id="toolTitle">工具</span>
   </div>
-  <div class="tool-iframe-wrap" id="iframeWrap">
-    <div class="loading-indicator" id="loadingIndicator">
-      <div class="loading-spinner"></div>
+  <div class="tool-body-wrap">
+    <div class="tool-loading" id="toolLoading">
+      <div class="tool-spinner"></div>
       加载中...
     </div>
-    <iframe id="toolIframe" frameborder="0" allow="local-storage"></iframe>
+    <iframe id="toolIframe" allow="local-storage"></iframe>
   </div>
 </div>
 
 <script>
-'use strict';
+(function() {
+  'use strict';
 
-// ======== Tool Configuration ========
-// 添加新工具只需在这里加一行：
-var tools = {
-  habit:  { title: '减重打卡', src: 'habit-tracker.html' },
-  jijhang: { title: '极简记账', src: 'jijhang.html' }
-};
-
-// ======== Greeting ========
-(function updateTime() {
+  // ====== Greeting ======
   var el = document.getElementById('headerTime');
-  if (!el) return;
-  var h = new Date().getHours();
-  var g = h < 6 ? '夜深了 🌛' : h < 9 ? '早上好 🌅' : h < 12 ? '上午好 ☀️' : h < 14 ? '中午好 ☀️' : h < 18 ? '下午好 ☀️' : h < 22 ? '晚上好 🌙' : '夜深了 🌛';
-  el.textContent = g + ' · ' + new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
-})();
+  if (el) {
+    var h = new Date().getHours();
+    var g = h < 6 ? '夜深了 🌛' : h < 9 ? '早上好 🌅' : h < 12 ? '上午好 ☀️' : h < 14 ? '中午好 ☀️' : h < 18 ? '下午好 ☀️' : h < 22 ? '晚上好 🌙' : '夜深了 🌛';
+    el.textContent = g + ' · ' + new Date().toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+  }
 
-// ======== Tool View Management ========
-var toolView = document.getElementById('toolView');
-var toolIframe = document.getElementById('toolIframe');
-var toolTitle = document.getElementById('toolTitle');
-var loadingIndicator = document.getElementById('loadingIndicator');
-var currentTool = null;
-
-function openTool(key) {
-  var tool = tools[key];
-  if (!tool) return;
-  currentTool = key;
-  
-  toolTitle.textContent = tool.title;
-  loadingIndicator.style.display = 'block';
-  toolIframe.style.display = 'none';
-  toolIframe.src = tool.src;
-  toolView.classList.add('active');
-  
-  // Prevent body scroll when tool is open
-  document.body.style.overflow = 'hidden';
-  
-  // Show iframe when loaded
-  toolIframe.onload = function() {
-    loadingIndicator.style.display = 'none';
-    toolIframe.style.display = 'block';
+  // ====== Tool config ======
+  var tools = {
+    habit:  { title: '减重打卡', src: 'habit-tracker.html' },
+    jijhang: { title: '极简记账', src: 'jijhang.html' }
   };
-}
 
-function closeTool() {
-  toolView.classList.remove('active');
-  document.body.style.overflow = '';
-  
-  // Clear iframe after transition
-  setTimeout(function() {
-    if (!toolView.classList.contains('active')) {
-      toolIframe.src = '';
-      toolIframe.style.display = 'none';
-      currentTool = null;
+  // ====== DOM refs ======
+  var overlay = document.getElementById('toolOverlay');
+  var iframe = document.getElementById('toolIframe');
+  var titleEl = document.getElementById('toolTitle');
+  var loading = document.getElementById('toolLoading');
+
+  // ====== Bind card clicks ======
+  var cards = document.querySelectorAll('.tool-card[data-tool]');
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].addEventListener('click', (function(key) {
+      return function() { openTool(key); };
+    })(cards[i].getAttribute('data-tool')));
+  }
+
+  // ====== Bind close button ======
+  document.getElementById('btnClose').addEventListener('click', closeTool);
+
+  // ====== Open tool ======
+  function openTool(key) {
+    var t = tools[key];
+    if (!t) return;
+
+    titleEl.textContent = t.title;
+    loading.style.display = 'block';
+    iframe.style.display = 'none';
+
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+
+    // Set onload BEFORE setting src
+    iframe.onload = function() {
+      loading.style.display = 'none';
+      iframe.style.display = 'block';
+    };
+    iframe.src = t.src;
+  }
+
+  // ====== Close tool ======
+  function closeTool() {
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+    // Delay clearing iframe to allow transition
+    setTimeout(function() {
+      if (!overlay.classList.contains('show')) {
+        iframe.src = 'about:blank';
+        iframe.style.display = 'none';
+        loading.style.display = 'block';
+      }
+    }, 300);
+  }
+
+  // ====== Escape key ======
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.classList.contains('show')) {
+      closeTool();
     }
-  }, 400);
-}
+  });
 
-// ======== Handle browser back button ========
-window.addEventListener('popstate', function(e) {
-  if (toolView.classList.contains('active')) {
-    closeTool();
-    e.preventDefault();
-  }
-});
-
-// Push state when opening a tool so back button works
-var origOpenTool = openTool;
-openTool = function(key) {
-  history.pushState({ toolOpen: true }, '', '');
-  origOpenTool(key);
-};
-
-// ======== Keyboard shortcut ========
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && toolView.classList.contains('active')) {
-    closeTool();
-  }
-});
-
+})();
 </script>
 
 </body>
