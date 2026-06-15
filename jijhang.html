@@ -5,41 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>止付日记</title>
   <style>
-    /* ======== 全局变量 ======== */
+    /* ======== 全局变量（参考慢瘦日记 Glass 风格） ======== */
     :root {
-      --primary: #4CAF50;
-      --primary-light: #E8F5E9;
-      --primary-dark: #388E3C;
-      --danger: #F44336;
-      --danger-light: #FFEBEE;
-      --text-primary: #212121;
-      --text-secondary: #757575;
-      --text-hint: #BDBDBD;
-      --bg: #F5F5F5;
-      --card: #FFFFFF;
-      --border: #E0E0E0;
+      --primary: #34C759;
+      --primary-light: rgba(52,199,89,0.12);
+      --primary-glass: rgba(52,199,89,0.85);
+      --primary-dark: #28A745;
+      --danger: #FF3B30;
+      --danger-light: rgba(255,59,48,0.10);
+      --text-primary: rgba(0,0,0,0.88);
+      --text-secondary: rgba(0,0,0,0.52);
+      --text-hint: rgba(0,0,0,0.28);
+      --bg: #F0F0F5;
+      --card: rgba(255,255,255,0.72);
+      --card-solid: #FFFFFF;
+      --border: rgba(0,0,0,0.06);
+      --edge: rgba(255,255,255,0.5);
       --top-h: 44px;
-      --radius: 12px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --radius: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --radius-xs: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.05);
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
     }
 
     /* ======== 基础重置 ======== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif; color: var(--text-primary); font-size: 15px; -webkit-tap-highlight-color: transparent; }
-    button { border: none; cursor: pointer; background: none; font-family: inherit; }
+    html, body { height: 100%; background:
+      radial-gradient(ellipse 70% 60% at 30% 10%, rgba(180,220,180,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 75% 50%, rgba(200,180,230,0.2) 0%, transparent 55%),
+      linear-gradient(172deg, #E8ECF5 0%, #EDEEF6 20%, #EEF5EF 45%, #ECF0F5 70%, #E7EBF3 100%);
+      background-attachment: fixed; font-family: var(--font); color: var(--text-primary); font-size: 15px;
+      -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; max-width: 430px; margin: 0 auto; }
+    button { border: none; cursor: pointer; background: none; font-family: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: transform 0.15s, opacity 0.15s; }
+    button:active { transform: scale(0.97); opacity: 0.85; }
     input, textarea { font-family: inherit; outline: none; border: none; }
 
     /* ======== 页面切换 ======== */
     .page { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
     .page.active { display: flex; }
 
-    /* ======== 顶部Tab导航 ======== */
+    /* ======== 通用工具类 ======== */
+    .required-mark { color: var(--danger); font-weight: 600; }
+    /* stat-detail-row 可点击下钻 */
+    .stat-detail-row.clickable { cursor: pointer; }
+    .stat-detail-row.clickable:active { background: rgba(0,0,0,0.03); }
+    .stat-detail-row .arrow { font-size: 14px; color: var(--text-hint); margin-left: 8px; flex-shrink: 0; }
+    .clickable { cursor: pointer; }
+    .mb-0 { margin-bottom: 0 !important; }
+    .mt-10 { margin-top: 10px !important; }
+    .mt-16 { margin-top: 16px !important; }
+    .fs-11 { font-size: 11px; }
+    .fs-18 { font-size: 18px; }
+    .w-full { width: 100%; }
+    .text-center { text-align: center; }
+
+    /* ======== 顶部Tab导航（干净无按钮） ======== */
     .top-tab-bar {
       display: flex;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
+      background: rgba(242,244,250,0.72);
+      backdrop-filter: saturate(200%) blur(20px);
+      -webkit-backdrop-filter: saturate(200%) blur(20px);
+      border-bottom: 0.5px solid var(--edge);
       flex-shrink: 0;
-      height: 44px;
+      height: 48px;
+      align-items: center;
     }
     .top-tab {
       flex: 1;
@@ -48,10 +79,12 @@
       justify-content: center;
       font-size: 14px;
       font-weight: 500;
-      color: var(--text-hint);
+      color: var(--text-secondary);
       cursor: pointer;
       position: relative;
-      transition: color 0.2s;
+      height: 100%;
+      transition: color 0.2s, transform 0.15s;
+      letter-spacing: 0.2px;
     }
     .top-tab.active {
       color: var(--primary);
@@ -60,11 +93,11 @@
     .top-tab.active::after {
       content: '';
       position: absolute;
-      bottom: 0;
+      bottom: 2px;
       left: 50%;
       transform: translateX(-50%);
-      width: 24px;
-      height: 3px;
+      width: 22px;
+      height: 2.5px;
       background: var(--primary);
       border-radius: 2px;
     }
@@ -114,18 +147,22 @@
       margin-bottom: 16px;
     }
     .login-box input:focus { border-color: var(--primary); }
-    .login-box .login-btn {
+    .login-btn {
       width: 100%;
       padding: 14px;
-      background: var(--primary);
+      background: var(--primary-glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       color: #fff;
       font-size: 16px;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: 100px;
       margin-bottom: 16px;
-      transition: background 0.2s;
+      border: 0.5px solid rgba(255,255,255,0.2);
+      box-shadow: 0 2px 8px rgba(52,199,89,0.2);
+      letter-spacing: 0.3px;
     }
-    .login-box .login-btn:active { background: var(--primary-dark); }
+    .login-btn:active { background: var(--primary-dark); }
     .login-remember {
       display: flex;
       align-items: center;
@@ -138,16 +175,16 @@
     .login-tip { font-size: 12px; color: var(--text-hint); text-align: center; margin-top: 16px; }
 
     /* ======== ===== 首页 ===== ======== */
-    /* 当日汇总卡片 */
     .today-summary {
       margin: 12px 16px 0;
-      background: linear-gradient(135deg, #4CAF50, #66BB6A);
+      background: linear-gradient(135deg, var(--primary), #48D269);
       border-radius: var(--radius);
-      padding: 18px 20px;
+      padding: 20px 22px;
       color: #fff;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 16px rgba(52,199,89,0.25);
     }
     .today-summary .left .label { font-size: 13px; opacity: 0.85; margin-bottom: 4px; }
     .today-summary .left .amount { font-size: 30px; font-weight: 700; }
@@ -155,91 +192,145 @@
     .today-summary .right .count { font-size: 13px; opacity: 0.85; }
     .today-summary .right .num { font-size: 22px; font-weight: 600; }
 
-    /* 分类区 */
-    .section-title {
+    /* 首页表单：标签与输入框同行（Glass 风格） */
+    .form-field {
+      display: flex;
+      align-items: flex-start;
+      margin: 12px 16px;
+      gap: 12px;
+    }
+    .form-field .field-label {
       font-size: 13px;
       color: var(--text-secondary);
-      padding: 10px 16px 5px;
-      font-weight: 500;
+      font-weight: 600;
+      white-space: nowrap;
+      width: 64px;
+      padding-top: 12px;
+      line-height: 1.4;
+      letter-spacing: 0.2px;
+      text-align: right;
     }
-    .category-grid {
+    .form-field .field-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .form-row {
+      background: var(--card);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 0.5px solid var(--edge);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .form-row.clickable { cursor: pointer; }
+    .form-row .row-icon { font-size: 17px; flex-shrink: 0; opacity: 0.7; }
+    .form-row .row-value {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text-primary);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .form-row input, .form-row textarea {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text-primary);
+      background: none;
+      border: none;
+      outline: none;
+      padding: 0;
+      margin: 0;
+      min-width: 0;
+    }
+    .form-row textarea { resize: none; height: 38px; line-height: 1.4; font-family: inherit; }
+    /* 金额输入框：防溢出 */
+    .form-row .amount-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+    .form-row .amount-input-wrap .yen-symbol {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    .form-row .amount-input {
+      font-size: 22px !important;
+      font-weight: 700;
+      color: var(--primary-dark) !important;
+      text-align: right;
+      flex: 1;
+      min-width: 0;
+      background: none !important;
+      -moz-appearance: textfield;
+    }
+    .form-row .amount-input::-webkit-inner-spin-button,
+    .form-row .amount-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* 分类/账户：内联在表单中 */
+    .inline-cat-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 6px;
-      padding: 0 16px;
+    }
+    .inline-acc-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .cat-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 3px;
-      padding: 7px 4px;
+      padding: 8px 4px 6px;
       background: var(--card);
-      border-radius: 8px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-xs);
       font-size: 11px;
       color: var(--text-secondary);
       cursor: pointer;
-      border: 1.5px solid transparent;
-      transition: all 0.15s;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 0.5px solid var(--border);
+      transition: all 0.2s;
+      font-weight: 500;
     }
     .cat-item.selected {
       background: var(--primary-light);
       border-color: var(--primary);
       color: var(--primary-dark);
+      font-weight: 600;
     }
     .cat-item .cat-icon { font-size: 18px; }
 
-    /* 录入区 */
-    .input-section { margin: 8px 16px 0; }
-    .input-row {
-      background: var(--card);
-      border-radius: 10px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      gap: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    .input-row label {
-      font-size: 14px;
-      color: var(--text-secondary);
-      white-space: nowrap;
-      min-width: 52px;
-    }
-    .input-row input, .input-row textarea {
-      flex: 1;
-      font-size: 15px;
-      color: var(--text-primary);
-      background: none;
-    }
-    .input-row textarea { resize: none; height: 38px; line-height: 1.4; }
     .amount-input {
       font-size: 24px !important;
       font-weight: 600;
       color: var(--primary-dark) !important;
     }
-    .input-row .placeholder-text { color: var(--text-hint); }
+    .placeholder-text { color: var(--text-hint); }
 
-    /* 账户选择 */
-    .account-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 0 16px;
-      margin-bottom: 8px;
-    }
     .acc-chip {
-      padding: 7px 14px;
-      border-radius: 20px;
+      padding: 8px 16px;
+      border-radius: 100px;
       font-size: 13px;
+      font-weight: 500;
       background: var(--card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       color: var(--text-secondary);
       cursor: pointer;
-      border: 1.5px solid var(--border);
-      transition: all 0.15s;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 0.5px solid var(--border);
+      transition: all 0.2s;
     }
     .acc-chip.selected {
       background: var(--primary);
@@ -247,106 +338,139 @@
       border-color: var(--primary);
     }
 
-    /* 提交按钮 */
     .submit-btn {
       margin: 12px 16px 0;
       width: calc(100% - 32px);
-      padding: 15px;
-      background: var(--primary);
+      padding: 14px;
+      background: var(--primary-glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       color: #fff;
       font-size: 16px;
       font-weight: 600;
-      border-radius: 12px;
-      transition: background 0.2s;
-    }
-    .submit-btn:active { background: var(--primary-dark); }
-
-    /* ======== ===== 统计页 ===== ======== */
-    /* 时间维度切换 */
-    .tab-bar {
-      display: flex;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .tab-item {
-      flex: 1;
-      text-align: center;
-      padding: 12px 0;
-      font-size: 15px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      border-bottom: 2.5px solid transparent;
+      border-radius: 100px;
+      letter-spacing: 0.3px;
+      border: 0.5px solid rgba(255,255,255,0.2);
+      box-shadow: 0 2px 8px rgba(52,199,89,0.2), 0 0 0 0.5px rgba(52,199,89,0.12);
       transition: all 0.2s;
     }
-    .tab-item.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-      font-weight: 600;
-    }
+    .submit-btn:active { background: var(--primary-dark); transform: scale(0.97); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    /* 周期导航 */
-    .period-nav {
+    /* ======== ===== 统计页：合并时间栏 + 操作按钮 ===== ======== */
+    .time-bar {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 10px 16px;
       background: var(--card);
-      border-bottom: 1px solid var(--border);
-      gap: 16px;
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 0.5px solid var(--edge);
       flex-shrink: 0;
+      padding: 0 8px 0 4px;
+      height: 46px;
+      gap: 2px;
     }
-    .period-nav .period-label {
+    .time-nav-btn {
+      font-size: 22px;
+      color: var(--text-secondary);
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .time-nav-btn:active { background: rgba(0,0,0,0.04); }
+    .time-label {
       font-size: 15px;
       font-weight: 600;
       color: var(--text-primary);
-      min-width: 120px;
+      min-width: 90px;
       text-align: center;
+      white-space: nowrap;
     }
-    .period-nav button {
-      font-size: 22px;
-      color: var(--text-secondary);
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
-      transition: background 0.15s;
-    }
-    .period-nav button:active { background: var(--bg); }
-
-    /* 统计维度 */
-    .stat-mode-bar {
+    .time-pills {
       display: flex;
-      margin: 12px 16px 0;
-      background: var(--card);
-      border-radius: 10px;
-      padding: 4px;
       gap: 2px;
-      box-shadow: var(--shadow);
-      flex-shrink: 0;
+      margin-left: auto;
+      background: rgba(0,0,0,0.04);
+      border-radius: 8px;
+      padding: 3px;
     }
-    .stat-mode-btn {
-      flex: 1;
-      text-align: center;
-      padding: 8px 4px;
-      font-size: 13px;
+    .time-pill {
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--text-secondary);
-      border-radius: 7px;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
     }
-    .stat-mode-btn.active {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 500;
+    .time-pill.active {
+      background: var(--card-solid);
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
 
-    /* 统计汇总卡片 */
+    /* 统计页工具栏 */
+    .stat-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 16px;
+      flex-shrink: 0;
+    }
+    .stat-toolbar-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 0.5px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .stat-toolbar-btn:active { color: var(--primary); background: var(--primary-light); border-color: var(--primary); }
+    .stat-toolbar-spacer { flex: 1; }
+
+    /* 搜索栏 */
+    .search-bar {
+      margin: 10px 16px 0;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: border-color 0.2s;
+    }
+    .search-bar input:focus { border-color: var(--primary); }
+
+    /* 统计汇总卡片（Glass） */
     .stat-summary-card {
       margin: 10px 16px 0;
       background: var(--card);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: var(--shadow);
+      border: 0.5px solid var(--edge);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04);
+      overflow: hidden;
+    }
+    .stat-summary-card .ssc-header {
+      padding: 14px 16px 8px;
     }
     .stat-summary-card .main-amount {
       font-size: 28px;
@@ -358,18 +482,68 @@
       color: var(--text-secondary);
       margin-top: 4px;
     }
-    .stat-detail-rows { margin-top: 12px; }
+
+    /* 统计维度分段控件（卡片内） */
+    .stat-mode-seg {
+      display: flex;
+      background: rgba(0,0,0,0.03);
+      border-radius: 8px;
+      padding: 3px;
+      margin: 10px 16px 0;
+      gap: 2px;
+    }
+    .stat-mode-seg-btn {
+      flex: 1;
+      text-align: center;
+      padding: 7px 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .stat-mode-seg-btn.active {
+      background: var(--card);
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* 下钻过滤标签 */
+    .drill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 10px 16px 0;
+      padding: 6px 12px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 100px;
+      border: 0.5px solid rgba(52,199,89,0.2);
+    }
+    .drill-tag-clear {
+      font-size: 14px;
+      padding: 0 4px;
+      color: var(--primary-dark);
+      opacity: 0.7;
+      cursor: pointer;
+    }
+    .drill-tag-clear:active { opacity: 1; }
+
+    .stat-detail-rows { padding: 0 16px 14px; margin-top: 8px; }
     .stat-detail-row {
       display: flex;
       align-items: center;
       padding: 10px 0;
       border-top: 1px solid var(--border);
     }
-    .stat-detail-row .icon { font-size: 18px; margin-right: 10px; }
+    .stat-detail-row .icon { font-size: 18px; margin-right: 10px; flex-shrink: 0; }
     .stat-detail-row .name { flex: 1; font-size: 14px; color: var(--text-primary); }
     .stat-detail-row .pct { font-size: 13px; color: var(--text-secondary); margin-right: 12px; }
-    .stat-detail-row .amount { font-size: 14px; font-weight: 600; color: var(--primary-dark); }
-    .progress-bar { width: 100%; height: 4px; background: #E8F5E9; border-radius: 2px; margin-top: 4px; }
+    .stat-detail-row .amount { font-size: 14px; font-weight: 600; color: var(--primary-dark); white-space: nowrap; }
+    .progress-bar { width: 100%; height: 4px; background: var(--primary-light); border-radius: 2px; margin-top: 4px; }
     .progress-fill { height: 4px; background: var(--primary); border-radius: 2px; transition: width 0.4s; }
 
     /* 明细列表 */
@@ -382,54 +556,53 @@
     }
     .record-item {
       background: var(--card);
-      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-sm);
       padding: 12px 14px;
       margin-bottom: 6px;
       display: flex;
       align-items: center;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 0.5px solid var(--border);
       cursor: pointer;
+      transition: background 0.15s;
     }
-    .record-item .r-icon { font-size: 20px; margin-right: 10px; }
-    .record-item .r-info { flex: 1; }
-    .record-item .r-info .r-cat { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+    .record-item:active { background: rgba(0,0,0,0.03); }
+    .record-item .r-icon { font-size: 20px; margin-right: 10px; flex-shrink: 0; }
+    .record-item .r-info { flex: 1; min-width: 0; }
+    .record-item .r-info .r-cat { font-size: 14px; color: var(--text-primary); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .record-item .r-info .r-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-    .record-item .r-amount { font-size: 16px; font-weight: 600; color: var(--danger); }
+    .record-item .r-amount { font-size: 16px; font-weight: 600; color: var(--danger); white-space: nowrap; margin-left: 8px; }
 
-    /* 导出导入 — 同行紧凑按钮 */
-    .export-bar {
-      padding: 8px 12px;
-      background: transparent;
-      border-top: none;
-      flex-shrink: 0;
-      display: flex;
-      gap: 10px;
-    }
-    .export-btn-main {
-      flex: 1;
-      padding: 8px 0;
-      background: #fff;
-      border: 1.5px solid var(--border);
+    /* 导入按钮 */
+    .import-btn-area { padding: 12px 16px 24px; text-align: center; }
+    .import-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 0.5px solid var(--border);
       color: var(--text-secondary);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
-      border-radius: 8px;
+      border-radius: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .export-btn-main.primary {
-      border-color: var(--primary);
-      color: var(--primary);
-      font-weight: 600;
-    }
+    .import-btn:active { border-color: var(--primary); color: var(--primary); }
 
     /* ======== ===== 管理页 ===== ======== */
     .mgmt-tabs {
       display: flex;
       background: var(--card);
-      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 0.5px solid var(--edge);
       flex-shrink: 0;
     }
     .mgmt-tab {
@@ -447,46 +620,55 @@
     .mgmt-list { padding: 0 16px; }
     .mgmt-item {
       background: var(--card);
-      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-sm);
       padding: 14px 16px;
       margin-top: 8px;
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 0.5px solid var(--border);
     }
     .mgmt-item .m-icon { font-size: 20px; }
-    .mgmt-item .m-name { flex: 1; font-size: 15px; color: var(--text-primary); }
+    .mgmt-item .m-name { flex: 1; font-size: 15px; color: var(--text-primary); font-weight: 500; }
     .mgmt-item .m-tag {
       font-size: 11px;
       padding: 2px 8px;
-      background: var(--bg);
+      background: rgba(0,0,0,0.04);
       color: var(--text-hint);
-      border-radius: 4px;
+      border-radius: 100px;
     }
     .mgmt-item .m-actions { display: flex; gap: 8px; }
-    .m-btn { font-size: 13px; padding: 5px 12px; border-radius: 6px; }
+    .m-btn { font-size: 13px; padding: 6px 14px; border-radius: 100px; cursor: pointer; font-weight: 500; }
     .m-btn-edit { background: var(--primary-light); color: var(--primary-dark); }
     .m-btn-del { background: var(--danger-light); color: var(--danger); }
     .add-btn {
       margin: 12px 16px 0;
       width: calc(100% - 32px);
-      padding: 14px;
+      padding: 12px;
       background: var(--primary-light);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: var(--primary-dark);
       font-size: 15px;
-      font-weight: 500;
-      border-radius: 10px;
+      font-weight: 600;
+      border-radius: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      cursor: pointer;
+      border: 0.5px solid rgba(52,199,89,0.15);
+      letter-spacing: 0.2px;
     }
 
     /* ======== 弹窗 ======== */
     .overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
+      background: rgba(0,0,0,0.28);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       z-index: 100;
       display: none;
       align-items: flex-end;
@@ -498,7 +680,10 @@
       width: 100%;
       max-width: 480px;
       background: var(--card);
-      border-radius: 18px 18px 0 0;
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-radius: 20px 20px 0 0;
+      border: 0.5px solid var(--edge);
       padding: 20px 20px 32px;
       animation: slideUp 0.25s ease;
     }
@@ -506,7 +691,10 @@
       width: calc(100% - 48px);
       max-width: 360px;
       background: var(--card);
-      border-radius: 16px;
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border-radius: var(--radius);
+      border: 0.5px solid var(--edge);
       padding: 24px 20px 20px;
       animation: fadeIn 0.2s ease;
     }
@@ -524,11 +712,12 @@
       font-size: 15px;
       color: var(--text-primary);
       text-align: center;
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       margin-bottom: 6px;
       cursor: pointer;
-      background: var(--bg);
+      background: rgba(0,0,0,0.03);
       transition: background 0.15s;
+      font-weight: 500;
     }
     .sheet-option:active { background: var(--primary-light); }
     .sheet-cancel {
@@ -538,27 +727,31 @@
       font-size: 15px;
       color: var(--text-secondary);
       text-align: center;
-      background: var(--bg);
-      border-radius: 10px;
+      background: rgba(0,0,0,0.03);
+      border-radius: var(--radius-sm);
       cursor: pointer;
+      font-weight: 500;
     }
     .modal-title { font-size: 17px; font-weight: 600; text-align: center; margin-bottom: 8px; }
     .modal-msg { font-size: 14px; color: var(--text-secondary); text-align: center; margin-bottom: 20px; }
     .modal-input {
       width: 100%;
       padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
       font-size: 15px;
       margin-bottom: 16px;
+      background: rgba(0,0,0,0.03);
       transition: border-color 0.2s;
     }
-    .modal-input:focus { border-color: var(--primary); }
+    .modal-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.05); }
     .modal-btns { display: flex; gap: 10px; }
-    .modal-btn { flex: 1; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 500; }
-    .modal-btn-cancel { background: var(--bg); color: var(--text-secondary); }
-    .modal-btn-confirm { background: var(--primary); color: #fff; }
+    .modal-btn { flex: 1; padding: 12px; border-radius: 100px; font-size: 15px; font-weight: 600; cursor: pointer; letter-spacing: 0.2px; }
+    .modal-btn-cancel { background: rgba(0,0,0,0.05); color: var(--text-secondary); }
+    .modal-btn-confirm { background: var(--primary-glass); color: #fff; border: 0.5px solid rgba(255,255,255,0.2); box-shadow: 0 2px 8px rgba(52,199,89,0.2); }
     .modal-btn-danger { background: var(--danger); color: #fff; }
+    .modal-btn-now { background: var(--primary-light); color: var(--primary-dark); }
+    .modal-btn-delete { background: var(--danger-light); color: var(--danger); flex: 0.8; }
 
     /* 编辑记录弹窗 */
     .edit-sheet { max-height: 85vh; overflow-y: auto; }
@@ -567,13 +760,28 @@
     .edit-field input, .edit-field textarea {
       width: 100%;
       padding: 10px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
       font-size: 15px;
+      background: rgba(0,0,0,0.03);
       transition: border-color 0.2s;
     }
     .edit-field input:focus, .edit-field textarea:focus { border-color: var(--primary); }
     .edit-field textarea { resize: none; height: 60px; }
+    .datetime-row { display: flex; gap: 10px; }
+    .datetime-row input { flex: 1; }
+
+    /* 编辑弹窗中分类/账户选择 */
+    .edit-cat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .edit-acc-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
     /* Toast */
     .toast {
@@ -603,6 +811,14 @@
     .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
     .empty-state p { font-size: 14px; }
 
+    /* 无结果 */
+    .no-result {
+      text-align: center;
+      padding: 32px 24px;
+      color: var(--text-hint);
+      font-size: 14px;
+    }
+
     /* 横向滚动 cat */
     .category-scroll {
       overflow-x: auto;
@@ -612,10 +828,6 @@
       scrollbar-width: none;
     }
     .category-scroll::-webkit-scrollbar { display: none; }
-
-    /* 日期时间时间弹窗 */
-    .datetime-row { display: flex; gap: 10px; }
-    .datetime-row input { flex: 1; }
   </style>
 </head>
 <body>
@@ -636,7 +848,7 @@
 </div>
 
 <!-- ========== 顶部Tab导航 ========== -->
-<div class="top-tab-bar" id="topTabBar">
+<div class="top-tab-bar" id="topTabBar" style="display:none">
   <div class="top-tab active" data-tab="home" onclick="navTo('home')">随手记账</div>
   <div class="top-tab" data-tab="stat" onclick="navTo('stat')">支出明细</div>
   <div class="top-tab" data-tab="mgmt" onclick="navTo('mgmt')">管理</div>
@@ -658,89 +870,109 @@
     </div>
 
     <!-- 记账时间 -->
-    <div class="section-title">记账时间</div>
-    <div class="input-section">
-      <div class="input-row" style="cursor:pointer;" onclick="openDatetimePicker()">
-        <label>🕐</label>
-        <span id="time-display" class="placeholder-text">点击选择时间</span>
+    <div class="form-field">
+      <div class="field-label">记账时间</div>
+      <div class="field-body">
+        <div class="form-row clickable" onclick="openDatetimePicker()">
+          <span class="row-icon">🕐</span>
+          <span id="time-display" class="row-value placeholder-text">点击选择时间</span>
+        </div>
       </div>
     </div>
 
-    <!-- 消费详情（必填） -->
-    <div class="section-title">消费详情 <span style="color:#f44336">*</span></div>
-    <div class="input-section">
-      <div class="input-row">
-        <label>📝</label>
-        <textarea id="note-input" placeholder="请描述消费内容，如：午餐、打车回家" rows="2"></textarea>
+    <!-- 消费详情 -->
+    <div class="form-field">
+      <div class="field-label">消费详情</div>
+      <div class="field-body">
+        <div class="form-row">
+          <span class="row-icon">📝</span>
+          <textarea id="note-input" placeholder="请描述消费内容，如：午餐、打车回家" rows="2"></textarea>
+        </div>
       </div>
     </div>
 
     <!-- 金额 -->
-    <div class="section-title">金额 <span style="color:#f44336">*</span></div>
-    <div class="input-section">
-      <div class="input-row">
-        <label>¥</label>
-        <input class="amount-input" type="number" id="amt-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
+    <div class="form-field">
+      <div class="field-label">金额</div>
+      <div class="field-body">
+        <div class="form-row">
+          <div class="amount-input-wrap">
+            <span class="yen-symbol">¥</span>
+            <input class="amount-input" type="number" id="amt-input" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- 支出分类 -->
-    <div class="section-title">支出分类 <span style="color:#f44336">*</span></div>
-    <div class="category-grid" id="cat-grid"></div>
+    <div class="form-field">
+      <div class="field-label">支出分类</div>
+      <div class="field-body">
+        <div class="inline-cat-grid" id="cat-grid"></div>
+      </div>
+    </div>
 
     <!-- 支出账户 -->
-    <div class="section-title">支出账户 <span style="color:#f44336">*</span></div>
-    <div class="account-list" id="acc-list"></div>
+    <div class="form-field">
+      <div class="field-label">支出账户</div>
+      <div class="field-body">
+        <div class="inline-acc-list" id="acc-list"></div>
+      </div>
+    </div>
 
-    <button class="submit-btn" onclick="submitRecord()">✅ 保存记账</button>
+    <button class="submit-btn" id="submit-btn" onclick="submitRecord()">保存记账</button>
   </div>
 </div>
 
-<!-- ========== 统计页 ========== -->
+<!-- ========== 统计页（重构后） ========== -->
 <div class="page" id="page-stat">
-
-  <!-- 时间维度 -->
-  <div class="tab-bar" id="time-tabs">
-    <div class="tab-item active" data-period="day" onclick="switchPeriod('day')">日</div>
-    <div class="tab-item" data-period="week" onclick="switchPeriod('week')">周</div>
-    <div class="tab-item" data-period="month" onclick="switchPeriod('month')">月</div>
-    <div class="tab-item" data-period="year" onclick="switchPeriod('year')">年</div>
+  <!-- 合并：时间维度 + 周期导航 -->
+  <div class="time-bar">
+    <button class="time-nav-btn" onclick="shiftPeriod(-1)">‹</button>
+    <span class="time-label" id="period-label"></span>
+    <button class="time-nav-btn" onclick="shiftPeriod(1)">›</button>
+    <div class="time-pills">
+      <span class="time-pill active" data-period="day" onclick="switchPeriod('day')">日</span>
+      <span class="time-pill" data-period="week" onclick="switchPeriod('week')">周</span>
+      <span class="time-pill" data-period="month" onclick="switchPeriod('month')">月</span>
+      <span class="time-pill" data-period="year" onclick="switchPeriod('year')">年</span>
+    </div>
   </div>
 
-  <!-- 周期导航 -->
-  <div class="period-nav">
-    <button onclick="shiftPeriod(-1)">‹</button>
-    <div class="period-label" id="period-label"></div>
-    <button onclick="shiftPeriod(1)">›</button>
+  <!-- 统计工具栏 -->
+  <div class="stat-toolbar">
+    <button class="stat-toolbar-btn" onclick="toggleSearch()">🔍 搜索</button>
+    <span class="stat-toolbar-spacer"></span>
+    <button class="stat-toolbar-btn" onclick="openExportSheet()">📤 导出</button>
   </div>
 
-  <!-- 统计维度 -->
-  <div class="stat-mode-bar">
-    <div class="stat-mode-btn active" data-mode="all" onclick="switchStatMode('all')">整体汇总</div>
-    <div class="stat-mode-btn" data-mode="cat" onclick="switchStatMode('cat')">按分类</div>
-    <div class="stat-mode-btn" data-mode="acc" onclick="switchStatMode('acc')">按账户</div>
+  <!-- 搜索栏 -->
+  <div class="search-bar" id="search-bar" style="display:none">
+    <input type="text" id="search-input" placeholder="搜索记录（支持分类/账户/备注/金额）..." oninput="filterRecords()">
   </div>
 
   <div class="scroll-body" id="stat-scroll">
+
     <!-- 汇总数据 -->
     <div class="stat-summary-card" id="stat-summary"></div>
+
     <!-- 明细 -->
     <div class="record-list" id="stat-records"></div>
+
+    <!-- 导入 -->
+    <div class="import-btn-area">
+      <button class="import-btn" onclick="document.getElementById('importFileInput').click()">📥 导入 Excel 数据</button>
+    </div>
   </div>
 
-  <!-- 导入/导出 — 同行紧凑 -->
-  <div class="export-bar">
-    <button class="export-btn-main primary" onclick="openExportSheet()">📤 导出</button>
-    <button class="export-btn-main" onclick="document.getElementById('importFileInput').click()">📥 导入</button>
-    <input type="file" id="importFileInput" accept=".xlsx,.xls" style="display:none;" onchange="importFromExcel(this)">
-  </div>
+  <input type="file" id="importFileInput" accept=".xlsx,.xls" style="display:none;" onchange="importFromExcel(this)">
 </div>
 
 <!-- ========== 管理页 ========== -->
 <div class="page" id="page-mgmt">
   <div class="mgmt-tabs">
-    <div class="mgmt-tab active" onclick="switchMgmtTab('cat')">支出分类</div>
-    <div class="mgmt-tab" onclick="switchMgmtTab('acc')">支付账户</div>
+    <div class="mgmt-tab active" data-mgmt="cat" onclick="switchMgmtTab('cat')">支出分类</div>
+    <div class="mgmt-tab" data-mgmt="acc" onclick="switchMgmtTab('acc')">支付账户</div>
   </div>
 
   <div class="scroll-body">
@@ -761,14 +993,15 @@
     <div class="sheet-title">选择记账时间</div>
     <div class="edit-field">
       <label>日期</label>
-      <input type="date" id="dt-date" class="modal-input" style="margin-bottom:0">
+      <input type="date" id="dt-date" class="modal-input mb-0">
     </div>
-    <div class="edit-field" style="margin-top:10px">
+    <div class="edit-field mt-10">
       <label>时间</label>
-      <input type="time" id="dt-time" class="modal-input" style="margin-bottom:0">
+      <input type="time" id="dt-time" class="modal-input mb-0">
     </div>
-    <div class="modal-btns" style="margin-top:16px">
+    <div class="modal-btns mt-16">
       <button class="modal-btn modal-btn-cancel" onclick="closeOverlay('datetime-overlay')">取消</button>
+      <button class="modal-btn modal-btn-now" onclick="setNowDatetime()">🕐 现在</button>
       <button class="modal-btn modal-btn-confirm" onclick="confirmDatetime()">确定</button>
     </div>
   </div>
@@ -804,29 +1037,29 @@
     <div class="sheet-title">编辑记录</div>
     <div class="edit-field">
       <label>金额 (¥)</label>
-      <input type="number" id="edit-amt" class="modal-input" style="margin-bottom:0" min="0" step="0.01">
+      <input type="number" id="edit-amt" class="modal-input mb-0" min="0" step="0.01">
     </div>
-    <div class="edit-field" style="margin-top:10px">
+    <div class="edit-field mt-10">
       <label>支出分类</label>
-      <div id="edit-cat-grid" class="category-grid" style="margin:0"></div>
+      <div id="edit-cat-grid" class="edit-cat-grid"></div>
     </div>
-    <div class="edit-field" style="margin-top:10px">
+    <div class="edit-field mt-10">
       <label>支出账户</label>
-      <div id="edit-acc-list" class="account-list" style="margin:0; padding:0"></div>
+      <div id="edit-acc-list" class="edit-acc-list"></div>
     </div>
-    <div class="edit-field" style="margin-top:10px">
+    <div class="edit-field mt-10">
       <label>记账时间</label>
       <div class="datetime-row">
-        <input type="date" id="edit-date" class="modal-input" style="margin-bottom:0">
-        <input type="time" id="edit-time" class="modal-input" style="margin-bottom:0">
+        <input type="date" id="edit-date" class="modal-input mb-0">
+        <input type="time" id="edit-time" class="modal-input mb-0">
       </div>
     </div>
-    <div class="edit-field" style="margin-top:10px">
-      <label>消费详情 <span style="color:#f44336">*</span></label>
-      <textarea id="edit-note" class="modal-input" style="margin-bottom:0; resize:none; height:60px" placeholder="请描述消费内容"></textarea>
+    <div class="edit-field mt-10">
+      <label>消费详情 <span class="required-mark">*</span></label>
+      <textarea id="edit-note" class="modal-input mb-0" style="resize:none;height:60px" placeholder="请描述消费内容"></textarea>
     </div>
-    <div class="modal-btns" style="margin-top:16px">
-      <button class="modal-btn modal-btn-danger" style="flex:0.8" onclick="deleteRecord()">删除</button>
+    <div class="modal-btns mt-16">
+      <button class="modal-btn modal-btn-delete" onclick="deleteRecord()">删除</button>
       <button class="modal-btn modal-btn-cancel" onclick="closeOverlay('edit-record-overlay')">取消</button>
       <button class="modal-btn modal-btn-confirm" onclick="saveEditRecord()">保存</button>
     </div>
@@ -850,11 +1083,23 @@
 <!-- ========== JS ========== -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
-/* ============================================================
-   数据层：基于 localStorage（模拟云端，可替换为实际API）
-   ============================================================ */
+(function(){
+'use strict';
 
+/* ============================================================
+   常量
+   ============================================================ */
 const DB_PREFIX = 'jzhh_';
+const KEYS = {
+  CATEGORIES: 'categories',
+  ACCOUNTS: 'accounts',
+  RECORDS: 'records',
+  INITED: 'inited',
+};
+
+/* ============================================================
+   数据层：基于 localStorage
+   ============================================================ */
 let currentUser = null;
 
 function dbKey(key) { return DB_PREFIX + currentUser + '_' + key; }
@@ -870,10 +1115,24 @@ function dbSet(key, val) {
 }
 
 /* ============================================================
+   工具函数
+   ============================================================ */
+function fmtDate(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function fmtTime(d) {
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function fmtDatetimeCompact(d) {
+  return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') +
+         String(d.getHours()).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0');
+}
+function genRecordId() { return 'r' + Date.now() + '_' + Math.random().toString(36).slice(2,6); }
+
+/* ============================================================
    登录逻辑
    ============================================================ */
 function init() {
-  // 检查记住的登录状态
   const saved = localStorage.getItem(DB_PREFIX + 'saved_user');
   if (saved) {
     currentUser = saved;
@@ -890,9 +1149,8 @@ function doLogin() {
   if (document.getElementById('remember-me').checked) {
     localStorage.setItem(DB_PREFIX + 'saved_user', val);
   }
-  // 初始化新用户的默认分类
-  if (!dbGet('inited', false)) {
-    dbSet('categories', [
+  if (!dbGet(KEYS.INITED, false)) {
+    dbSet(KEYS.CATEGORIES, [
       {id:'c1', name:'餐饮美食', icon:'🍜', system:true},
       {id:'c2', name:'日用百货', icon:'🛒', system:true},
       {id:'c3', name:'交通出行', icon:'🚌', system:true},
@@ -901,11 +1159,12 @@ function doLogin() {
       {id:'c6', name:'医疗健康', icon:'💊', system:true},
       {id:'c7', name:'娱乐休闲', icon:'🎮', system:true},
       {id:'c8', name:'人情往来', icon:'🎁', system:true},
+      {id:'c10', name:'会员会费', icon:'💳', system:true},
       {id:'c9', name:'其他支出', icon:'📌', system:true},
     ]);
-    dbSet('accounts', []);
-    dbSet('records', []);
-    dbSet('inited', true);
+    dbSet(KEYS.ACCOUNTS, []);
+    dbSet(KEYS.RECORDS, []);
+    dbSet(KEYS.INITED, true);
   }
   enterApp();
 }
@@ -920,19 +1179,16 @@ function enterApp() {
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  // 登录页隐藏顶部Tab
-  document.getElementById('topTabBar').style.display = (name === 'login') ? 'none' : 'flex';
+  const topBar = document.getElementById('topTabBar');
+  topBar.style.display = (name === 'login') ? 'none' : 'flex';
 }
 
 function navTo(name) {
   showPage(name);
-  // 更新顶部Tab激活状态
-  var tabs = document.getElementById('topTabBar').querySelectorAll('.top-tab');
-  tabs.forEach(function(t) { t.classList.remove('active'); });
-  var tgt = document.getElementById('topTabBar').querySelector('[data-tab="' + name + '"]');
+  const tabs = document.querySelectorAll('#topTabBar .top-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  const tgt = document.querySelector('#topTabBar [data-tab="' + name + '"]');
   if (tgt) tgt.classList.add('active');
-  // 显示/隐藏顶部Tab（登录页隐藏）
-  document.getElementById('topTabBar').style.display = (name === 'login') ? 'none' : 'flex';
   if (name === 'home') renderHome();
   if (name === 'stat') renderStat();
   if (name === 'mgmt') renderMgmt();
@@ -941,11 +1197,12 @@ function navTo(name) {
 /* ============================================================
    Toast
    ============================================================ */
-function showToast(msg, duration=2000) {
+function showToast(msg, duration) {
+  duration = duration || 2000;
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), duration);
+  setTimeout(function(){ t.classList.remove('show'); }, duration);
 }
 
 /* ============================================================
@@ -965,63 +1222,69 @@ function renderHome() {
   renderTodaySummary();
   renderCatGrid();
   renderAccChips();
-  // 默认时间
-  if (!selectedDateTime) {
-    selectedDateTime = new Date();
-  }
+  if (!selectedDateTime) { selectedDateTime = new Date(); }
   updateTimeDisplay();
-  // 重置选择
   document.getElementById('amt-input').value = '';
   document.getElementById('note-input').value = '';
 }
 
 function renderTodaySummary() {
-  const records = dbGet('records', []);
+  const records = dbGet(KEYS.RECORDS, []);
   const today = fmtDate(new Date());
-  const todayRecs = records.filter(r => r.date === today);
-  const total = todayRecs.reduce((s, r) => s + r.amount, 0);
+  const todayRecs = records.filter(function(r){ return r.date === today; });
+  const total = todayRecs.reduce(function(s, r){ return s + r.amount; }, 0);
   document.getElementById('today-amount').textContent = '¥' + total.toFixed(2);
   document.getElementById('today-count').textContent = todayRecs.length + ' 笔';
 }
 
 function renderCatGrid() {
-  const cats = dbGet('categories', []);
+  const cats = dbGet(KEYS.CATEGORIES, []).filter(function(c){ return !c.deleted; });
   const grid = document.getElementById('cat-grid');
-  grid.innerHTML = cats.map(c => `
-    <div class="cat-item ${selectedCatId===c.id?'selected':''}" onclick="selectCat('${c.id}')">
-      <span class="cat-icon">${c.icon || '📌'}</span>
-      <span>${c.name}</span>
-    </div>
-  `).join('');
+  grid.innerHTML = cats.map(function(c){
+    return '<div class="cat-item' + (selectedCatId===c.id?' selected':'') + '" onclick="selectCat(\'' + c.id + '\')">' +
+      '<span class="cat-icon">' + (c.icon||'📌') + '</span>' +
+      '<span>' + c.name + '</span>' +
+    '</div>';
+  }).join('');
+  // 默认选中第一个
+  if (!selectedCatId && cats.length > 0) {
+    selectedCatId = cats[0].id;
+    renderCatGrid();
+  }
 }
 
-function selectCat(id) {
-  selectedCatId = id;
-  renderCatGrid();
-}
+function selectCat(id) { selectedCatId = id; renderCatGrid(); }
 
 function renderAccChips() {
-  const accs = dbGet('accounts', []);
+  const accs = dbGet(KEYS.ACCOUNTS, []).filter(function(a){ return !a.deleted; });
   const list = document.getElementById('acc-list');
   if (accs.length === 0) {
-    list.innerHTML = '<span style="font-size:13px;color:var(--text-hint);padding:4px 16px;">请先在「管理」页添加支出账户</span>';
+    list.innerHTML = '<span style="font-size:13px;color:var(--text-hint);padding:4px 0;">请先在「管理」页添加支出账户</span>';
     return;
   }
-  list.innerHTML = accs.map(a => `
-    <div class="acc-chip ${selectedAccId===a.id?'selected':''}" onclick="selectAcc('${a.id}')">${a.name}</div>
-  `).join('');
+  list.innerHTML = accs.map(function(a){
+    return '<div class="acc-chip' + (selectedAccId===a.id?' selected':'') + '" onclick="selectAcc(\'' + a.id + '\')">' + a.name + '</div>';
+  }).join('');
+  // 默认选中第一个
+  if (!selectedAccId && accs.length > 0) {
+    selectedAccId = accs[0].id;
+    renderAccChips();
+  }
 }
 
-function selectAcc(id) {
-  selectedAccId = id;
-  renderAccChips();
-}
+function selectAcc(id) { selectedAccId = id; renderAccChips(); }
 
 function openDatetimePicker() {
   const dt = selectedDateTime || new Date();
   document.getElementById('dt-date').value = fmtDate(dt);
   document.getElementById('dt-time').value = fmtTime(dt);
   openOverlay('datetime-overlay');
+}
+
+function setNowDatetime() {
+  const now = new Date();
+  document.getElementById('dt-date').value = fmtDate(now);
+  document.getElementById('dt-time').value = fmtTime(now);
 }
 
 function confirmDatetime() {
@@ -1049,14 +1312,19 @@ function submitRecord() {
   if (!amtStr || isNaN(amt) || amt <= 0) { showToast('请输入有效金额'); return; }
   if (!selectedCatId) { showToast('请选择支出分类'); return; }
   if (!selectedAccId) { showToast('请选择支出账户'); return; }
-  const records = dbGet('records', []);
-  const cats = dbGet('categories', []);
-  const accs = dbGet('accounts', []);
-  const cat = cats.find(c => c.id === selectedCatId);
-  const acc = accs.find(a => a.id === selectedAccId);
+
+  // 防重复提交
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+
+  const records = dbGet(KEYS.RECORDS, []);
+  const cats = dbGet(KEYS.CATEGORIES, []);
+  const accs = dbGet(KEYS.ACCOUNTS, []);
+  const cat = cats.find(function(c){ return c.id === selectedCatId && !c.deleted; });
+  const acc = accs.find(function(a){ return a.id === selectedAccId && !a.deleted; });
   const dt = selectedDateTime || new Date();
   const record = {
-    id: 'r' + Date.now(),
+    id: genRecordId(),
     amount: amt,
     catId: selectedCatId,
     catName: cat ? cat.name : '',
@@ -1069,11 +1337,12 @@ function submitRecord() {
     note: noteVal,
   };
   records.unshift(record);
-  dbSet('records', records);
-  // 重置
+  dbSet(KEYS.RECORDS, records);
+
   selectedCatId = null;
   selectedAccId = null;
   selectedDateTime = new Date();
+  setTimeout(function(){ btn.disabled = false; }, 1000);
   showToast('✅ 记账成功！');
   renderHome();
 }
@@ -1082,14 +1351,27 @@ function submitRecord() {
    统计页
    ============================================================ */
 let currentPeriod = 'day';
-let periodOffset = 0; // 0=当前，-1=上一个，1=下一个
+let periodOffset = 0;
 let currentStatMode = 'all';
+let drillType = 'all';   // 'all' | 'cat' | 'acc'
+let drillId = '';
+let drillName = '';
 let editingRecordId = null;
+let searchVisible = false;
+
+function toggleSearch() {
+  searchVisible = !searchVisible;
+  document.getElementById('search-bar').style.display = searchVisible ? 'block' : 'none';
+  if (!searchVisible) {
+    document.getElementById('search-input').value = '';
+    renderStat();
+  }
+}
 
 function switchPeriod(p) {
   currentPeriod = p;
   periodOffset = 0;
-  document.querySelectorAll('#time-tabs .tab-item').forEach(el => {
+  document.querySelectorAll('.time-pill').forEach(function(el){
     el.classList.toggle('active', el.dataset.period === p);
   });
   renderStat();
@@ -1102,11 +1384,37 @@ function shiftPeriod(delta) {
 
 function switchStatMode(m) {
   currentStatMode = m;
-  document.querySelectorAll('.stat-mode-btn').forEach(el => {
+  drillType = 'all'; drillId = ''; drillName = '';  // 切模式时清空下钻
+  document.querySelectorAll('.stat-mode-seg-btn').forEach(function(el){
     el.classList.toggle('active', el.dataset.mode === m);
   });
   renderStat();
 }
+
+/* 下钻：按分类/按账户过滤明细 */
+function filterByCat(catId, name) {
+  drillType = 'cat'; drillId = catId; drillName = name;
+  renderStat();
+}
+function filterByAcc(accId, name) {
+  drillType = 'acc'; drillId = accId; drillName = name;
+  renderStat();
+}
+function clearDrillFilter() {
+  drillType = 'all'; drillId = ''; drillName = '';
+  renderStat();
+}
+
+/* 事件委托：处理 stat-summary 中分类/账户行的点击下钻 */
+document.addEventListener('click', function(e) {
+  var row = e.target.closest('.stat-detail-row.clickable');
+  if (!row) return;
+  var catId = row.getAttribute('data-cat-id');
+  var accId = row.getAttribute('data-acc-id');
+  var name = row.getAttribute('data-drill-name');
+  if (catId && name) { filterByCat(catId, name); return; }
+  if (accId && name) { filterByAcc(accId, name); return; }
+});
 
 function getPeriodRange() {
   const now = new Date();
@@ -1130,119 +1438,18 @@ function getPeriodRange() {
     const lastDay = new Date(y, m+1, 0).getDate();
     end = y + '-' + String(m+1).padStart(2,'0') + '-' + lastDay;
     label = y + '年' + (m+1) + '月';
-  } else { // year
+  } else {
     const y = now.getFullYear() + periodOffset;
     start = y + '-01-01'; end = y + '-12-31';
     label = y + '年';
   }
   document.getElementById('period-label').textContent = label;
-  return { start, end };
+  return { start: start, end: end };
 }
 
 function getRecordsInRange(start, end) {
-  const records = dbGet('records', []);
-  return records.filter(r => r.date >= start && r.date <= end);
-}
-
-function renderStat() {
-  const { start, end } = getPeriodRange();
-  const recs = getRecordsInRange(start, end);
-  const total = recs.reduce((s, r) => s + r.amount, 0);
-
-  // 汇总区
-  const sumEl = document.getElementById('stat-summary');
-  let subLabel = '';
-  if (currentPeriod === 'week') {
-    const days = 7;
-    subLabel = `日均支出 ¥${(total/days).toFixed(2)}`;
-  } else if (currentPeriod === 'month') {
-    const days = getDaysInPeriod(start, end);
-    subLabel = `日均支出 ¥${(total/days).toFixed(2)}`;
-  } else if (currentPeriod === 'year') {
-    subLabel = `月均支出 ¥${(total/12).toFixed(2)}`;
-  }
-
-  let detailHTML = '';
-  if (currentStatMode === 'cat') {
-    const grouped = {};
-    recs.forEach(r => {
-      if (!grouped[r.catId]) grouped[r.catId] = {name:r.catName, icon:r.catIcon, total:0};
-      grouped[r.catId].total += r.amount;
-    });
-    const items = Object.values(grouped).sort((a,b)=>b.total-a.total);
-    detailHTML = '<div class="stat-detail-rows">' + items.map(it => {
-      const pct = total > 0 ? (it.total/total*100).toFixed(1) : 0;
-      return `
-        <div class="stat-detail-row">
-          <span class="icon">${it.icon||'📌'}</span>
-          <div style="flex:1">
-            <div style="display:flex;align-items:center">
-              <span class="name">${it.name}</span>
-              <span class="pct">${pct}%</span>
-              <span class="amount">¥${it.total.toFixed(2)}</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-          </div>
-        </div>`;
-    }).join('') + '</div>';
-  } else if (currentStatMode === 'acc') {
-    const grouped = {};
-    recs.forEach(r => {
-      if (!grouped[r.accId]) grouped[r.accId] = {name:r.accName, total:0};
-      grouped[r.accId].total += r.amount;
-    });
-    const items = Object.values(grouped).sort((a,b)=>b.total-a.total);
-    detailHTML = '<div class="stat-detail-rows">' + items.map(it => `
-      <div class="stat-detail-row">
-        <span class="icon">💳</span>
-        <span class="name">${it.name}</span>
-        <span class="amount">¥${it.total.toFixed(2)}</span>
-      </div>
-    `).join('') + '</div>';
-  }
-
-  sumEl.innerHTML = `
-    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">总支出</div>
-    <div class="main-amount">¥${total.toFixed(2)}</div>
-    ${subLabel ? `<div class="sub-info">${subLabel}</div>` : ''}
-    ${detailHTML}
-  `;
-
-  // 明细列表
-  renderRecordList(recs);
-}
-
-function renderRecordList(recs) {
-  const el = document.getElementById('stat-records');
-  if (recs.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>暂无记账数据</p></div>';
-    return;
-  }
-  // 按日期分组
-  const grouped = {};
-  recs.forEach(r => {
-    if (!grouped[r.date]) grouped[r.date] = [];
-    grouped[r.date].push(r);
-  });
-  const dates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
-  el.innerHTML = dates.map(date => {
-    const dayRecs = grouped[date];
-    const dayTotal = dayRecs.reduce((s,r)=>s+r.amount,0);
-    return `
-      <div class="record-date-group">
-        <div class="record-date-label">${date} &nbsp;共 ¥${dayTotal.toFixed(2)}</div>
-        ${dayRecs.map(r=>`
-          <div class="record-item" onclick="openEditRecord('${r.id}')">
-            <span class="r-icon">${r.catIcon||'📌'}</span>
-            <div class="r-info">
-              <div class="r-cat">${r.note&&r.note!=='无'?r.note:r.catName}</div>
-              <div class="r-meta">${r.catName} · ${r.accName} · ${r.time}</div>
-            </div>
-            <span class="r-amount">¥${r.amount.toFixed(2)}</span>
-          </div>
-        `).join('')}
-      </div>`;
-  }).join('');
+  const records = dbGet(KEYS.RECORDS, []);
+  return records.filter(function(r){ return r.date >= start && r.date <= end; });
 }
 
 function getDaysInPeriod(start, end) {
@@ -1250,42 +1457,210 @@ function getDaysInPeriod(start, end) {
   return Math.max(1, Math.ceil((e - s) / 86400000) + 1);
 }
 
-/* 编辑记录 */
+function renderStat() {
+  const range = getPeriodRange();
+  const recs = getRecordsInRange(range.start, range.end);
+  const total = recs.reduce(function(s, r){ return s + r.amount; }, 0);
+
+  // 汇总区
+  const sumEl = document.getElementById('stat-summary');
+  let subLabel = '';
+  if (currentPeriod === 'week') {
+    subLabel = '日均支出 ¥' + (total / 7).toFixed(2);
+  } else if (currentPeriod === 'month') {
+    const days = getDaysInPeriod(range.start, range.end);
+    subLabel = '日均支出 ¥' + (total / days).toFixed(2);
+  } else if (currentPeriod === 'year') {
+    subLabel = '月均支出 ¥' + (total / 12).toFixed(2);
+  }
+
+  // 统计维度分段控件
+  let segHTML = '<div class="stat-mode-seg">' +
+    '<div class="stat-mode-seg-btn' + (currentStatMode==='all'?' active':'') + '" data-mode="all" onclick="switchStatMode(\'all\')">整体汇总</div>' +
+    '<div class="stat-mode-seg-btn' + (currentStatMode==='cat'?' active':'') + '" data-mode="cat" onclick="switchStatMode(\'cat\')">按分类</div>' +
+    '<div class="stat-mode-seg-btn' + (currentStatMode==='acc'?' active':'') + '" data-mode="acc" onclick="switchStatMode(\'acc\')">按账户</div>' +
+  '</div>';
+
+  let detailHTML = '';
+  if (currentStatMode === 'cat') {
+    const grouped = {};
+    recs.forEach(function(r){
+      if (!grouped[r.catId]) grouped[r.catId] = {id:r.catId, name:r.catName, icon:r.catIcon, total:0};
+      grouped[r.catId].total += r.amount;
+    });
+    const items = Object.values(grouped).sort(function(a,b){return b.total-a.total;});
+    detailHTML = '<div class="stat-detail-rows">' + items.map(function(it){
+      const pct = total > 0 ? (it.total/total*100).toFixed(1) : 0;
+      return '<div class="stat-detail-row clickable" data-cat-id="' + it.id + '" data-drill-name="' + it.name.replace(/"/g,'&quot;') + '">' +
+        '<span class="icon">' + (it.icon||'📌') + '</span>' +
+        '<div style="flex:1">' +
+          '<div style="display:flex;align-items:center">' +
+            '<span class="name">' + it.name + '</span>' +
+            '<span class="pct">' + pct + '%</span>' +
+            '<span class="amount">¥' + it.total.toFixed(2) + '</span>' +
+          '</div>' +
+          '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+        '</div>' +
+        '<span class="arrow">›</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  } else if (currentStatMode === 'acc') {
+    const grouped = {};
+    recs.forEach(function(r){
+      if (!grouped[r.accId]) grouped[r.accId] = {id:r.accId, name:r.accName, total:0};
+      grouped[r.accId].total += r.amount;
+    });
+    const items = Object.values(grouped).sort(function(a,b){return b.total-a.total;});
+    detailHTML = '<div class="stat-detail-rows">' + items.map(function(it){
+      return '<div class="stat-detail-row clickable" data-acc-id="' + it.id + '" data-drill-name="' + it.name.replace(/"/g,'&quot;') + '">' +
+        '<span class="icon">💳</span>' +
+        '<span class="name">' + it.name + '</span>' +
+        '<span class="amount">¥' + it.total.toFixed(2) + '</span>' +
+        '<span class="arrow">›</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  sumEl.innerHTML = '<div class="ssc-header">' +
+    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">总支出</div>' +
+    '<div class="main-amount">¥' + total.toFixed(2) + '</div>' +
+    (subLabel ? '<div class="sub-info">' + subLabel + '</div>' : '') +
+  '</div>' + segHTML + detailHTML;
+
+  // 下钻过滤标签
+  let drillTagHTML = '';
+  if (drillType !== 'all') {
+    drillTagHTML = '<div class="drill-tag">' +
+      '<span>' + (drillType==='cat'?'📂':'💳') + ' ' + drillName + '</span>' +
+      '<button class="drill-tag-clear" onclick="clearDrillFilter()">✕</button>' +
+    '</div>';
+  }
+
+  // 应用下钻过滤
+  let displayRecs = recs;
+  if (drillType === 'cat') {
+    displayRecs = recs.filter(function(r){ return r.catId === drillId; });
+  } else if (drillType === 'acc') {
+    displayRecs = recs.filter(function(r){ return r.accId === drillId; });
+  }
+
+  // 明细列表
+  renderRecordList(displayRecs, drillTagHTML);
+}
+
+/* ============================================================
+   明细列表 + 搜索
+   ============================================================ */
+function filterRecords() {
+  const kw = document.getElementById('search-input').value.trim().toLowerCase();
+  const recs = getRecordsInRange(getPeriodRange().start, getPeriodRange().end);
+  // 应用下钻过滤
+  let filtered = recs;
+  let tagHTML = '';
+  if (drillType === 'cat') {
+    filtered = filtered.filter(function(r){ return r.catId === drillId; });
+    tagHTML = '<div class="drill-tag"><span>📂 ' + drillName + '</span><button class="drill-tag-clear" onclick="clearDrillFilter()">✕</button></div>';
+  } else if (drillType === 'acc') {
+    filtered = filtered.filter(function(r){ return r.accId === drillId; });
+    tagHTML = '<div class="drill-tag"><span>💳 ' + drillName + '</span><button class="drill-tag-clear" onclick="clearDrillFilter()">✕</button></div>';
+  }
+  if (!kw) {
+    renderRecordList(filtered, tagHTML);
+    return;
+  }
+  filtered = filtered.filter(function(r){
+    return r.note.toLowerCase().indexOf(kw)>=0 ||
+           r.catName.toLowerCase().indexOf(kw)>=0 ||
+           r.accName.toLowerCase().indexOf(kw)>=0 ||
+           String(r.amount).indexOf(kw)>=0;
+  });
+  renderRecordList(filtered, tagHTML);
+}
+
+function renderRecordList(recs, drillTagHTML) {
+  const el = document.getElementById('stat-records');
+  const kw = document.getElementById('search-input').value.trim();
+
+  // 下钻过滤标签
+  let headerHTML = (drillTagHTML || '');
+
+  if (recs.length === 0) {
+    const icon = kw ? '🔍' : (drillType !== 'all' ? '📂' : '📭');
+    const msg = kw ? '未找到匹配的记录' : (drillType !== 'all' ? '该' + (drillType==='cat'?'分类':'账户') + '下暂无记录' : '暂无记账数据');
+    el.innerHTML = headerHTML + '<div class="empty-state"><div class="empty-icon">' + icon + '</div><p>' + msg + '</p></div>';
+    return;
+  }
+
+  const grouped = {};
+  recs.forEach(function(r){
+    if (!grouped[r.date]) grouped[r.date] = [];
+    grouped[r.date].push(r);
+  });
+  const dates = Object.keys(grouped).sort(function(a,b){return b.localeCompare(a);});
+
+  el.innerHTML = headerHTML + dates.map(function(date){
+    const dayRecs = grouped[date];
+    const dayTotal = dayRecs.reduce(function(s,r){return s+r.amount;},0);
+    return '<div class="record-date-group">' +
+      '<div class="record-date-label">' + date + ' &nbsp;共 ¥' + dayTotal.toFixed(2) + '</div>' +
+      dayRecs.map(function(r){
+        return '<div class="record-item" onclick="openEditRecord(\'' + r.id + '\')">' +
+          '<span class="r-icon">' + (r.catIcon||'📌') + '</span>' +
+          '<div class="r-info">' +
+            '<div class="r-cat">' + (r.note&&r.note!=='无'?r.note:r.catName) + '</div>' +
+            '<div class="r-meta">' + r.catName + ' · ' + r.accName + ' · ' + r.time + '</div>' +
+          '</div>' +
+          '<span class="r-amount">¥' + r.amount.toFixed(2) + '</span>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  }).join('');
+
+  // 小提示
+  if (kw) {
+    el.innerHTML += '<div class="no-result">找到 ' + recs.length + ' 条匹配记录</div>';
+  }
+}
+
+/* ============================================================
+   编辑记录
+   ============================================================ */
 function openEditRecord(id) {
-  const records = dbGet('records', []);
-  const r = records.find(x => x.id === id);
+  const records = dbGet(KEYS.RECORDS, []);
+  const r = records.find(function(x){ return x.id === id; });
   if (!r) return;
   editingRecordId = id;
   document.getElementById('edit-amt').value = r.amount;
   document.getElementById('edit-date').value = r.date;
   document.getElementById('edit-time').value = r.time;
-  document.getElementById('edit-note').value = r.note === '无' ? '' : r.note;
+  document.getElementById('edit-note').value = r.note === '无' ? '' : (r.note || '');
 
-  // 分类
-  const cats = dbGet('categories', []);
-  document.getElementById('edit-cat-grid').innerHTML = cats.map(c => `
-    <div class="cat-item ${r.catId===c.id?'selected':''}" onclick="editSelectCat('${c.id}',this)" style="font-size:11px;">
-      <span class="cat-icon" style="font-size:18px">${c.icon||'📌'}</span>
-      <span>${c.name}</span>
-    </div>
-  `).join('');
+  const cats = dbGet(KEYS.CATEGORIES, []).filter(function(c){ return !c.deleted; });
+  document.getElementById('edit-cat-grid').innerHTML = cats.map(function(c){
+    return '<div class="cat-item fs-11' + (r.catId===c.id?' selected':'') + '" data-cat-id="' + c.id + '" onclick="editSelectCat(\'' + c.id + '\',this)">' +
+      '<span class="cat-icon fs-18">' + (c.icon||'📌') + '</span>' +
+      '<span>' + c.name + '</span>' +
+    '</div>';
+  }).join('');
 
-  // 账户
-  const accs = dbGet('accounts', []);
-  document.getElementById('edit-acc-list').innerHTML = accs.map(a => `
-    <div class="acc-chip ${r.accId===a.id?'selected':''}" onclick="editSelectAcc('${a.id}',this)">${a.name}</div>
-  `).join('');
+  const accs = dbGet(KEYS.ACCOUNTS, []).filter(function(a){ return !a.deleted; });
+  document.getElementById('edit-acc-list').innerHTML = accs.map(function(a){
+    return '<div class="acc-chip' + (r.accId===a.id?' selected':'') + '" data-acc-id="' + a.id + '" onclick="editSelectAcc(\'' + a.id + '\',this)">' + a.name + '</div>';
+  }).join('');
 
   openOverlay('edit-record-overlay');
 }
 
 function editSelectCat(id, el) {
-  document.querySelectorAll('#edit-cat-grid .cat-item').forEach(e=>e.classList.remove('selected'));
+  document.querySelectorAll('#edit-cat-grid .cat-item').forEach(function(e){ e.classList.remove('selected'); });
   el.classList.add('selected');
+  el.dataset.catId = id;
 }
+
 function editSelectAcc(id, el) {
-  document.querySelectorAll('#edit-acc-list .acc-chip').forEach(e=>e.classList.remove('selected'));
+  document.querySelectorAll('#edit-acc-list .acc-chip').forEach(function(e){ e.classList.remove('selected'); });
   el.classList.add('selected');
+  el.dataset.accId = id;
 }
 
 function saveEditRecord() {
@@ -1299,35 +1674,37 @@ function saveEditRecord() {
   const time = document.getElementById('edit-time').value || '00:00';
   if (!catEl) { showToast('请选择分类'); return; }
   if (!accEl) { showToast('请选择账户'); return; }
-  const catId = catEl.getAttribute('onclick').match(/'([^']+)'/)[1];
-  const accId = accEl.getAttribute('onclick').match(/'([^']+)'/)[1];
-  const cats = dbGet('categories', []);
-  const accs = dbGet('accounts', []);
-  const cat = cats.find(c=>c.id===catId);
-  const acc = accs.find(a=>a.id===accId);
-  let records = dbGet('records', []);
-  const idx = records.findIndex(r=>r.id===editingRecordId);
+
+  // 使用 data-* 属性获取 ID
+  const catId = catEl.dataset.catId;
+  const accId = accEl.dataset.accId;
+  const cats = dbGet(KEYS.CATEGORIES, []);
+  const accs = dbGet(KEYS.ACCOUNTS, []);
+  const cat = cats.find(function(c){ return c.id === catId; });
+  const acc = accs.find(function(a){ return a.id === accId; });
+  let records = dbGet(KEYS.RECORDS, []);
+  const idx = records.findIndex(function(r){ return r.id === editingRecordId; });
   if (idx < 0) return;
-  records[idx] = {
-    ...records[idx],
+
+  records[idx] = Object.assign({}, records[idx], {
     amount: amt,
-    catId, catName: cat?cat.name:'', catIcon: cat?(cat.icon||'📌'):'📌',
-    accId, accName: acc?acc.name:'',
-    date, time,
-    datetime: new Date(date+'T'+time).toISOString(),
+    catId: catId, catName: cat ? cat.name : '', catIcon: cat ? (cat.icon || '📌') : '📌',
+    accId: accId, accName: acc ? acc.name : '',
+    date: date, time: time,
+    datetime: new Date(date + 'T' + time).toISOString(),
     note: editNote,
-  };
-  dbSet('records', records);
+  });
+  dbSet(KEYS.RECORDS, records);
   closeOverlay('edit-record-overlay');
   showToast('✅ 修改已保存');
   renderStat();
 }
 
 function deleteRecord() {
-  showConfirm('删除记录', '确定要删除这条记录吗？', () => {
-    let records = dbGet('records', []);
-    records = records.filter(r => r.id !== editingRecordId);
-    dbSet('records', records);
+  showConfirm('删除记录', '确定要删除这条记录吗？删除后不可恢复。', function(){
+    let records = dbGet(KEYS.RECORDS, []);
+    records = records.filter(function(r){ return r.id !== editingRecordId; });
+    dbSet(KEYS.RECORDS, records);
     closeOverlay('edit-record-overlay');
     showToast('已删除');
     renderStat();
@@ -1344,23 +1721,21 @@ function doExport(type) {
   if (exportLock) { showToast('导出进行中，请稍候'); return; }
   closeOverlay('export-overlay');
   const now = new Date();
-  let records = dbGet('records', []);
+  let records = dbGet(KEYS.RECORDS, []);
   let filename = '';
   let filtered = [];
 
   if (type === 'month') {
-    const y = now.getFullYear(), m = now.getMonth();
-    const monthStr = y + '-' + String(m+1).padStart(2,'0');
-    filtered = records.filter(r => r.date.startsWith(monthStr));
-    filename = `记账数据_月度_${monthStr}.xlsx`;
+    const monthStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+    filtered = records.filter(function(r){ return r.date.startsWith(monthStr); });
+    filename = '记账数据_月度_' + monthStr + '.xlsx';
   } else if (type === 'year') {
-    const y = now.getFullYear();
-    filtered = records.filter(r => r.date.startsWith(String(y)));
-    filename = `记账数据_年度_${y}.xlsx`;
+    const y = String(now.getFullYear());
+    filtered = records.filter(function(r){ return r.date.startsWith(y); });
+    filename = '记账数据_年度_' + y + '.xlsx';
   } else {
-    filtered = [...records];
-    const ts = fmtDatetimeCompact(now);
-    filename = `记账数据_全部数据_导出时间${ts}.xlsx`;
+    filtered = records.slice();
+    filename = '记账数据_全部数据_导出时间' + fmtDatetimeCompact(now) + '.xlsx';
   }
 
   if (filtered.length === 0) {
@@ -1371,17 +1746,16 @@ function doExport(type) {
   exportLock = true;
   showToast('正在生成文件...');
 
-  setTimeout(() => {
+  setTimeout(function(){
     try {
       const data = [['记录时间', '支出金额', '支出分类', '支付账户', '消费备注']];
-      filtered.sort((a,b)=>a.datetime.localeCompare(b.datetime)).forEach(r => {
+      filtered.sort(function(a,b){ return a.datetime.localeCompare(b.datetime); }).forEach(function(r){
         data.push([r.date + ' ' + r.time, r.amount, r.catName, r.accName, r.note]);
       });
       const ws = XLSX.utils.aoa_to_sheet(data);
       ws['!cols'] = [{wch:18},{wch:12},{wch:14},{wch:14},{wch:24}];
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, '记账明细');
-      // 手动构建 Blob + a 标签，确保文件名正确（兼容移动端/微信浏览器）
       const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
@@ -1390,7 +1764,7 @@ function doExport(type) {
       a.download = filename;
       document.body.appendChild(a);
       a.click();
-      setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 1000);
+      setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 1000);
       showToast('✅ 导出成功：' + filename);
     } catch(e) {
       showToast('导出失败，请检查网络后重试');
@@ -1404,47 +1778,45 @@ function doExport(type) {
    ============================================================ */
 function importFromExcel(fileInput) {
   if (typeof XLSX === 'undefined') { showToast('Excel 组件加载中，请稍后再试'); fileInput.value = ''; return; }
-  var file = fileInput.files[0];
+  const file = fileInput.files[0];
   if (!file) { fileInput.value = ''; return; }
 
-  var reader = new FileReader();
+  const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-      var newRecords = [];
+      const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      const newRecords = [];
 
-      // Find the first sheet with data (usually '记账明细')
-      for (var si = 0; si < wb.SheetNames.length; si++) {
-        var sn = wb.SheetNames[si];
-        var ws = wb.Sheets[sn];
-        var rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      for (let si = 0; si < wb.SheetNames.length; si++) {
+        const sn = wb.SheetNames[si];
+        const ws = wb.Sheets[sn];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
         if (rows.length < 2) continue;
 
-        // Check header: 记录时间, 支出金额, 支出分类, 支付账户, 消费备注
-        var hdr = rows[0];
+        const hdr = rows[0];
         if (!hdr || hdr.length < 5) continue;
         if (String(hdr[0]).indexOf('记录时间') < 0 && String(hdr[0]).indexOf('时间') < 0) continue;
 
-        for (var i = 1; i < rows.length; i++) {
-          var r = rows[i];
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i];
           if (!r || !r[0] || !r[1]) continue;
-          var datetimeStr = String(r[0]).trim();
-          var amount = parseFloat(r[1]);
+          const datetimeStr = String(r[0]).trim();
+          const amount = parseFloat(r[1]);
           if (isNaN(amount) || !datetimeStr) continue;
 
-          // Parse datetime - format: "2026-06-15 16:38" or just date
-          var parts = datetimeStr.split(' ');
-          var datePart = parts[0];
-          var timePart = parts[1] || '00:00';
-          var catName = (r[2] || '').toString().trim();
-          var accName = (r[3] || '').toString().trim();
-          var note = (r[4] || '').toString().trim();
+          const parts = datetimeStr.split(' ');
+          const datePart = parts[0];
+          const timePart = parts[1] || '00:00';
+          const catName = (r[2] || '').toString().trim();
+          const accName = (r[3] || '').toString().trim();
+          const note = (r[4] || '').toString().trim();
 
-          // Find matching category and account IDs
-          var cat = findCatByName(catName);
-          var acc = findAccByName(accName);
+          // 修复：使用正确的 key
+          const cat = findCatByName(catName);
+          const acc = findAccByName(accName);
 
           newRecords.push({
+            id: genRecordId(),
             amount: amount,
             catId: cat ? cat.id : '',
             catName: catName,
@@ -1453,11 +1825,11 @@ function importFromExcel(fileInput) {
             accName: accName,
             date: datePart,
             time: timePart,
-            datetime: new Date(datePart + 'T' + timePart + ':00').toISOString(),
+            datetime: new Date(datePart + 'T' + timePart).toISOString(),
             note: note
           });
         }
-        break; // Only process first matching sheet
+        break;
       }
 
       if (newRecords.length === 0) {
@@ -1466,12 +1838,11 @@ function importFromExcel(fileInput) {
         return;
       }
 
-      // Merge with existing records - skip exact duplicates (same datetime + amount)
-      var records = dbGet('records', []);
-      var existSet = {};
+      const records = dbGet(KEYS.RECORDS, []);
+      const existSet = {};
       records.forEach(function(r){ existSet[r.datetime + '|' + r.amount] = true; });
 
-      var added = 0;
+      let added = 0;
       newRecords.forEach(function(nr){
         if (!existSet[nr.datetime + '|' + nr.amount]) {
           existSet[nr.datetime + '|' + nr.amount] = true;
@@ -1480,9 +1851,8 @@ function importFromExcel(fileInput) {
         }
       });
 
-      // Sort by datetime descending
       records.sort(function(a,b){ return b.datetime.localeCompare(a.datetime); });
-      dbSet('records', records);
+      dbSet(KEYS.RECORDS, records);
 
       showToast('导入完成！新增 ' + added + ' 条记录（已跳过 ' + (newRecords.length - added) + ' 条重复）。刷新中...');
       setTimeout(function(){ location.reload(); }, 1200);
@@ -1494,17 +1864,18 @@ function importFromExcel(fileInput) {
   reader.readAsArrayBuffer(file);
 }
 
+// 修复：使用正确的 key 'categories' 和 'accounts'
 function findCatByName(name) {
-  var cats = dbGet('cats', []);
-  for (var i = 0; i < cats.length; i++) {
+  const cats = dbGet(KEYS.CATEGORIES, []);
+  for (let i = 0; i < cats.length; i++) {
     if (cats[i].name === name) return cats[i];
   }
   return null;
 }
 
 function findAccByName(name) {
-  var accs = dbGet('accs', []);
-  for (var i = 0; i < accs.length; i++) {
+  const accs = dbGet(KEYS.ACCOUNTS, []);
+  for (let i = 0; i < accs.length; i++) {
     if (accs[i].name === name) return accs[i];
   }
   return null;
@@ -1514,10 +1885,12 @@ function findAccByName(name) {
    管理页
    ============================================================ */
 let mgmtTab = 'cat';
+
 function switchMgmtTab(t) {
   mgmtTab = t;
-  document.querySelectorAll('.mgmt-tab').forEach(el => {
-    el.classList.toggle('active', el.textContent.includes(t==='cat'?'分类':'账户'));
+  // 修复：使用 data-mgmt 属性替代 textContent 匹配
+  document.querySelectorAll('.mgmt-tab').forEach(function(el){
+    el.classList.toggle('active', el.dataset.mgmt === t);
   });
   document.getElementById('mgmt-cat-panel').style.display = t === 'cat' ? 'block' : 'none';
   document.getElementById('mgmt-acc-panel').style.display = t === 'acc' ? 'block' : 'none';
@@ -1530,42 +1903,42 @@ function renderMgmt() {
 }
 
 function renderCatMgmt() {
-  const cats = dbGet('categories', []);
+  const cats = dbGet(KEYS.CATEGORIES, []).filter(function(c){ return !c.deleted; });
   const el = document.getElementById('cat-mgmt-list');
   if (cats.length === 0) {
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div><p>暂无分类</p></div>';
     return;
   }
-  el.innerHTML = cats.map(c => `
-    <div class="mgmt-item">
-      <span class="m-icon">${c.icon||'📌'}</span>
-      <span class="m-name">${c.name}</span>
-      ${c.system ? '<span class="m-tag">系统</span>' : ''}
-      <div class="m-actions">
-        <button class="m-btn m-btn-edit" onclick="editCategory('${c.id}')">编辑</button>
-        ${!c.system ? `<button class="m-btn m-btn-del" onclick="delCategory('${c.id}','${c.name}')">删除</button>` : ''}
-      </div>
-    </div>
-  `).join('');
+  el.innerHTML = cats.map(function(c){
+    return '<div class="mgmt-item">' +
+      '<span class="m-icon">' + (c.icon||'📌') + '</span>' +
+      '<span class="m-name">' + c.name + '</span>' +
+      (c.system ? '<span class="m-tag">系统</span>' : '') +
+      '<div class="m-actions">' +
+        '<button class="m-btn m-btn-edit" onclick="editCategory(\'' + c.id + '\')">编辑</button>' +
+        (!c.system ? '<button class="m-btn m-btn-del" onclick="delCategory(\'' + c.id + '\',\'' + c.name.replace(/'/g,"\\'") + '\')">删除</button>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
 function renderAccMgmt() {
-  const accs = dbGet('accounts', []);
+  const accs = dbGet(KEYS.ACCOUNTS, []).filter(function(a){ return !a.deleted; });
   const el = document.getElementById('acc-mgmt-list');
   if (accs.length === 0) {
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">💳</div><p>暂无账户，点击下方新增</p></div>';
     return;
   }
-  el.innerHTML = accs.map(a => `
-    <div class="mgmt-item">
-      <span class="m-icon">💳</span>
-      <span class="m-name">${a.name}</span>
-      <div class="m-actions">
-        <button class="m-btn m-btn-edit" onclick="editAccount('${a.id}')">编辑</button>
-        <button class="m-btn m-btn-del" onclick="delAccount('${a.id}','${a.name}')">删除</button>
-      </div>
-    </div>
-  `).join('');
+  el.innerHTML = accs.map(function(a){
+    return '<div class="mgmt-item">' +
+      '<span class="m-icon">💳</span>' +
+      '<span class="m-name">' + a.name + '</span>' +
+      '<div class="m-actions">' +
+        '<button class="m-btn m-btn-edit" onclick="editAccount(\'' + a.id + '\')">编辑</button>' +
+        '<button class="m-btn m-btn-del" onclick="delAccount(\'' + a.id + '\',\'' + a.name.replace(/'/g,"\\'") + '\')">删除</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
 /* 分类操作 */
@@ -1578,7 +1951,7 @@ function showInputModal(title, placeholder, defaultVal, cb) {
   input.value = defaultVal || '';
   _inputCallback = cb;
   openOverlay('input-overlay');
-  setTimeout(() => input.focus(), 100);
+  setTimeout(function(){ input.focus(); }, 100);
 }
 
 function confirmInput() {
@@ -1589,33 +1962,34 @@ function confirmInput() {
 }
 
 function addCategory() {
-  showInputModal('新增分类', '输入分类名称', '', name => {
-    const cats = dbGet('categories', []);
-    cats.push({ id: 'cu' + Date.now(), name, icon: '📌', system: false });
-    dbSet('categories', cats);
+  showInputModal('新增分类', '输入分类名称', '', function(name){
+    const cats = dbGet(KEYS.CATEGORIES, []);
+    cats.push({ id: 'cu' + Date.now(), name: name, icon: '📌', system: false });
+    dbSet(KEYS.CATEGORIES, cats);
     renderCatMgmt();
     showToast('分类已添加');
   });
 }
 
 function editCategory(id) {
-  const cats = dbGet('categories', []);
-  const c = cats.find(x=>x.id===id);
-  showInputModal('编辑分类名称', '输入新名称', c?c.name:'', name => {
-    const cats2 = dbGet('categories', []);
-    const idx = cats2.findIndex(x=>x.id===id);
+  const cats = dbGet(KEYS.CATEGORIES, []);
+  const c = cats.find(function(x){ return x.id === id; });
+  showInputModal('编辑分类名称', '输入新名称', c ? c.name : '', function(name){
+    const cats2 = dbGet(KEYS.CATEGORIES, []);
+    const idx = cats2.findIndex(function(x){ return x.id === id; });
     if (idx >= 0) cats2[idx].name = name;
-    dbSet('categories', cats2);
+    dbSet(KEYS.CATEGORIES, cats2);
     renderCatMgmt();
     showToast('已更新');
   });
 }
 
 function delCategory(id, name) {
-  showConfirm('删除分类', `确定删除「${name}」？删除后不影响已有记录。`, () => {
-    let cats = dbGet('categories', []);
-    cats = cats.filter(c => c.id !== id);
-    dbSet('categories', cats);
+  showConfirm('删除分类', '确定删除「' + name + '」？删除后该分类将不再出现在选项中，已有记录不受影响。', function(){
+    let cats = dbGet(KEYS.CATEGORIES, []);
+    const idx = cats.findIndex(function(c){ return c.id === id; });
+    if (idx >= 0) cats[idx].deleted = true; // 软删除
+    dbSet(KEYS.CATEGORIES, cats);
     renderCatMgmt();
     showToast('已删除');
   });
@@ -1623,37 +1997,38 @@ function delCategory(id, name) {
 
 /* 账户操作 */
 function addAccount() {
-  showInputModal('新增账户', '如：微信零钱、现金、建行银行卡', '', name => {
-    const accs = dbGet('accounts', []);
-    accs.push({ id: 'a' + Date.now(), name });
-    dbSet('accounts', accs);
+  showInputModal('新增账户', '如：微信零钱、现金、建行银行卡', '', function(name){
+    const accs = dbGet(KEYS.ACCOUNTS, []);
+    accs.push({ id: 'a' + Date.now(), name: name });
+    dbSet(KEYS.ACCOUNTS, accs);
     renderAccMgmt();
     showToast('账户已添加');
   });
 }
 
 function editAccount(id) {
-  const accs = dbGet('accounts', []);
-  const a = accs.find(x=>x.id===id);
-  showInputModal('编辑账户名称', '输入新名称', a?a.name:'', name => {
-    const accs2 = dbGet('accounts', []);
-    const idx = accs2.findIndex(x=>x.id===id);
+  const accs = dbGet(KEYS.ACCOUNTS, []);
+  const a = accs.find(function(x){ return x.id === id; });
+  showInputModal('编辑账户名称', '输入新名称', a ? a.name : '', function(name){
+    const accs2 = dbGet(KEYS.ACCOUNTS, []);
+    const idx = accs2.findIndex(function(x){ return x.id === id; });
     if (idx >= 0) accs2[idx].name = name;
-    dbSet('accounts', accs2);
+    dbSet(KEYS.ACCOUNTS, accs2);
     // 同步更新记录中的账户名
-    let records = dbGet('records', []);
-    records.forEach(r => { if(r.accId===id) r.accName = name; });
-    dbSet('records', records);
+    let records = dbGet(KEYS.RECORDS, []);
+    records.forEach(function(r){ if(r.accId===id) r.accName = name; });
+    dbSet(KEYS.RECORDS, records);
     renderAccMgmt();
     showToast('已更新');
   });
 }
 
 function delAccount(id, name) {
-  showConfirm('删除账户', `确定删除「${name}」？历史记录不受影响。`, () => {
-    let accs = dbGet('accounts', []);
-    accs = accs.filter(a => a.id !== id);
-    dbSet('accounts', accs);
+  showConfirm('删除账户', '确定删除「' + name + '」？删除后该账户将不再出现在选项中，已有记录不受影响。', function(){
+    let accs = dbGet(KEYS.ACCOUNTS, []);
+    const idx = accs.findIndex(function(a){ return a.id === id; });
+    if (idx >= 0) accs[idx].deleted = true; // 软删除
+    dbSet(KEYS.ACCOUNTS, accs);
     renderAccMgmt();
     showToast('已删除');
   });
@@ -1665,7 +2040,7 @@ function delAccount(id, name) {
 function showConfirm(title, msg, onConfirm) {
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-msg').textContent = msg;
-  document.getElementById('confirm-ok-btn').onclick = () => {
+  document.getElementById('confirm-ok-btn').onclick = function(){
     closeOverlay('confirm-overlay');
     onConfirm();
   };
@@ -1673,23 +2048,48 @@ function showConfirm(title, msg, onConfirm) {
 }
 
 /* ============================================================
-   工具函数
+   暴露到全局（供 onclick 使用）
    ============================================================ */
-function fmtDate(d) {
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-}
-function fmtTime(d) {
-  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-}
-function fmtDatetimeCompact(d) {
-  return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') +
-         String(d.getHours()).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0');
-}
+window.doLogin = doLogin;
+window.navTo = navTo;
+window.openDatetimePicker = openDatetimePicker;
+window.setNowDatetime = setNowDatetime;
+window.confirmDatetime = confirmDatetime;
+window.submitRecord = submitRecord;
+window.selectCat = selectCat;
+window.selectAcc = selectAcc;
+window.switchPeriod = switchPeriod;
+window.shiftPeriod = shiftPeriod;
+window.switchStatMode = switchStatMode;
+window.openEditRecord = openEditRecord;
+window.editSelectCat = editSelectCat;
+window.editSelectAcc = editSelectAcc;
+window.saveEditRecord = saveEditRecord;
+window.deleteRecord = deleteRecord;
+window.openExportSheet = openExportSheet;
+window.doExport = doExport;
+window.importFromExcel = importFromExcel;
+window.toggleSearch = toggleSearch;
+window.filterRecords = filterRecords;
+window.switchMgmtTab = switchMgmtTab;
+window.addCategory = addCategory;
+window.editCategory = editCategory;
+window.delCategory = delCategory;
+window.addAccount = addAccount;
+window.editAccount = editAccount;
+window.delAccount = delAccount;
+window.filterByCat = filterByCat;
+window.filterByAcc = filterByAcc;
+window.clearDrillFilter = clearDrillFilter;
+window.closeOverlay = closeOverlay;
+window.confirmInput = confirmInput;
 
 /* ============================================================
    启动
    ============================================================ */
 init();
+
+})();
 </script>
 </body>
 </html>
