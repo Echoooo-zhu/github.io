@@ -384,9 +384,11 @@
       font-size: 15px;
       font-weight: 600;
       color: var(--text-primary);
-      min-width: 90px;
       text-align: center;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 1;
     }
     .time-pills {
       display: flex;
@@ -395,9 +397,10 @@
       background: rgba(0,0,0,0.04);
       border-radius: 8px;
       padding: 3px;
+      flex-shrink: 0;
     }
     .time-pill {
-      padding: 5px 12px;
+      padding: 5px 10px;
       font-size: 12px;
       font-weight: 500;
       color: var(--text-secondary);
@@ -1120,6 +1123,9 @@ function dbSet(key, val) {
 function fmtDate(d) {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
+function fmtDateShort(d) {
+  return String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
+}
 function fmtTime(d) {
   return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
@@ -1429,7 +1435,7 @@ function getPeriodRange() {
     const mon = new Date(base); mon.setDate(base.getDate() - dow + 1 + periodOffset * 7);
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
     start = fmtDate(mon); end = fmtDate(sun);
-    label = start + ' ~ ' + end;
+    label = fmtDateShort(mon) + ' ~ ' + fmtDateShort(sun);
   } else if (currentPeriod === 'month') {
     let y = now.getFullYear(), m = now.getMonth() + periodOffset;
     while (m < 0) { m += 12; y--; }
