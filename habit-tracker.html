@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="习惯打卡">
+<meta name="apple-mobile-web-app-title" content="慢瘦日记">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>生活习惯打卡</title>
+<title>慢瘦日记</title>
 <style>
 /* ═══════════════════════════════════════════════════════
    iOS 26 Liquid Glass Design System
@@ -1398,6 +1398,8 @@ body {
 
   <div class="card">
     <button class="btn btn-outline full-width" onclick="exportToExcel()">导出 Excel (.xlsx)</button>
+    <button class="btn btn-outline full-width" style="margin-top:8px;" onclick="document.getElementById('importFileInput').click()">导入 Excel (.xlsx)</button>
+    <input type="file" id="importFileInput" accept=".xlsx,.xls" style="display:none;" onchange="importFromExcel(this)">
   </div>
 
 </div>
@@ -2736,59 +2738,133 @@ function init() {
   renderExerciseHistory();
 }
 
-var IMPORT_DATA = {"weights":[{"date":"2026-05-17","morning":60.7,"evening":61.6,"bmi":25.3},{"date":"2026-05-18","morning":61.2,"evening":60.9,"bmi":25.5},{"date":"2026-05-19","morning":60.5,"evening":61.4,"bmi":25.2},{"date":"2026-05-20","morning":60.9,"evening":60.9,"bmi":25.3},{"date":"2026-05-21","morning":60.3,"evening":60.7,"bmi":25.1},{"date":"2026-05-22","morning":60,"evening":61.1,"bmi":25},{"date":"2026-05-23","morning":60.2,"evening":60.6,"bmi":25.1},{"date":"2026-05-24","morning":60,"evening":60.7,"bmi":25},{"date":"2026-05-25","morning":60.2,"evening":60.6,"bmi":25.1},{"date":"2026-05-26","morning":59.9,"evening":60.9,"bmi":24.9},{"date":"2026-05-27","morning":60.5,"evening":null,"bmi":25.2},{"date":"2026-05-28","morning":60,"evening":60.2,"bmi":25},{"date":"2026-05-29","morning":59.5,"evening":60.3,"bmi":24.8},{"date":"2026-05-30","morning":null,"evening":60,"bmi":null},{"date":"2026-05-31","morning":null,"evening":60,"bmi":null},{"date":"2026-06-01","morning":59.6,"evening":60.2,"bmi":24.8},{"date":"2026-06-02","morning":59.7,"evening":60.3,"bmi":24.8},{"date":"2026-06-03","morning":59.6,"evening":59.9,"bmi":24.8},{"date":"2026-06-04","morning":59.5,"evening":60,"bmi":24.8},{"date":"2026-06-05","morning":59.5,"evening":60.3,"bmi":24.8},{"date":"2026-06-06","morning":null,"evening":60.4,"bmi":null},{"date":"2026-06-07","morning":59.9,"evening":60.2,"bmi":24.9},{"date":"2026-06-08","morning":59.7,"evening":60.2,"bmi":24.8},{"date":"2026-06-09","morning":59.4,"evening":60.2,"bmi":24.7},{"date":"2026-06-10","morning":59.5,"evening":null,"bmi":24.8}],"periods":[{"start":"2026-03-01","end":"2026-03-04","flow":"medium-flow","symptoms":["腰酸","乏力"]},{"start":"2026-03-31","end":"2026-04-03","flow":"medium-flow","symptoms":["腰酸","乏力"]},{"start":"2026-04-28","end":"2026-05-01","flow":"medium-flow","symptoms":["腰酸","情绪波动"]},{"start":"2026-05-27","end":"2026-05-30","flow":"medium-flow","symptoms":["腰酸","乏力","情绪波动","食欲变化"]}],"exercises":[{"date":"2026-06-01","type":"快走","intensity":"high","duration":210,"note":"仙湖植物园-怡景，11.11公里"},{"date":"2026-06-01","type":"瑜伽","intensity":"low","duration":10,"note":"早晨空腹核心训练"},{"date":"2026-06-01","type":"瑜伽","intensity":"low","duration":24,"note":"睡前拉伸"},{"date":"2026-06-02","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹核心运动"},{"date":"2026-06-03","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹核心运动"},{"date":"2026-06-03","type":"快走","intensity":"high","duration":150,"note":"雪竹径公园-贝尔路地铁站，10.5公里"},{"date":"2026-06-03","type":"瑜伽","intensity":"low","duration":20,"note":"运动后拉伸"},{"date":"2026-06-04","type":"力量","intensity":"low","duration":5,"note":"小哑铃一组4个动作"},{"date":"2026-06-04","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹核心训练"},{"date":"2026-06-04","type":"快走","intensity":"high","duration":120,"note":"孖岭-梅林水库-孖岭，9公里"},{"date":"2026-06-05","type":"瑜伽","intensity":"low","duration":20,"note":"早晨空腹腰腹训练"},{"date":"2026-06-06","type":"瑜伽","intensity":"low","duration":10,"note":"站姿核心训练1组"},{"date":"2026-06-06","type":"瑜伽","intensity":"medium","duration":30,"note":"拉伸及腰腹运动"},{"date":"2026-06-06","type":"快走","intensity":"high","duration":130,"note":"塘朗山公园，11公里"},{"date":"2026-06-07","type":"快走","intensity":"high","duration":150,"note":"淘金山绿道-翠湖文体公园-东湖公园，10公里"},{"date":"2026-06-07","type":"瑜伽","intensity":"low","duration":15,"note":"早晨空腹腰腹训练"},{"date":"2026-06-07","type":"力量","intensity":"low","duration":15,"note":"小哑铃训练5个动作*30个*2组"},{"date":"2026-06-07","type":"瑜伽","intensity":"low","duration":30,"note":"睡前拉伸"},{"date":"2026-06-08","type":"瑜伽","intensity":"low","duration":20,"note":"早晨空腹腰腹训练"},{"date":"2026-06-08","type":"力量","intensity":"medium","duration":30,"note":"小哑铃手臂训练"},{"date":"2026-06-09","type":"瑜伽","intensity":"low","duration":30,"note":"早晨空腹腰腹训练"},{"date":"2026-06-09","type":"快走","intensity":"medium","duration":90,"note":"分段步行13000步"},{"date":"2026-06-09","type":"瑜伽","intensity":"medium","duration":40,"note":"小哑铃+腰腹训练"}],"initialWeight":62.3,"targetWeight":50};
+// ─── Data Import from Excel file ───
+function importFromExcel(fileInput) {
+  if (typeof XLSX === 'undefined') { showToast('Excel 组件加载中，请稍后再试'); fileInput.value = ''; return; }
+  var file = fileInput.files[0];
+  if (!file) { fileInput.value = ''; return; }
 
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      var imported = { weights: [], periods: [], exercises: [] };
+      var counts = { weights: 0, periods: 0, exercises: 0 };
 
-// ─── Data Import ───
-function importHistoryData() {
-  var btn = document.getElementById("importBtn");
-  btn.disabled = true;
-  btn.textContent = "正在导入...";
-
-  // Merge with existing data (keep any new records user already added)
-  var existing = null;
-  try {
-    existing = JSON.parse(localStorage.getItem("habit_tracker_data"));
-  } catch(e) {}
-
-  if (!existing || !existing.weights || existing.weights.length <= 11) {
-    // Fresh install or only seed data — sort newest-first then store
-    IMPORT_DATA.weights.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
-    IMPORT_DATA.exercises.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
-    IMPORT_DATA.periods.sort(function(a,b){ return new Date(b.start) - new Date(a.start); });
-    localStorage.setItem("habit_tracker_data", JSON.stringify(IMPORT_DATA));
-    showToast("导入完成！正在刷新...");
-    setTimeout(function(){ location.reload(); }, 800);
-  } else {
-    // Has user data already — merge by date
-    var wMap = {}, pMap = {}, eSet = new Set();
-    IMPORT_DATA.weights.forEach(function(w){ wMap[w.date] = w; });
-    IMPORT_DATA.periods.forEach(function(p){ pMap[p.start] = p; });
-    IMPORT_DATA.exercises.forEach(function(e){ eSet.add(e.date + "|" + e.type + "|" + e.duration); });
-
-    // Add imported weights that don't exist
-    existing.weights.forEach(function(w){ wMap[w.date] = w; });
-    existing.weights = Object.values(wMap).sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
-
-    // Add imported periods that don't exist
-    existing.periods.forEach(function(p){ if (!pMap[p.start]) pMap[p.start] = p; });
-    existing.periods = Object.values(pMap).sort(function(a,b){ return new Date(b.start) - new Date(b.start); });
-
-    // Add imported exercises that don't exist
-    existing.exercises.forEach(function(e){ eSet.add(e.date + "|" + e.type + "|" + e.duration); });
-    var existSet = new Set();
-    IMPORT_DATA.exercises.forEach(function(e){
-      if (!eSet.has(e.date + "|" + e.type + "|" + e.duration)) {
-        existSet.add(e.date + "|" + e.type + "|" + e.duration);
-        existing.exercises.push(e);
+      // Sheet 1: 体重记录
+      if (wb.SheetNames.indexOf('体重记录') >= 0) {
+        var ws = wb.Sheets['体重记录'];
+        var rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          if (!r || !r[0]) continue;
+          var dateVal = r[0];
+          var dateStr = typeof dateVal === 'number' ? fmtDateXLSX(dateVal) : String(dateVal).trim();
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
+          var morning = (r[1] !== '' && r[1] !== undefined && r[1] !== null) ? parseFloat(r[1]) : null;
+          var evening = (r[2] !== '' && r[2] !== undefined && r[2] !== null) ? parseFloat(r[2]) : null;
+          var bmi = (r[4] !== '' && r[4] !== undefined && r[4] !== null) ? parseFloat(r[4]) : null;
+          if (morning !== null || evening !== null || bmi !== null) {
+            imported.weights.push({ date: dateStr, morning: morning, evening: evening, bmi: bmi });
+          }
+        }
+        counts.weights = imported.weights.length;
       }
-    });
-    existing.exercises.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
 
-    localStorage.setItem("habit_tracker_data", JSON.stringify(existing));
-    showToast("导入完成！已合并数据，正在刷新...");
-    setTimeout(function(){ location.reload(); }, 800);
-  }
+      // Sheet 2: 月经记录
+      if (wb.SheetNames.indexOf('月经记录') >= 0) {
+        var ws2 = wb.Sheets['月经记录'];
+        var rows2 = XLSX.utils.sheet_to_json(ws2, { header: 1 });
+        var flowMap = { '少量': 'light', '正常': 'medium-flow', '较多': 'heavy' };
+        for (var j = 1; j < rows2.length; j++) {
+          var r2 = rows2[j];
+          if (!r2 || !r2[0]) continue;
+          var startStr = typeof r2[0] === 'number' ? fmtDateXLSX(r2[0]) : String(r2[0]).trim();
+          var endStr = typeof r2[1] === 'number' ? fmtDateXLSX(r2[1]) : String(r2[1]).trim();
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(startStr)) continue;
+          var flowRaw = (r2[3] || '').toString().trim();
+          var flow = flowMap[flowRaw] || 'medium-flow';
+          var symptoms = [];
+          if (r2[4]) {
+            symptoms = String(r2[4]).split(/[,，、]/).map(function(s){ return s.trim(); }).filter(Boolean);
+          }
+          imported.periods.push({ start: startStr, end: endStr || startStr, flow: flow, symptoms: symptoms });
+        }
+        counts.periods = imported.periods.length;
+      }
+
+      // Sheet 3: 运动记录
+      if (wb.SheetNames.indexOf('运动记录') >= 0) {
+        var ws3 = wb.Sheets['运动记录'];
+        var rows3 = XLSX.utils.sheet_to_json(ws3, { header: 1 });
+        var intMap = { '低': 'low', '中': 'medium', '高': 'high' };
+        for (var k = 1; k < rows3.length; k++) {
+          var r3 = rows3[k];
+          if (!r3 || !r3[0]) continue;
+          var dStr = typeof r3[0] === 'number' ? fmtDateXLSX(r3[0]) : String(r3[0]).trim();
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(dStr)) continue;
+          var eType = (r3[1] || '').toString().trim();
+          if (!eType) continue;
+          var intensity = intMap[(r3[2] || '').toString().trim()] || 'medium';
+          var duration = parseInt(r3[3]) || 0;
+          if (duration <= 0) continue;
+          imported.exercises.push({ date: dStr, type: eType, intensity: intensity, duration: duration, note: (r3[5] || '').toString().trim() });
+        }
+        counts.exercises = imported.exercises.length;
+      }
+
+      if (counts.weights === 0 && counts.periods === 0 && counts.exercises === 0) {
+        showToast('文件中未识别到有效数据，请确认文件格式正确');
+        fileInput.value = '';
+        return;
+      }
+
+      // Merge with existing data
+      var existing = null;
+      try { existing = JSON.parse(localStorage.getItem('habit_tracker_data')); } catch(er) {}
+
+      if (!existing || !existing.weights) {
+        existing = { weights: [], periods: [], exercises: [] };
+      }
+
+      // Merge weights by date (imported takes priority for same date)
+      var wMap = {};
+      existing.weights.forEach(function(w){ wMap[w.date] = w; });
+      imported.weights.forEach(function(w){ wMap[w.date] = w; });
+      existing.weights = Object.values(wMap).sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+
+      // Merge periods by start date
+      var pMap = {};
+      existing.periods.forEach(function(p){ pMap[p.start] = p; });
+      imported.periods.forEach(function(p){ pMap[p.start] = p; });
+      existing.periods = Object.values(pMap).sort(function(a,b){ return new Date(b.start) - new Date(b.start); });
+
+      // Merge exercises (deduplicate by date+type+duration)
+      var eSet = {};
+      existing.exercises.forEach(function(e){ eSet[e.date + '|' + e.type + '|' + e.duration] = e; });
+      imported.exercises.forEach(function(e){
+        eSet[e.date + '|' + e.type + '|' + e.duration] = e;
+      });
+      existing.exercises = Object.values(eSet).sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+
+      localStorage.setItem('habit_tracker_data', JSON.stringify(existing));
+      showToast('导入完成！体重' + counts.weights + '条 经期' + counts.periods + '条 运动' + counts.exercises + '条。刷新中...');
+      setTimeout(function(){ location.reload(); }, 1000);
+    } catch(err) {
+      showToast('导入失败：文件格式错误或已损坏');
+    }
+    fileInput.value = '';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Helper: convert Excel serial date number to YYYY-MM-DD
+function fmtDateXLSX(serial) {
+  var d = new Date((serial - 25569) * 86400 * 1000);
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
 }
 
 init();

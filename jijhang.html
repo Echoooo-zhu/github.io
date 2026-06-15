@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>极简随手记账</title>
+  <title>止付日记</title>
   <style>
     /* ======== 全局变量 ======== */
     :root {
@@ -733,9 +733,11 @@
     <div class="record-list" id="stat-records"></div>
   </div>
 
-  <!-- 导出 -->
+  <!-- 导入/导出 -->
   <div class="export-bar">
     <button class="export-btn-main" onclick="openExportSheet()">📤 导出 Excel</button>
+    <button class="export-btn-main" style="margin-top:8px;border-color:var(--text-secondary);color:var(--text-secondary);" onclick="document.getElementById('importFileInput').click()">📥 导入 Excel</button>
+    <input type="file" id="importFileInput" accept=".xlsx,.xls" style="display:none;" onchange="importFromExcel(this)">
   </div>
 
   <div class="bottom-nav">
@@ -1417,6 +1419,117 @@ function doExport(type) {
     }
     exportLock = false;
   }, 300);
+}
+
+/* ============================================================
+   导入 Excel
+   ============================================================ */
+function importFromExcel(fileInput) {
+  if (typeof XLSX === 'undefined') { showToast('Excel 组件加载中，请稍后再试'); fileInput.value = ''; return; }
+  var file = fileInput.files[0];
+  if (!file) { fileInput.value = ''; return; }
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      var newRecords = [];
+
+      // Find the first sheet with data (usually '记账明细')
+      for (var si = 0; si < wb.SheetNames.length; si++) {
+        var sn = wb.SheetNames[si];
+        var ws = wb.Sheets[sn];
+        var rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        if (rows.length < 2) continue;
+
+        // Check header: 记录时间, 支出金额, 支出分类, 支付账户, 消费备注
+        var hdr = rows[0];
+        if (!hdr || hdr.length < 5) continue;
+        if (String(hdr[0]).indexOf('记录时间') < 0 && String(hdr[0]).indexOf('时间') < 0) continue;
+
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          if (!r || !r[0] || !r[1]) continue;
+          var datetimeStr = String(r[0]).trim();
+          var amount = parseFloat(r[1]);
+          if (isNaN(amount) || !datetimeStr) continue;
+
+          // Parse datetime - format: "2026-06-15 16:38" or just date
+          var parts = datetimeStr.split(' ');
+          var datePart = parts[0];
+          var timePart = parts[1] || '00:00';
+          var catName = (r[2] || '').toString().trim();
+          var accName = (r[3] || '').toString().trim();
+          var note = (r[4] || '').toString().trim();
+
+          // Find matching category and account IDs
+          var cat = findCatByName(catName);
+          var acc = findAccByName(accName);
+
+          newRecords.push({
+            amount: amount,
+            catId: cat ? cat.id : '',
+            catName: catName,
+            catIcon: cat ? (cat.icon || '📌') : '📌',
+            accId: acc ? acc.id : '',
+            accName: accName,
+            date: datePart,
+            time: timePart,
+            datetime: new Date(datePart + 'T' + timePart + ':00').toISOString(),
+            note: note
+          });
+        }
+        break; // Only process first matching sheet
+      }
+
+      if (newRecords.length === 0) {
+        showToast('文件中未识别到记账数据，请确认文件格式正确');
+        fileInput.value = '';
+        return;
+      }
+
+      // Merge with existing records - skip exact duplicates (same datetime + amount)
+      var records = dbGet('records', []);
+      var existSet = {};
+      records.forEach(function(r){ existSet[r.datetime + '|' + r.amount] = true; });
+
+      var added = 0;
+      newRecords.forEach(function(nr){
+        if (!existSet[nr.datetime + '|' + nr.amount]) {
+          existSet[nr.datetime + '|' + nr.amount] = true;
+          records.unshift(nr);
+          added++;
+        }
+      });
+
+      // Sort by datetime descending
+      records.sort(function(a,b){ return b.datetime.localeCompare(a.datetime); });
+      dbSet('records', records);
+
+      showToast('导入完成！新增 ' + added + ' 条记录（已跳过 ' + (newRecords.length - added) + ' 条重复）。刷新中...');
+      setTimeout(function(){ location.reload(); }, 1200);
+    } catch(err) {
+      showToast('导入失败：文件格式错误或已损坏');
+    }
+    fileInput.value = '';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function findCatByName(name) {
+  var cats = dbGet('cats', []);
+  for (var i = 0; i < cats.length; i++) {
+    if (cats[i].name === name) return cats[i];
+  }
+  return null;
+}
+
+function findAccByName(name) {
+  var accs = dbGet('accs', []);
+  for (var i = 0; i < accs.length; i++) {
+    if (accs[i].name === name) return accs[i];
+  }
+  return null;
 }
 
 /* ============================================================
