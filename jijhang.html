@@ -18,8 +18,7 @@
       --bg: #F5F5F5;
       --card: #FFFFFF;
       --border: #E0E0E0;
-      --nav-h: 56px;
-      --top-h: 56px;
+      --top-h: 44px;
       --radius: 12px;
       --shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
@@ -34,51 +33,41 @@
     .page { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
     .page.active { display: flex; }
 
-    /* ======== 顶部导航栏 ======== */
-    .topbar {
-      height: var(--top-h);
-      background: var(--card);
+    /* ======== 顶部Tab导航 ======== */
+    .top-tab-bar {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-      font-weight: 600;
-      position: relative;
+      background: var(--card);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
-      padding: 0 16px;
+      height: 44px;
     }
-    .topbar .back-btn {
-      position: absolute; left: 16px;
-      font-size: 24px; color: var(--text-secondary); padding: 4px 8px;
-    }
-    .topbar .action-btn {
-      position: absolute; right: 16px;
-      font-size: 14px; color: var(--primary); padding: 4px 8px;
-    }
-
-    /* ======== 底部导航 ======== */
-    .bottom-nav {
-      height: var(--nav-h);
-      background: var(--card);
-      display: flex;
-      border-top: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .nav-item {
+    .top-tab {
       flex: 1;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
-      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
       color: var(--text-hint);
+      cursor: pointer;
+      position: relative;
       transition: color 0.2s;
-      font-size: 11px;
     }
-    .nav-item.active { color: var(--primary); }
-    .nav-item .nav-icon { font-size: 22px; }
+    .top-tab.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .top-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
 
     /* ======== 滚动主体 ======== */
     .scroll-body {
@@ -407,26 +396,33 @@
     .record-item .r-info .r-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
     .record-item .r-amount { font-size: 16px; font-weight: 600; color: var(--danger); }
 
-    /* 导出按钮 */
+    /* 导出导入 — 同行紧凑按钮 */
     .export-bar {
-      padding: 10px 16px;
-      background: var(--card);
-      border-top: 1px solid var(--border);
+      padding: 8px 12px;
+      background: transparent;
+      border-top: none;
       flex-shrink: 0;
+      display: flex;
+      gap: 10px;
     }
     .export-btn-main {
-      width: 100%;
-      padding: 12px;
+      flex: 1;
+      padding: 8px 0;
       background: #fff;
-      border: 1.5px solid var(--primary);
-      color: var(--primary);
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
+    }
+    .export-btn-main.primary {
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
     }
 
     /* ======== ===== 管理页 ===== ======== */
@@ -627,8 +623,8 @@
 <!-- ========== 登录页 ========== -->
 <div class="page active" id="page-login">
   <div class="login-logo">📒</div>
-  <div class="login-title">极简随手记账</div>
-  <div class="login-subtitle">纯净、极简、数据可同步</div>
+  <div class="login-title">止付日记</div>
+  <div class="login-subtitle">记录每一次"剁手"</div>
   <div class="login-box">
     <input type="text" id="login-input" placeholder="请设置/输入你的专属账号" maxlength="30" autocomplete="off">
     <button class="login-btn" onclick="doLogin()">登录 / 注册</button>
@@ -639,9 +635,15 @@
   </div>
 </div>
 
+<!-- ========== 顶部Tab导航 ========== -->
+<div class="top-tab-bar" id="topTabBar">
+  <div class="top-tab active" data-tab="home" onclick="navTo('home')">随手记账</div>
+  <div class="top-tab" data-tab="stat" onclick="navTo('stat')">支出明细</div>
+  <div class="top-tab" data-tab="mgmt" onclick="navTo('mgmt')">管理</div>
+</div>
+
 <!-- ========== 首页 ========== -->
 <div class="page" id="page-home">
-  <div class="topbar">📒 随手记账</div>
   <div class="scroll-body" id="home-scroll">
     <!-- 当日汇总 -->
     <div class="today-summary" id="today-summary">
@@ -692,17 +694,10 @@
 
     <button class="submit-btn" onclick="submitRecord()">✅ 保存记账</button>
   </div>
-
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="navTo('home')"><span class="nav-icon">🏠</span>首页</div>
-    <div class="nav-item" onclick="navTo('stat')"><span class="nav-icon">📊</span>统计</div>
-    <div class="nav-item" onclick="navTo('mgmt')"><span class="nav-icon">⚙️</span>管理</div>
-  </div>
 </div>
 
 <!-- ========== 统计页 ========== -->
 <div class="page" id="page-stat">
-  <div class="topbar">📊 支出明细</div>
 
   <!-- 时间维度 -->
   <div class="tab-bar" id="time-tabs">
@@ -733,23 +728,16 @@
     <div class="record-list" id="stat-records"></div>
   </div>
 
-  <!-- 导入/导出 -->
+  <!-- 导入/导出 — 同行紧凑 -->
   <div class="export-bar">
-    <button class="export-btn-main" onclick="openExportSheet()">📤 导出 Excel</button>
-    <button class="export-btn-main" style="margin-top:8px;border-color:var(--text-secondary);color:var(--text-secondary);" onclick="document.getElementById('importFileInput').click()">📥 导入 Excel</button>
+    <button class="export-btn-main primary" onclick="openExportSheet()">📤 导出</button>
+    <button class="export-btn-main" onclick="document.getElementById('importFileInput').click()">📥 导入</button>
     <input type="file" id="importFileInput" accept=".xlsx,.xls" style="display:none;" onchange="importFromExcel(this)">
-  </div>
-
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><span class="nav-icon">🏠</span>首页</div>
-    <div class="nav-item active" onclick="navTo('stat')"><span class="nav-icon">📊</span>统计</div>
-    <div class="nav-item" onclick="navTo('mgmt')"><span class="nav-icon">⚙️</span>管理</div>
   </div>
 </div>
 
 <!-- ========== 管理页 ========== -->
 <div class="page" id="page-mgmt">
-  <div class="topbar">⚙️ 管理</div>
   <div class="mgmt-tabs">
     <div class="mgmt-tab active" onclick="switchMgmtTab('cat')">支出分类</div>
     <div class="mgmt-tab" onclick="switchMgmtTab('acc')">支付账户</div>
@@ -764,12 +752,6 @@
       <div class="mgmt-list" id="acc-mgmt-list"></div>
       <button class="add-btn" onclick="addAccount()">＋ 新增账户</button>
     </div>
-  </div>
-
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="navTo('home')"><span class="nav-icon">🏠</span>首页</div>
-    <div class="nav-item" onclick="navTo('stat')"><span class="nav-icon">📊</span>统计</div>
-    <div class="nav-item active" onclick="navTo('mgmt')"><span class="nav-icon">⚙️</span>管理</div>
   </div>
 </div>
 
@@ -938,23 +920,19 @@ function enterApp() {
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
+  // 登录页隐藏顶部Tab
+  document.getElementById('topTabBar').style.display = (name === 'login') ? 'none' : 'flex';
 }
 
 function navTo(name) {
   showPage(name);
-  // 导航激活状态
-  document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-  // 更新各页面的底部导航激活
-  const pages = ['home', 'stat', 'mgmt'];
-  const icons = ['🏠', '📊', '⚙️'];
-  pages.forEach((p, i) => {
-    const page = document.getElementById('page-' + p);
-    if (!page) return;
-    const items = page.querySelectorAll('.nav-item');
-    items.forEach(item => item.classList.remove('active'));
-    const active = page.querySelectorAll('.nav-item')[pages.indexOf(name)];
-    if (active) active.classList.add('active');
-  });
+  // 更新顶部Tab激活状态
+  var tabs = document.getElementById('topTabBar').querySelectorAll('.top-tab');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  var tgt = document.getElementById('topTabBar').querySelector('[data-tab="' + name + '"]');
+  if (tgt) tgt.classList.add('active');
+  // 显示/隐藏顶部Tab（登录页隐藏）
+  document.getElementById('topTabBar').style.display = (name === 'login') ? 'none' : 'flex';
   if (name === 'home') renderHome();
   if (name === 'stat') renderStat();
   if (name === 'mgmt') renderMgmt();
