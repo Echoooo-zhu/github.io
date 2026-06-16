@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="来日有期">
+  <title>来日有期</title>
+  <style>
+/* v-cloak: hide until Vue mounts */
+[v-cloak] { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════
+   来日有期 · 低饱和护眼设计系统
+   主色 #60A5FA · 极淡蓝白背景 · 轻量工具箱内嵌 H5
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --glass-primary: rgba(255,255,255,0.72);
+  --glass-secondary: rgba(255,255,255,0.52);
+  --glass-tertiary: rgba(255,255,255,0.35);
+  --glass-header: rgba(248,250,255,0.82);
+  --glass-input: rgba(0,0,0,0.03);
+  --glass-input-focus: rgba(0,0,0,0.05);
+  --glass-selected: rgba(96,165,250,0.12);
+  --edge-primary: rgba(255,255,255,0.55);
+  --edge-secondary: rgba(255,255,255,0.35);
+  --edge-subtle: rgba(0,0,0,0.05);
+  --edge-accent: rgba(96,165,250,0.22);
+  --text: #1F2937;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-on-glass: #1F2937;
+  --accent: #60A5FA;
+  --accent-deep: #2563EB;
+  --accent-glass: rgba(96,165,250,0.15);
+  --danger: #EF4444;
+  --danger-glass: rgba(239,68,68,0.08);
+  --warning: #F59E0B;
+  --success: #34D399;
+  --purple: #A78BFA;
+  --orange: #FB923C;
+  --orange-glass: rgba(251,146,60,0.10);
+  --tag-blue-bg: #DBEAFE;
+  --tag-blue-text: #2563EB;
+  --tag-purple-bg: #DDC9F7;
+  --tag-purple-text: #7C3AED;
+  --tag-green-bg: rgba(52,211,153,0.15);
+  --tag-green-text: #059669;
+  --bg-page: #F8FAFF;
+  --r-lg: 20px;
+  --r-md: 16px;
+  --r-sm: 12px;
+  --r-xs: 10px;
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  height:100%;
+  font-family: var(--font);
+  color: var(--text);
+  max-width: 430px;
+  margin: 0 auto;
+  background: var(--bg-page);
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+  overflow-x: hidden;
+}
+
+#app { height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+
+/* ═══════════════ Sticky Header ═══════════════ */
+.sticky-header {
+  flex-shrink:0;
+  background: var(--glass-header);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--edge-subtle);
+  z-index: 100;
+}
+
+.app-header {
+  padding: 18px 16px 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.app-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.app-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+.app-header-slogan {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+.header-add {
+  min-width: 44px; min-height: 44px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+.header-add:active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ═══════════════ Top Tab Navigation ═══════════════ */
+.top-tab-bar {
+  display: flex;
+  padding: 0 16px;
+  gap: 0;
+}
+.top-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B7280;
+  cursor: pointer;
+  position: relative;
+  height: 44px;
+  transition: color 210ms ease-out;
+  letter-spacing: 0.2px;
+  -webkit-tap-highlight-color: transparent;
+}
+.top-tab.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+.top-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+}
+
+/* ═══════════════ Scroll Body ═══════════════ */
+.scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px 24px;
+  padding-bottom: calc(24px + var(--safe-b));
+}
+
+/* ═══════════════ Glass Card ═══════════════ */
+.card {
+  background: #fff;
+  border-radius: var(--r-lg);
+  border: none;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: transform 210ms ease-out;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.card:active { transform: scale(0.985); }
+
+/* ═══════════════ Event Card Layout ═══════════════ */
+.ev-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: none;
+}
+
+/* 顶部标记条 → 底部标记条 — 按状态区分颜色 */
+.ev-card::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  background: transparent;
+  transition: background 210ms ease-out;
+}
+/* 进行中：浅蓝条 */
+.ev-card.ev-pinned::before {
+  background: var(--accent);
+}
+/* 特别纪念：浅绿条 */
+.ev-card.ev-memorial::before {
+  background: var(--success);
+}
+/* 已过期：浅灰条 */
+.ev-card.ev-past::before {
+  background: #D1D5DB;
+}
+
+/* Row 1: tags + actions (same line, actions on right) */
+.ev-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 22px;
+}
+.ev-tags {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.card-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+  background: var(--tag-blue-bg);
+  color: var(--tag-blue-text);
+}
+.card-tag-holiday {
+  background: var(--orange-glass);
+  color: var(--orange);
+}
+
+.memorial-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  background: var(--tag-green-bg);
+  color: var(--tag-green-text);
+}
+
+.repeat-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  background: var(--tag-purple-bg);
+  color: var(--tag-purple-text);
+}
+
+/* Row 2: name(left) + desc(bottom-left) | days(right, full-height centered) */
+.ev-main {
+  display: flex;
+  position: relative;
+}
+.ev-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 64px;
+  min-height: 44px;
+}
+.ev-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-on-glass);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.2px;
+}
+.ev-days {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+}
+.days-num {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -1px;
+  display: block;
+}
+.days-num-upcoming { color: var(--accent); }
+.days-num-today { color: var(--warning); }
+.days-num-past { color: var(--text-tertiary); }
+.days-num-holiday { color: var(--orange); }
+.days-num-memorial { color: var(--success); }
+.days-unit {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  display: block;
+  margin-top: 2px;
+}
+
+/* Row 3: description */
+.ev-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* ═══════════════ Card Type Variants ═══════════════ */
+/* 无左侧边框，仅通过背景色和顶部标记条区分类别 */
+.ev-pinned {
+  background: rgba(96,165,250,0.04);
+}
+.ev-today {
+  background: rgba(245,158,11,0.04);
+}
+.ev-memorial {
+  background: rgba(52,211,153,0.04);
+}
+.ev-holiday {
+  background: rgba(251,146,60,0.04);
+}
+.ev-past {
+  opacity: 0.5;
+}
+
+/* 卡片操作 — 标签行右侧，始终可见 */
+.card-actions {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+  opacity: 0.45;
+  transition: opacity 150ms ease-out;
+}
+.card:hover .card-actions,
+.card:active .card-actions { opacity: 1; }
+/* 移动端始终显示操作按钮 */
+@media (hover: none) {
+  .card-actions { opacity: 0.5; }
+}
+.card-action-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: none;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 150ms ease-out;
+}
+.card-action-btn:active { background: rgba(0,0,0,0.04); color: var(--text-secondary); }
+.card-action-btn.del:active { background: var(--danger-glass); color: var(--danger); }
+
+/* ═══════════════ Filter Bar ═══════════════ */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 0.5px solid var(--edge-subtle);
+  background: #F3F4F6;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 210ms ease-out;
+  min-height: 32px;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+.filter-btn.active {
+  background: var(--tag-blue-bg);
+  border-color: transparent;
+  color: var(--tag-blue-text);
+  font-weight: 600;
+}
+.filter-btn:active { transform: scale(0.94); }
+
+/* 标签横向滚动 */
+.tag-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.tag-scroll::-webkit-scrollbar { display: none; }
+
+/* 状态切换 + 更多筛选（合并一行） */
+.status-seg {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.status-seg-inner {
+  display: flex;
+  background: rgba(0,0,0,0.03);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  flex: 1;
+}
+.status-seg-btn {
+  flex: 1;
+  text-align: center;
+  padding: 6px 4px;
+  font-size: 12px;
+  color: #6B7280;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 210ms ease-out;
+  font-weight: 500;
+}
+.status-seg-btn.active {
+  background: var(--tag-blue-bg);
+  color: var(--tag-blue-text);
+  font-weight: 600;
+}
+.status-seg-count {
+  font-weight: 700;
+}
+
+/* ═══════════════ More Filters (inline in status row) ═══════════════ */
+.more-filters-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #6B7280;
+  background: #F3F4F6;
+  border: 0.5px solid var(--edge-subtle);
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 150ms ease-out;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+}
+.more-filters-btn:active { transform: scale(0.95); }
+.more-filters-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+.more-filters-section {
+  animation: fadeIn 0.2s ease;
+}
+
+/* ═══════════════ Empty State ═══════════════ */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.45; }
+.empty-text { font-size: 15px; font-weight: 500; }
+.empty-sub { font-size: 13px; color: var(--text-tertiary); margin-top: 4px; }
+.empty-btn {
+  margin-top: 20px;
+  padding: 12px 28px;
+  background: #fff;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 100px;
+  border: 1.5px solid var(--accent);
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+.empty-btn:active { background: var(--accent); color: #fff; }
+
+/* ═══════════════ Tab 2: 算日子 ═══════════════ */
+.calc-section {
+  background: #fff;
+  border-radius: var(--r-lg);
+  border: none;
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.calc-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-on-glass);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.calc-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.calc-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 0.5px solid var(--edge-subtle);
+  border-radius: var(--r-xs);
+  font-size: 15px;
+  color: var(--text);
+  background: var(--glass-input);
+  font-family: var(--font);
+  transition: all 210ms ease-out;
+}
+.calc-input:focus { outline: none; background: var(--glass-input-focus); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(96,165,250,0.08); }
+.calc-sep { font-size: 14px; color: var(--text-secondary); flex-shrink: 0; }
+.calc-result {
+  text-align: center;
+  padding: 14px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--tag-blue-bg);
+  border-radius: var(--r-xs);
+  margin-top: 6px;
+  font-weight: 500;
+}
+.calc-num { font-size: 24px; font-weight: 700; color: var(--accent); }
+.calc-lunar { font-size: 13px; color: var(--warning); display: block; margin-top: 4px; }
+
+/* ═══════════════ Tab 3: 个人设置 ═══════════════ */
+.settings-section {
+  background: #fff;
+  border-radius: var(--r-lg);
+  border: none;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.settings-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  padding: 14px 16px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text);
+  border-bottom: 0.5px solid var(--edge-subtle);
+  transition: background 150ms ease-out;
+}
+.settings-btn:last-child { border-bottom: none; }
+.settings-btn:active { background: rgba(0,0,0,0.03); }
+.settings-btn-left { display: flex; align-items: center; gap: 10px; }
+.settings-btn-icon { font-size: 18px; }
+.settings-btn-arrow { color: var(--text-tertiary); font-size: 14px; }
+.settings-btn.danger { color: var(--danger); }
+
+/* 假日管理 */
+.holiday-list { padding: 0 16px 8px; }
+.holiday-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--edge-subtle);
+}
+.holiday-item:last-child { border-bottom: none; }
+.holiday-info { display: flex; align-items: center; gap: 8px; }
+.holiday-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text-tertiary);
+}
+.holiday-dot.added { background: var(--accent); }
+.holiday-name { font-size: 14px; color: var(--text); font-weight: 500; }
+.holiday-date { font-size: 12px; color: var(--text-secondary); }
+.holiday-action {
+  padding: 5px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: #fff;
+  cursor: pointer;
+  transition: all 150ms ease-out;
+}
+.holiday-action:active { transform: scale(0.95); }
+.holiday-action.added {
+  background: var(--tag-blue-bg);
+  color: var(--tag-blue-text);
+  border-color: transparent;
+}
+.holiday-batch-btn {
+  margin: 8px 16px 12px;
+  width: calc(100% - 32px);
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+  transition: all 150ms ease-out;
+}
+.holiday-batch-btn:active { background: var(--accent); color: #fff; }
+.holiday-batch-btn.remove { background: #F3F4F6; color: #6B7280; border-color: transparent; }
+
+/* ═══════════════ Bottom Sheet / Overlay ═══════════════ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 200;
+  animation: fadeIn 0.2s ease;
+}
+.bottom-sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 201;
+  background: #fff;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  max-height: 85vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--safe-b);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp { from { transform:translateY(100%) } to { transform:translateY(0) } }
+
+.sheet-content { padding: 20px 20px 24px; }
+.sheet-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.sheet-title { font-size:18px; font-weight:700; color:var(--text); letter-spacing:-0.3px; }
+.sheet-close {
+  width:30px; height:30px;
+  display:flex; align-items:center; justify-content:center;
+  border:none; background:rgba(0,0,0,0.06); border-radius:50%;
+  color:var(--text-secondary); font-size:16px; cursor:pointer;
+}
+.sheet-close:active { background:rgba(0,0,0,0.1); }
+
+/* Form Elements */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; display:block; font-weight:600; letter-spacing:0.3px; }
+.form-input {
+  width:100%; padding:12px 14px;
+  border:0.5px solid var(--edge-subtle);
+  border-radius:var(--r-xs);
+  font-size:15px; color:var(--text);
+  background:var(--glass-input);
+  font-family:var(--font);
+  transition: all 210ms ease-out;
+}
+.form-input:focus { outline:none; background:var(--glass-input-focus); border-color:var(--accent); box-shadow:0 0 0 3px rgba(96,165,250,0.08); }
+
+.radio-group { display:flex; gap:8px; flex-wrap:wrap; }
+.radio-item {
+  padding:8px 14px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:500;
+  border:0.5px solid var(--edge-subtle);
+  background:#F3F4F6;
+  color:#6B7280;
+  cursor:pointer;
+  transition:all 210ms ease-out;
+}
+.radio-item.active {
+  background:var(--tag-blue-bg);
+  border-color:transparent;
+  color:var(--tag-blue-text);
+  font-weight:600;
+}
+
+/* Toggle Switch */
+.form-switch { display:flex; align-items:center; gap:10px; }
+.form-switch .label { font-size:13px; color:var(--text-secondary); font-weight:500; }
+.toggle-track {
+  position:relative; display:inline-block; width:44px; height:24px; cursor:pointer;
+}
+.toggle-track input { opacity:0; width:0; height:0; }
+.toggle-slider {
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.15);
+  border-radius:24px;
+  transition: all 210ms ease-out;
+}
+.toggle-slider::before {
+  content:''; position:absolute;
+  height:18px; width:18px; left:3px; bottom:3px;
+  background:#fff; border-radius:50%;
+  transition: transform 210ms ease-out;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle-track input:checked + .toggle-slider { background:var(--accent); }
+.toggle-track input:checked + .toggle-slider::before { transform:translateX(20px); }
+
+.date-picker-row { display:flex; gap:6px; }
+.date-picker-row select {
+  flex:1; padding:10px 8px;
+  border:0.5px solid var(--edge-subtle);
+  border-radius:var(--r-xs);
+  font-size:14px;
+  background:var(--glass-input);
+  color:var(--text);
+  font-family:var(--font);
+  -webkit-appearance:none;
+  appearance:none;
+}
+.date-picker-row select:focus { outline:none; border-color:var(--accent); }
+
+.form-save {
+  width:100%; padding:14px;
+  background:var(--accent-glass);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  color:#fff; font-size:16px; font-weight:600;
+  border-radius:100px;
+  border:0.5px solid rgba(255,255,255,0.2);
+  box-shadow:0 2px 8px rgba(0,122,255,0.2);
+  cursor:pointer; margin-top:8px;
+  letter-spacing:0.2px;
+  transition:all 150ms ease-out;
+}
+.form-save:active:not(:disabled) { transform:scale(0.97); }
+.form-save:disabled { opacity:0.45; cursor:not-allowed; }
+
+/* Export area */
+.export-area {
+  width:100%; min-height:100px; padding:12px;
+  border:0.5px solid var(--edge-subtle);
+  border-radius:var(--r-xs);
+  font-size:12px; font-family:'SF Mono',Menlo,monospace;
+  background:var(--glass-input);
+  color:var(--text);
+  resize:vertical;
+}
+.export-tip { font-size:12px; color:var(--warning); margin-bottom:8px; font-weight:500; }
+.copy-btn {
+  width:100%; padding:12px;
+  background:var(--accent-glass);
+  color:#fff; border:0.5px solid rgba(255,255,255,0.2);
+  border-radius:100px; font-size:14px; font-weight:600;
+  cursor:pointer; margin-top:8px;
+}
+.copy-btn:active { transform:scale(0.97); }
+
+/* ═══════════════ Confirm Dialog ═══════════════ */
+.confirm-dialog {
+  position:fixed; inset:0;
+  display:none; align-items:center; justify-content:center;
+  z-index:300;
+  background:rgba(0,0,0,0.28);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+/* v-cloak + active state: only show when Vue has mounted AND confirmShow=true */
+.confirm-dialog.active {
+  display:flex;
+}
+.confirm-box {
+  background:var(--glass-primary);
+  backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  border-radius:var(--r-md);
+  border:0.5px solid var(--edge-primary);
+  padding:24px 20px 20px;
+  width:calc(100% - 64px);
+  max-width:320px;
+  text-align:center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  animation: fadeIn 0.2s ease;
+}
+.confirm-title { font-size:17px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.confirm-msg { font-size:14px; color:var(--text-secondary); margin-bottom:20px; line-height:1.5; }
+.confirm-btns { display:flex; gap:10px; }
+.confirm-btn {
+  flex:1; padding:12px; border:none; border-radius:100px;
+  font-size:15px; font-weight:600; cursor:pointer; transition:all 150ms ease-out;
+}
+.confirm-btn:active { transform:scale(0.96); }
+.confirm-cancel { background:rgba(0,0,0,0.06); color:var(--text-secondary); }
+.confirm-ok { background:var(--accent-glass); color:#fff; border:0.5px solid rgba(255,255,255,0.2); box-shadow:0 2px 8px rgba(0,122,255,0.2); }
+.confirm-ok.danger { background:var(--danger); border-color:transparent; }
+
+/* ═══════════════ Toast ═══════════════ */
+.toast {
+  position:fixed; top:16px; left:50%;
+  transform:translateX(-50%);
+  background:rgba(28,28,30,0.82);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  color:#fff;
+  padding:10px 24px;
+  border-radius:100px;
+  border:0.5px solid rgba(255,255,255,0.15);
+  font-size:14px; font-weight:500;
+  z-index:999;
+  opacity:0;
+  transition:opacity 210ms ease-out, transform 210ms ease-out;
+  pointer-events:none;
+  white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(4px); }
+
+/* ═══════════════ Responsive ═══════════════ */
+@media (max-width: 374px) {
+  .top-tab { font-size:13px; }
+  .days-num { font-size:36px; }
+  .ev-name { font-size:14px; }
+  .status-seg-btn { font-size:11px; padding:5px 2px; }
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .scroll-body { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+}
+
+/* ═══════════════ Scrollbar ═══════════════ */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.12); border-radius:4px; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- ====== Sticky Header ====== -->
+  <div class="sticky-header">
+    <div class="app-header">
+      <div class="app-header-left">
+        <h1>来日有期</h1>
+        <span class="app-header-slogan">来日有期，万般所盼皆可期</span>
+      </div>
+      <button class="header-add" v-if="activeTab===0" @click="openAdd" title="新增">+</button>
+    </div>
+    <div class="top-tab-bar">
+      <div class="top-tab" :class="{active:activeTab===0}" @click="activeTab=0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        倒计时
+      </div>
+      <div class="top-tab" :class="{active:activeTab===1}" @click="activeTab=1">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        算日子
+      </div>
+      <div class="top-tab" :class="{active:activeTab===2}" @click="activeTab=2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        个人设置
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== Scroll Body ====== -->
+  <div class="scroll-body">
+
+    <!-- ══════ Tab 0: 倒计时 ══════ -->
+    <template v-if="activeTab===0">
+      <!-- 状态切换 + 更多筛选 -->
+      <div class="status-seg">
+        <div class="status-seg-inner">
+          <div class="status-seg-btn" :class="{active:statusFilter==='active'}" @click="statusFilter='active'">进行中・<span class="status-seg-count">{{ stats.active }}</span></div>
+          <div class="status-seg-btn" :class="{active:statusFilter==='memorial'}" @click="statusFilter='memorial'">特别纪念・<span class="status-seg-count">{{ stats.memorial }}</span></div>
+          <div class="status-seg-btn" :class="{active:statusFilter==='past'}" @click="statusFilter='past'">已过期・<span class="status-seg-count">{{ stats.past }}</span></div>
+        </div>
+        <button class="more-filters-btn" @click="showMoreFilters=!showMoreFilters">
+          <span class="more-filters-dot" v-if="hasActiveFilters"></span>
+          更多 <span v-if="showMoreFilters">▾</span><span v-else>▸</span>
+        </button>
+      </div>
+
+      <!-- 展开的筛选区 -->
+      <div class="more-filters-section" v-if="showMoreFilters">
+        <div class="filter-bar">
+          <div class="tag-scroll" style="flex:1;">
+            <span class="filter-btn" :class="{active:activeTag==='全部'}" @click="activeTag='全部'">全部</span>
+            <span class="filter-btn" v-for="t in existingTags" :key="t" :class="{active:activeTag===t}" @click="activeTag=t">{{ t }}</span>
+          </div>
+        </div>
+        <div class="filter-bar" v-if="statusFilter!=='memorial' && allRepeats.length > 1">
+          <div class="tag-scroll" style="flex:1;">
+            <span class="filter-btn" :class="{active:activeRepeat==='全部'}" @click="activeRepeat='全部'" style="font-size:12px;">全部周期</span>
+            <span class="filter-btn" v-for="r in allRepeats" :key="r" :class="{active:activeRepeat===r}" @click="activeRepeat=r" style="font-size:12px;">{{ repeatLabel(r) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 事件卡片 -->
+      <template v-if="filteredEvents.length">
+        <div v-for="ev in filteredEvents" :key="ev.id"
+          class="card ev-card"
+          :class="{
+            'ev-pinned': ev.pinned && !ev.isPast,
+            'ev-today': ev.diff===0,
+            'ev-memorial': ev.mode==='countup',
+            'ev-holiday': ev.tag==='法定假日',
+            'ev-past': ev.isPast && ev.mode==='countdown' && statusFilter==='past'
+          }">
+          <!-- Row 1: tags + actions -->
+          <div class="ev-top">
+            <div class="ev-tags">
+              <span class="repeat-tag" v-if="ev.repeat!=='none' && ev.mode!=='countup'">{{ repeatLabel(ev.repeat) }}</span>
+              <span class="memorial-badge" v-if="ev.mode==='countup'">特别纪念</span>
+              <span class="card-tag" :class="ev.tag==='法定假日'?'card-tag-holiday':''" v-if="ev.tag">{{ ev.tag }}</span>
+            </div>
+            <div class="card-actions">
+              <button class="card-action-btn" @click="openEdit(ev)" title="编辑">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="card-action-btn del" @click="confirmDel(ev)" title="删除">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+          <!-- Row 2: name(left) + desc(bottom) | days(right) -->
+          <div class="ev-main">
+            <div class="ev-left">
+              <div class="ev-name">{{ ev.name }}</div>
+              <div class="ev-desc" v-html="ev.descText"></div>
+            </div>
+            <div class="ev-days">
+              <span class="days-num"
+                :class="{
+                  'days-num-upcoming': !ev.isPast && ev.diff!==0 && ev.mode!=='countup',
+                  'days-num-today': ev.diff===0,
+                  'days-num-past': ev.isPast && ev.mode==='countdown',
+                  'days-num-holiday': ev.tag==='法定假日' && !ev.isPast,
+                  'days-num-memorial': ev.mode==='countup'
+                }">{{ ev.days }}</span>
+              <span class="days-unit">天</span>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- 空状态 -->
+      <div class="empty-state" v-else>
+        <div class="empty-icon">{{ statusFilter==='past' ? '📭' : statusFilter==='memorial' ? '🌿' : '📅' }}</div>
+        <div class="empty-text">{{ statusFilter==='past' ? '没有已过期的事件' : statusFilter==='memorial' ? '没有特别纪念' : '还没有事件' }}</div>
+        <div class="empty-sub" v-if="statusFilter==='active'">点击右上角 + 添加第一个事件</div>
+        <button class="empty-btn" v-if="statusFilter==='active'" @click="openAdd">添加事件</button>
+      </div>
+    </template>
+
+    <!-- ══════ Tab 1: 算日子 ══════ -->
+    <template v-if="activeTab===1">
+      <div class="calc-section">
+        <div class="calc-title">📏 间隔天数</div>
+        <div class="calc-row">
+          <input class="calc-input" type="date" v-model="calcStart" />
+          <span class="calc-sep">至</span>
+          <input class="calc-input" type="date" v-model="calcEnd" />
+        </div>
+        <div class="calc-result" v-if="calcStart&&calcEnd">
+          相隔 <span class="calc-num">{{ calcDaysDiff }}</span> 天
+          <span class="calc-lunar" v-if="calcDaysDiffLunar">{{ calcDaysDiffLunar }}</span>
+        </div>
+      </div>
+
+      <div class="calc-section">
+        <div class="calc-title">➕ 日期推算</div>
+        <div class="calc-row">
+          <input class="calc-input" type="date" v-model="offsetBase" />
+          <span class="calc-sep">±</span>
+          <input class="calc-input" type="number" v-model.number="offsetN" placeholder="天数" style="width:90px;flex:none" />
+        </div>
+        <div class="calc-result" v-if="offsetBase&&offsetN">
+          目标日期：<span class="calc-num">{{ offsetResult }}</span>
+          <span class="calc-lunar" v-if="offsetLunar">{{ offsetLunar }}</span>
+        </div>
+      </div>
+    </template>
+
+    <!-- ══════ Tab 2: 个人设置 ══════ -->
+    <template v-if="activeTab===2">
+      <!-- 法定节假日 -->
+      <div class="settings-section">
+        <div class="settings-section-title">🎆 法定节假日</div>
+        <div class="holiday-list">
+          <div class="holiday-item" v-for="h in holidayList" :key="h.name+h.year">
+            <div class="holiday-info">
+              <span class="holiday-dot" :class="{added:isHolidayAdded(h)}"></span>
+              <div>
+                <div class="holiday-name">{{ h.name }}</div>
+                <div class="holiday-date">{{ h.dateCN }} <span style="color:var(--warning)" v-if="h.isLunar">· 农历</span></div>
+              </div>
+            </div>
+            <button class="holiday-action" :class="{added:isHolidayAdded(h)}" @click="toggleHoliday(h)">
+              {{ isHolidayAdded(h) ? '已添加' : '添加' }}
+            </button>
+          </div>
+        </div>
+        <button class="holiday-batch-btn" @click="addAllHolidays" v-if="!holidayAllAdded">一键添加全部节假日</button>
+        <button class="holiday-batch-btn remove" @click="removeAllHolidays" v-else>移除全部节假日</button>
+      </div>
+
+      <!-- 数据备份 -->
+      <div class="settings-section">
+        <div class="settings-section-title">💾 数据备份</div>
+        <div class="settings-btn" @click="doExport">
+          <div class="settings-btn-left"><span class="settings-btn-icon">📤</span>导出备份</div>
+          <span class="settings-btn-arrow">›</span>
+        </div>
+        <div class="settings-btn" @click="showImport=true">
+          <div class="settings-btn-left"><span class="settings-btn-icon">📥</span>导入恢复</div>
+          <span class="settings-btn-arrow">›</span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">⚠️ 危险操作</div>
+        <div class="settings-btn danger" @click="confirmClear">
+          <div class="settings-btn-left"><span class="settings-btn-icon">🗑️</span>清空所有数据</div>
+          <span class="settings-btn-arrow">›</span>
+        </div>
+      </div>
+    </template>
+
+  <!-- ====== 新增/编辑弹窗 ====== -->
+  <div class="overlay" v-if="showForm" @click.self="showForm=false"></div>
+  <div class="bottom-sheet" v-if="showForm">
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <span class="sheet-title">{{ editingId ? '编辑事件' : '新增事件' }}</span>
+        <button class="sheet-close" @click="showForm=false">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">事件名称</label>
+        <input class="form-input" v-model="form.name" placeholder="输入事件名称" maxlength="20" />
+      </div>
+
+      <div class="form-group">
+        <div class="form-switch">
+          <span class="label">日期类型：</span>
+          <span :style="{color:!form.isLunar?'var(--accent)':'var(--text-tertiary)',fontWeight:!form.isLunar?600:400}">公历</span>
+          <label class="toggle-track">
+            <input type="checkbox" v-model="form.isLunar" />
+            <span class="toggle-slider"></span>
+          </label>
+          <span :style="{color:form.isLunar?'var(--warning)':'var(--text-tertiary)',fontWeight:form.isLunar?600:400}">农历</span>
+        </div>
+      </div>
+
+      <div class="form-group" v-if="!form.isLunar">
+        <label class="form-label">目标日期</label>
+        <input class="form-input" type="date" v-model="form.date" :max="form.mode === 'countup' ? todayStr : ''" />
+      </div>
+
+      <div class="form-group" v-if="form.isLunar">
+        <label class="form-label">农历日期</label>
+        <div class="date-picker-row">
+          <select v-model.number="form.lunarYear">
+            <option v-for="y in lunarYears" :key="y" :value="y">{{ y }}年</option>
+          </select>
+          <select v-model.number="form.lunarMonth">
+            <option v-for="m in lunarMonths" :key="m.v" :value="m.v">{{ m.t }}</option>
+          </select>
+          <select v-model.number="form.lunarDay">
+            <option v-for="d in 30" :key="d" :value="d">{{ lunarDayNames[d] }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">计时模式</label>
+        <div class="radio-group">
+          <span class="radio-item" :class="{active:form.mode==='countdown'}" @click="setFormMode('countdown')">⏳ 倒计时</span>
+          <span class="radio-item" :class="{active:form.mode==='countup'}" @click="setFormMode('countup')">📈 正计时</span>
+        </div>
+      </div>
+
+      <div class="form-group" v-if="form.mode !== 'countup'">
+        <label class="form-label">循环周期</label>
+        <div class="radio-group">
+          <span class="radio-item" :class="{active:form.repeat==='none'}" @click="form.repeat='none'">单次</span>
+          <span class="radio-item" :class="{active:form.repeat==='monthly'}" @click="form.repeat='monthly'">每月</span>
+          <span class="radio-item" :class="{active:form.repeat==='yearly'}" @click="form.repeat='yearly'">每年</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">标签</label>
+        <input class="form-input" v-model="form.tag" placeholder="输入标签（可选）" />
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
+          <span v-for="t in existingTags" :key="t" class="radio-item" style="font-size:12px;padding:5px 10px;" :class="{active:form.tag===t}" @click="form.tag=t">{{ t }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-switch">
+          <span class="label">📌 置顶</span>
+          <label class="toggle-track">
+            <input type="checkbox" v-model="form.pinned" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="form-save" :disabled="!form.name.trim()||!form.date" @click="saveEvent">
+        {{ editingId ? '保存修改' : '添加事件' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ====== 导出弹窗 ====== -->
+  <div class="overlay" v-if="showExport" @click.self="showExport=false"></div>
+  <div class="bottom-sheet" v-if="showExport">
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <span class="sheet-title">导出数据</span>
+        <button class="sheet-close" @click="showExport=false">✕</button>
+      </div>
+      <p class="export-tip" v-if="isWechat">微信浏览器不支持下载文件，请复制文本保存到备忘录</p>
+      <textarea class="export-area" v-model="exportDataText" readonly></textarea>
+      <button class="copy-btn" @click="copyExport">复制到剪贴板</button>
+    </div>
+  </div>
+
+  <!-- ====== 导入弹窗 ====== -->
+  <div class="overlay" v-if="showImport" @click.self="showImport=false"></div>
+  <div class="bottom-sheet" v-if="showImport">
+    <div class="sheet-content">
+      <div class="sheet-header">
+        <span class="sheet-title">导入数据</span>
+        <button class="sheet-close" @click="showImport=false">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">选择 JSON 文件</label>
+        <input type="file" accept=".json" @change="onFileSelected" style="font-size:13px;" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">或粘贴 JSON 文本</label>
+        <textarea class="export-area" v-model="importText" placeholder="粘贴 JSON 文本"></textarea>
+      </div>
+      <button class="form-save" @click="doImport" :disabled="!importText.trim()">导入</button>
+    </div>
+  </div>
+
+  <!-- ====== 确认弹窗 ====== -->
+  <div class="confirm-dialog" :class="{active:confirmShow}" v-cloak @click.self="confirmShow=false">
+    <div class="confirm-box">
+      <div class="confirm-title">{{ confirmTitle }}</div>
+      <div class="confirm-msg">{{ confirmMsg }}</div>
+      <div class="confirm-btns">
+        <button class="confirm-btn confirm-cancel" @click="confirmShow=false">取消</button>
+        <button class="confirm-btn confirm-ok" :class="{danger:confirmDanger}" @click="confirmAction">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" :class="{show:toastMsg}">{{ toastMsg }}</div>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/lunar-javascript@1/lunar.js"></script>
+<script>
+const { createApp, ref, computed } = Vue;
+
+const isWechat = /MicroMessenger/i.test(navigator.userAgent);
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+}
+
+function formatDate(d) {
+  if (typeof d === 'string') d = new Date(d);
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+
+function formatDateCN(s) {
+  if (!s) return '';
+  const d = new Date(s);
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+}
+
+function daysBetween(a, b) {
+  const da = new Date(a), db = new Date(b);
+  da.setHours(0,0,0,0); db.setHours(0,0,0,0);
+  return Math.round((db - da) / 86400000);
+}
+
+function getNextOccurrence(dateStr, repeat) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const orig = new Date(dateStr); orig.setHours(0,0,0,0);
+  if (repeat === 'yearly') {
+    let next = new Date(today.getFullYear(), orig.getMonth(), orig.getDate()); next.setHours(0,0,0,0);
+    if (next <= today) { next = new Date(today.getFullYear()+1, orig.getMonth(), orig.getDate()); next.setHours(0,0,0,0); }
+    return formatDate(next);
+  }
+  if (repeat === 'monthly') {
+    let next = new Date(today.getFullYear(), today.getMonth(), orig.getDate()); next.setHours(0,0,0,0);
+    if (next <= today) { next = new Date(today.getFullYear(), today.getMonth()+1, orig.getDate()); next.setHours(0,0,0,0); }
+    return formatDate(next);
+  }
+  return null;
+}
+
+function calcDays(targetDate, mode, repeat) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let target = new Date(targetDate); target.setHours(0,0,0,0);
+  let diff = daysBetween(today, target);
+  let isPast = diff < 0;
+  let effectiveDateStr = formatDateCN(targetDate);
+  if (isPast && repeat !== 'none') {
+    const next = getNextOccurrence(targetDate, repeat);
+    if (next) {
+      target = new Date(next); target.setHours(0,0,0,0);
+      diff = daysBetween(today, target);
+      isPast = diff < 0;
+      effectiveDateStr = formatDateCN(next);
+    }
+  }
+  const absDays = Math.abs(diff);
+  let descText = '';
+  if (diff === 0) {
+    descText = '🎉 今天！';
+  } else if (mode === 'countup') {
+    descText = `距离 <b>${effectiveDateStr}</b> 过去`;
+  } else if (isPast) {
+    descText = `距离 <b>${effectiveDateStr}</b> 过去`;
+  } else {
+    descText = `距离 <b>${effectiveDateStr}</b> 还有`;
+  }
+  return { days: absDays, isPast, descText, diff, effectiveDateStr };
+}
+
+function solarToLunarText(y, m, d) {
+  try {
+    const solar = Solar.fromYmd(y, m, d);
+    const lunar = solar.getLunar();
+    return `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`;
+  } catch(e) { return ''; }
+}
+
+function lunarToSolarDate(y, m, d) {
+  try {
+    const lunar = Lunar.fromYmd(y, m, d);
+    const solar = lunar.getSolar();
+    return { year: solar.getYear(), month: solar.getMonth(), day: solar.getDay() };
+  } catch(e) { return null; }
+}
+
+// ========== 法定节假日数据生成 ==========
+function generateHolidays() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const holidays = [];
+  for (let y = year; y <= year + 1; y++) {
+    holidays.push({ name: '元旦', date: `${y}-01-01`, isLunar: false, repeat: 'yearly' });
+    holidays.push({ name: '劳动节', date: `${y}-05-01`, isLunar: false, repeat: 'yearly' });
+    holidays.push({ name: '国庆节', date: `${y}-10-01`, isLunar: false, repeat: 'yearly' });
+    try {
+      const chunjie = lunarToSolarDate(y, 1, 1);
+      if (chunjie) {
+        const ds = `${chunjie.year}-${String(chunjie.month).padStart(2,'0')}-${String(chunjie.day).padStart(2,'0')}`;
+        holidays.push({ name: '春节', date: ds, isLunar: true, lunarDate: { year: y, month: 1, day: 1 }, repeat: 'yearly' });
+      }
+      try {
+        let qingmingDate = null;
+        for (let d = 4; d <= 6; d++) {
+          try {
+            const s = Solar.fromYmd(y, 4, d);
+            const l = s.getLunar();
+            if (l.getJieQi() === '清明') { qingmingDate = `${y}-04-${String(d).padStart(2,'0')}`; break; }
+          } catch(e) {}
+        }
+        holidays.push({ name: '清明节', date: qingmingDate || `${y}-04-04`, isLunar: false, repeat: 'yearly' });
+      } catch(e) { holidays.push({ name: '清明节', date: `${y}-04-04`, isLunar: false, repeat: 'yearly' }); }
+      const duanwu = lunarToSolarDate(y, 5, 5);
+      if (duanwu) {
+        const ds = `${duanwu.year}-${String(duanwu.month).padStart(2,'0')}-${String(duanwu.day).padStart(2,'0')}`;
+        holidays.push({ name: '端午节', date: ds, isLunar: true, lunarDate: { year: y, month: 5, day: 5 }, repeat: 'yearly' });
+      }
+      const zhongqiu = lunarToSolarDate(y, 8, 15);
+      if (zhongqiu) {
+        const ds = `${zhongqiu.year}-${String(zhongqiu.month).padStart(2,'0')}-${String(zhongqiu.day).padStart(2,'0')}`;
+        holidays.push({ name: '中秋节', date: ds, isLunar: true, lunarDate: { year: y, month: 8, day: 15 }, repeat: 'yearly' });
+      }
+    } catch(e) { console.warn('农历节假日计算失败:', e); }
+  }
+  return holidays.map(h => {
+    const d = new Date(h.date);
+    return { ...h, year: d.getFullYear(), dateCN: formatDateCN(h.date) };
+  }).filter(h => {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const hd = new Date(h.date); hd.setHours(0,0,0,0);
+    return hd >= today;
+  });
+}
+
+// ========== 存储 ==========
+const STORAGE_KEY = 'countdown_events';
+
+function saveToStorage(events) {
+  const json = JSON.stringify(events);
+  try { localStorage.setItem(STORAGE_KEY, json); } catch(e) {}
+  try { document.cookie = `${STORAGE_KEY}=${encodeURIComponent(json)};max-age=${30*24*60*60};path=/;SameSite=Lax`; } catch(e) {}
+}
+
+function loadFromStorage() {
+  try { const d = localStorage.getItem(STORAGE_KEY); if (d) return JSON.parse(d); } catch(e) {}
+  try {
+    const match = document.cookie.match(new RegExp('(?:^|; )countdown_events=([^;]*)'));
+    if (match) { const d = JSON.parse(decodeURIComponent(match[1])); try { localStorage.setItem(STORAGE_KEY, match[1]); } catch(e){} return d; }
+  } catch(e) {}
+  return [];
+}
+
+// ========== App ==========
+createApp({
+  setup() {
+    const events = ref(loadFromStorage());
+    const activeTag = ref('全部');
+    const activeRepeat = ref('全部');
+    const activeTab = ref(0);
+    const statusFilter = ref('active'); // 'active' | 'memorial' | 'past'
+    const showMoreFilters = ref(false);
+    const now = ref(Date.now());
+
+    let timer = setInterval(() => { now.value = Date.now(); }, 1000);
+    const onVis = () => { if (document.visibilityState === 'visible') now.value = Date.now(); };
+    document.addEventListener('visibilitychange', onVis);
+    const todayStr = computed(() => formatDate(new Date(now.value)));
+
+    // 标签
+    const allTags = computed(() => {
+      const tags = new Set();
+      events.value.forEach(e => { if (e.tag) tags.add(e.tag); });
+      return Array.from(tags);
+    });
+    const existingTags = computed(() => allTags.value);
+
+    // 循环周期
+    const allRepeats = computed(() => {
+      const repeats = new Set();
+      events.value.forEach(e => { if (e.repeat) repeats.add(e.repeat); });
+      const order = ['none','monthly','yearly'];
+      return Array.from(repeats).sort((a,b) => order.indexOf(a) - order.indexOf(b));
+    });
+
+    const hasActiveFilters = computed(() => activeTag.value !== '全部' || activeRepeat.value !== '全部');
+
+    function repeatLabel(r) {
+      if (r === 'yearly') return '每年';
+      if (r === 'monthly') return '每月';
+      return '单次';
+    }
+
+    // 排序 & 筛选
+    const filteredEvents = computed(() => {
+      let list = events.value.map(e => {
+        const c = calcDays(e.date, e.mode, e.repeat);
+        let lunarText = '';
+        if (e.isLunar && e.date) {
+          const p = e.date.split('-');
+          lunarText = solarToLunarText(+p[0], +p[1], +p[2]);
+        }
+        return { ...e, ...c, lunarText };
+      });
+
+      // 状态筛选 — 三态：进行中(倒计时active)、特别纪念(正计时)、已过期(倒计时past)
+      if (statusFilter.value === 'active') {
+        list = list.filter(e => e.mode !== 'countup' && (!e.isPast || e.diff === 0));
+      } else if (statusFilter.value === 'memorial') {
+        list = list.filter(e => e.mode === 'countup');
+      } else {
+        // 已过期：仅倒计时过期事件
+        list = list.filter(e => e.isPast && e.diff !== 0 && e.mode !== 'countup');
+      }
+
+      // 标签筛选
+      if (activeTag.value !== '全部') list = list.filter(e => e.tag === activeTag.value);
+
+      // 循环周期筛选（特别纪念tab无周期选项，跳过）
+      if (statusFilter.value !== 'memorial' && activeRepeat.value !== '全部') list = list.filter(e => e.repeat === activeRepeat.value);
+
+      // 排序逻辑 — 所有事件（含法定假日）统一按剩余天数升序排列，天数最小的在前面
+      list.sort((a, b) => {
+        // 今日事件始终排最前
+        const todayA = a.diff === 0 ? 1 : 0;
+        const todayB = b.diff === 0 ? 1 : 0;
+        if (todayA !== todayB) return todayB - todayA;
+
+        // 其余按剩余天数升序（最紧急优先）
+        return a.days - b.days;
+      });
+      return list;
+    });
+
+    const stats = computed(() => {
+      const active = events.value.filter(e => {
+        const c = calcDays(e.date, e.mode, e.repeat);
+        return e.mode !== 'countup' && (!c.isPast || c.diff === 0);
+      }).length;
+      const memorial = events.value.filter(e => e.mode === 'countup').length;
+      const past = events.value.filter(e => {
+        const c = calcDays(e.date, e.mode, e.repeat);
+        return e.mode !== 'countup' && c.isPast && c.diff !== 0;
+      }).length;
+      return { active, memorial, past, total: active + memorial + past };
+    });
+
+    function persist() { saveToStorage(events.value); }
+
+    // ====== 法定节假日 ======
+    const holidayList = ref(generateHolidays());
+    const HOLIDAY_TAG = '法定假日';
+
+    function isHolidayAdded(h) {
+      return events.value.some(e => e.name === h.name && e.date === h.date && e.tag === HOLIDAY_TAG);
+    }
+
+    const holidayAllAdded = computed(() => {
+      return holidayList.value.every(h => isHolidayAdded(h));
+    });
+
+    function toggleHoliday(h) {
+      if (isHolidayAdded(h)) {
+        events.value = events.value.filter(e => !(e.name === h.name && e.date === h.date && e.tag === HOLIDAY_TAG));
+        persist(); toast('已移除');
+      } else {
+        events.value.push({
+          id: generateId(), name: h.name, date: h.date,
+          isLunar: h.isLunar || false, lunarDate: h.lunarDate || null,
+          mode: 'countdown', repeat: h.repeat || 'yearly',
+          tag: HOLIDAY_TAG, pinned: false, createdAt: new Date().toISOString()
+        });
+        persist(); toast('已添加');
+      }
+    }
+
+    function addAllHolidays() {
+      let count = 0;
+      holidayList.value.forEach(h => {
+        if (!isHolidayAdded(h)) {
+          events.value.push({
+            id: generateId(), name: h.name, date: h.date,
+            isLunar: h.isLunar || false, lunarDate: h.lunarDate || null,
+            mode: 'countdown', repeat: h.repeat || 'yearly',
+            tag: HOLIDAY_TAG, pinned: false, createdAt: new Date().toISOString()
+          });
+          count++;
+        }
+      });
+      persist(); toast(`已添加 ${count} 个节假日`);
+    }
+
+    function removeAllHolidays() {
+      events.value = events.value.filter(e => e.tag !== HOLIDAY_TAG);
+      persist(); toast('已移除全部节假日');
+    }
+
+    // ====== 表单 ======
+    const showForm = ref(false);
+    const editingId = ref(null);
+    const form = ref({
+      name: '', date: formatDate(new Date()), isLunar: false,
+      mode: 'countdown', repeat: 'none', tag: '', pinned: false,
+      lunarYear: 2024, lunarMonth: 1, lunarDay: 1
+    });
+
+    const lunarYears = computed(() => { const a = []; for (let i = 1901; i <= 2049; i++) a.push(i); return a; });
+    const lunarMonths = [
+      {v:1,t:'正月'},{v:2,t:'二月'},{v:3,t:'三月'},{v:4,t:'四月'},{v:5,t:'五月'},{v:6,t:'六月'},
+      {v:7,t:'七月'},{v:8,t:'八月'},{v:9,t:'九月'},{v:10,t:'十月'},{v:11,t:'冬月'},{v:12,t:'腊月'}
+    ];
+    const lunarDayNames = ['','初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+
+    function resetForm() {
+      form.value = {
+        name: '', date: formatDate(new Date()), isLunar: false,
+        mode: 'countdown', repeat: 'none', tag: '', pinned: false,
+        lunarYear: new Date().getFullYear(), lunarMonth: 1, lunarDay: 1
+      };
+    }
+
+    function setFormMode(mode) {
+      form.value.mode = mode;
+      if (mode === 'countup') {
+        form.value.repeat = 'none';
+        const td = formatDate(new Date());
+        if (form.value.date > td) form.value.date = td;
+      }
+    }
+
+    function openAdd() { editingId.value = null; resetForm(); showForm.value = true; }
+    function openEdit(ev) {
+      editingId.value = ev.id;
+      form.value = {
+        name: ev.name, date: ev.date, isLunar: ev.isLunar || false,
+        mode: ev.mode || 'countdown', repeat: ev.repeat || 'none',
+        tag: ev.tag || '', pinned: ev.pinned || false,
+        lunarYear: ev.lunarDate?.year || 2024, lunarMonth: ev.lunarDate?.month || 1,
+        lunarDay: ev.lunarDate?.day || 1
+      };
+      showForm.value = true;
+    }
+
+    function saveEvent() {
+      const f = form.value;
+      if (!f.name.trim() || !f.date) return;
+      let finalDate = f.date;
+      if (f.isLunar) {
+        const r = lunarToSolarDate(f.lunarYear, f.lunarMonth, f.lunarDay);
+        if (r) finalDate = `${r.year}-${String(r.month).padStart(2,'0')}-${String(r.day).padStart(2,'0')}`;
+        else { toast('农历日期无效'); return; }
+      }
+      const data = {
+        name: f.name.trim(), date: finalDate, isLunar: f.isLunar,
+        lunarDate: f.isLunar ? { year: f.lunarYear, month: f.lunarMonth, day: f.lunarDay } : null,
+        mode: f.mode, repeat: f.repeat, tag: f.tag, pinned: f.pinned
+      };
+      if (editingId.value) {
+        const idx = events.value.findIndex(e => e.id === editingId.value);
+        if (idx !== -1) { events.value[idx] = { ...events.value[idx], ...data }; }
+        toast('修改成功');
+      } else {
+        events.value.push({ id: generateId(), ...data, createdAt: new Date().toISOString() });
+        toast('添加成功');
+      }
+      persist(); showForm.value = false;
+    }
+
+    // ====== 删除 ======
+    const confirmShow = ref(false);
+    const confirmTitle = ref('');
+    const confirmMsg = ref('');
+    const confirmDanger = ref(false);
+    let confirmCallback = null;
+
+    function confirmDel(ev) {
+      confirmTitle.value = '确认删除';
+      confirmMsg.value = `确定删除「${ev.name}」？`;
+      confirmDanger.value = true;
+      confirmCallback = () => { events.value = events.value.filter(e => e.id !== ev.id); persist(); toast('已删除'); };
+      confirmShow.value = true;
+    }
+
+    function confirmClear() {
+      confirmTitle.value = '确认清空';
+      confirmMsg.value = '确定清空所有事件？此操作不可恢复！';
+      confirmDanger.value = true;
+      confirmCallback = () => { events.value = []; persist(); toast('已清空'); };
+      confirmShow.value = true;
+    }
+
+    function confirmAction() { confirmShow.value = false; if (confirmCallback) confirmCallback(); }
+
+    // ====== Toast ======
+    const toastMsg = ref('');
+    let toastTimer = null;
+    function toast(msg) {
+      toastMsg.value = msg;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toastMsg.value = ''; }, 1800);
+    }
+
+    // ====== 日期计算器 ======
+    const calcStart = ref('');
+    const calcEnd = ref('');
+    const calcDaysDiff = computed(() => {
+      if (!calcStart.value || !calcEnd.value) return 0;
+      return daysBetween(calcStart.value, calcEnd.value);
+    });
+    const calcDaysDiffLunar = computed(() => {
+      if (!calcEnd.value) return '';
+      const d = new Date(calcEnd.value);
+      return solarToLunarText(d.getFullYear(), d.getMonth()+1, d.getDate());
+    });
+
+    const offsetBase = ref('');
+    const offsetN = ref(null);
+    const offsetResult = computed(() => {
+      if (!offsetBase.value || offsetN.value === null) return '';
+      const d = new Date(offsetBase.value);
+      d.setDate(d.getDate() + offsetN.value);
+      return formatDateCN(formatDate(d));
+    });
+    const offsetLunar = computed(() => {
+      if (!offsetResult.value) return '';
+      const d = new Date(offsetBase.value);
+      d.setDate(d.getDate() + offsetN.value);
+      return '农历 ' + solarToLunarText(d.getFullYear(), d.getMonth()+1, d.getDate());
+    });
+
+    // ====== 导出 ======
+    const showExport = ref(false);
+    const exportDataText = ref('');
+    function doExport() { exportDataText.value = JSON.stringify(events.value, null, 2); showExport.value = true; }
+    function copyExport() {
+      navigator.clipboard.writeText(exportDataText.value).then(() => toast('已复制')).catch(() => {
+        const ta = document.querySelector('.export-area');
+        if (ta) { ta.select(); document.execCommand('copy'); toast('已复制'); }
+      });
+    }
+
+    // ====== 导入 ======
+    const showImport = ref(false);
+    const importText = ref('');
+    function onFileSelected(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => { importText.value = evt.target.result; };
+      reader.readAsText(file);
+    }
+    function doImport() {
+      try {
+        const parsed = JSON.parse(importText.value);
+        if (!Array.isArray(parsed)) throw new Error();
+        events.value = parsed; persist(); toast('导入成功'); showImport.value = false;
+      } catch(e) { toast('导入失败，JSON格式错误'); }
+    }
+
+    return {
+      isWechat, events, activeTag, activeRepeat, activeTab, statusFilter, showMoreFilters, hasActiveFilters,
+      allTags, existingTags, allRepeats, repeatLabel, todayStr,
+      filteredEvents, stats,
+      showForm, editingId, form, lunarYears, lunarMonths, lunarDayNames,
+      openAdd, openEdit, saveEvent, setFormMode,
+      confirmShow, confirmTitle, confirmMsg, confirmDanger, confirmDel, confirmClear, confirmAction,
+      calcStart, calcEnd, calcDaysDiff, calcDaysDiffLunar, offsetBase, offsetN, offsetResult, offsetLunar,
+      showExport, exportDataText, doExport, copyExport,
+      showImport, importText, onFileSelected, doImport,
+      toastMsg, formatDateCN,
+      holidayList, isHolidayAdded, toggleHoliday, addAllHolidays, removeAllHolidays,
+      holidayAllAdded
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

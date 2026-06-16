@@ -59,6 +59,7 @@ html, body {
 }
 .tool-icon.habit { background: #EFEAF6; color: #7B6F9E; }
 .tool-icon.jijhang { background: #E6F4EA; color: #5A9E5F; }
+.tool-icon.countdown { background: #E8F0FE; color: #4A7FBF; }
 .tool-icon.soon { background: #EEEDED; color: #B8B5B0; }
 
 .tool-body { flex: 1; min-width: 0; }
@@ -149,6 +150,14 @@ html, body {
       </div>
       <div class="tool-arrow"></div>
     </div>
+    <div class="tool-card" data-tool="countdown">
+      <div class="tool-icon countdown">&#x23F3;</div>
+      <div class="tool-body">
+        <div class="tool-name">来日有期</div>
+        <div class="tool-desc">倒数日 · 正计时 · 算日子</div>
+      </div>
+      <div class="tool-arrow"></div>
+    </div>
   </div>
 
   <div class="section-title">更多工具</div>
@@ -204,7 +213,8 @@ html, body {
   // ====== Tool config ======
   var tools = {
     habit:  { title: '慢瘦日记', src: 'habit-tracker.html' },
-    jijhang: { title: '止付日记', src: 'jijhang.html' }
+    jijhang: { title: '止付日记', src: 'jijhang.html' },
+    countdown: { title: '来日有期', src: 'countdown.html' }
   };
 
   // ====== DOM refs ======
