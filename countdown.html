@@ -197,27 +197,9 @@ html, body {
   border-left: none;
 }
 
-/* 顶部标记条 → 底部标记条 — 按状态区分颜色 */
+/* 底部标记条 — 已移除，统一无底部色条 */
 .ev-card::before {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 3px;
-  border-radius: 0 0 var(--r-lg) var(--r-lg);
-  background: transparent;
-  transition: background 210ms ease-out;
-}
-/* 进行中：浅蓝条 */
-.ev-card.ev-pinned::before {
-  background: var(--accent);
-}
-/* 特别纪念：浅绿条 */
-.ev-card.ev-memorial::before {
-  background: var(--success);
-}
-/* 已过期：浅灰条 */
-.ev-card.ev-past::before {
-  background: #D1D5DB;
+  display: none;
 }
 
 /* Row 1: tags + actions (same line, actions on right) */
@@ -265,8 +247,16 @@ html, body {
   font-size: 11px;
   font-weight: 600;
   border-radius: 6px;
+}
+/* 每年 — 紫色 */
+.repeat-tag-yearly {
   background: var(--tag-purple-bg);
   color: var(--tag-purple-text);
+}
+/* 每月 — 浅粉底红色字 */
+.repeat-tag-monthly {
+  background: rgba(251,113,133,0.12);
+  color: #E11D48;
 }
 
 /* Row 2: name(left) + desc(bottom-left) | days(right, full-height centered) */
@@ -503,7 +493,7 @@ html, body {
 }
 .empty-btn:active { background: var(--accent); color: #fff; }
 
-/* ═══════════════ Tab 2: 算日子 ═══════════════ */
+/* ═══════════════ Tab 2: 日期推算 ═══════════════ */
 .calc-section {
   background: #fff;
   border-radius: var(--r-lg);
@@ -548,7 +538,7 @@ html, body {
 .calc-num { font-size: 24px; font-weight: 700; color: var(--accent); }
 .calc-lunar { font-size: 13px; color: var(--warning); display: block; margin-top: 4px; }
 
-/* ═══════════════ Tab 3: 个人设置 ═══════════════ */
+/* ═══════════════ Tab 3: 管理中心 ═══════════════ */
 .settings-section {
   background: #fff;
   border-radius: var(--r-lg);
@@ -860,22 +850,22 @@ html, body {
     <div class="app-header">
       <div class="app-header-left">
         <h1>来日有期</h1>
-        <span class="app-header-slogan">来日有期，万般所盼皆可期</span>
+        <span class="app-header-slogan">万般所盼皆可期</span>
       </div>
       <button class="header-add" v-if="activeTab===0" @click="openAdd" title="新增">+</button>
     </div>
     <div class="top-tab-bar">
       <div class="top-tab" :class="{active:activeTab===0}" @click="activeTab=0">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        倒计时
+        好事发生
       </div>
       <div class="top-tab" :class="{active:activeTab===1}" @click="activeTab=1">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        算日子
+        日期推算
       </div>
       <div class="top-tab" :class="{active:activeTab===2}" @click="activeTab=2">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        个人设置
+        管理中心
       </div>
     </div>
   </div>
@@ -883,14 +873,14 @@ html, body {
   <!-- ====== Scroll Body ====== -->
   <div class="scroll-body">
 
-    <!-- ══════ Tab 0: 倒计时 ══════ -->
+    <!-- ══════ Tab 0: 好事发生 ══════ -->
     <template v-if="activeTab===0">
       <!-- 状态切换 + 更多筛选 -->
       <div class="status-seg">
         <div class="status-seg-inner">
-          <div class="status-seg-btn" :class="{active:statusFilter==='active'}" @click="statusFilter='active'">进行中・<span class="status-seg-count">{{ stats.active }}</span></div>
+          <div class="status-seg-btn" :class="{active:statusFilter==='active'}" @click="statusFilter='active'">即将到来・<span class="status-seg-count">{{ stats.active }}</span></div>
           <div class="status-seg-btn" :class="{active:statusFilter==='memorial'}" @click="statusFilter='memorial'">特别纪念・<span class="status-seg-count">{{ stats.memorial }}</span></div>
-          <div class="status-seg-btn" :class="{active:statusFilter==='past'}" @click="statusFilter='past'">已过期・<span class="status-seg-count">{{ stats.past }}</span></div>
+          <div class="status-seg-btn" :class="{active:statusFilter==='past'}" @click="statusFilter='past'">达成归档・<span class="status-seg-count">{{ stats.past }}</span></div>
         </div>
         <button class="more-filters-btn" @click="showMoreFilters=!showMoreFilters">
           <span class="more-filters-dot" v-if="hasActiveFilters"></span>
@@ -928,7 +918,7 @@ html, body {
           <!-- Row 1: tags + actions -->
           <div class="ev-top">
             <div class="ev-tags">
-              <span class="repeat-tag" v-if="ev.repeat!=='none' && ev.mode!=='countup'">{{ repeatLabel(ev.repeat) }}</span>
+              <span class="repeat-tag" :class="ev.repeat==='yearly'?'repeat-tag-yearly':'repeat-tag-monthly'" v-if="ev.repeat!=='none' && ev.mode!=='countup'">{{ repeatLabel(ev.repeat) }}</span>
               <span class="memorial-badge" v-if="ev.mode==='countup'">特别纪念</span>
               <span class="card-tag" :class="ev.tag==='法定假日'?'card-tag-holiday':''" v-if="ev.tag">{{ ev.tag }}</span>
             </div>
@@ -965,13 +955,13 @@ html, body {
       <!-- 空状态 -->
       <div class="empty-state" v-else>
         <div class="empty-icon">{{ statusFilter==='past' ? '📭' : statusFilter==='memorial' ? '🌿' : '📅' }}</div>
-        <div class="empty-text">{{ statusFilter==='past' ? '没有已过期的事件' : statusFilter==='memorial' ? '没有特别纪念' : '还没有事件' }}</div>
+        <div class="empty-text">{{ statusFilter==='past' ? '没有达成归档的事件' : statusFilter==='memorial' ? '没有特别纪念' : '还没有事件' }}</div>
         <div class="empty-sub" v-if="statusFilter==='active'">点击右上角 + 添加第一个事件</div>
         <button class="empty-btn" v-if="statusFilter==='active'" @click="openAdd">添加事件</button>
       </div>
     </template>
 
-    <!-- ══════ Tab 1: 算日子 ══════ -->
+    <!-- ══════ Tab 1: 日期推算 ══════ -->
     <template v-if="activeTab===1">
       <div class="calc-section">
         <div class="calc-title">📏 间隔天数</div>
@@ -1000,7 +990,7 @@ html, body {
       </div>
     </template>
 
-    <!-- ══════ Tab 2: 个人设置 ══════ -->
+    <!-- ══════ Tab 2: 管理中心 ══════ -->
     <template v-if="activeTab===2">
       <!-- 法定节假日 -->
       <div class="settings-section">
@@ -1390,13 +1380,13 @@ createApp({
         return { ...e, ...c, lunarText };
       });
 
-      // 状态筛选 — 三态：进行中(倒计时active)、特别纪念(正计时)、已过期(倒计时past)
+      // 状态筛选 — 三态：即将到来(倒计时active)、特别纪念(正计时)、达成归档(倒计时past)
       if (statusFilter.value === 'active') {
         list = list.filter(e => e.mode !== 'countup' && (!e.isPast || e.diff === 0));
       } else if (statusFilter.value === 'memorial') {
         list = list.filter(e => e.mode === 'countup');
       } else {
-        // 已过期：仅倒计时过期事件
+        // 达成归档：仅倒计时过期事件
         list = list.filter(e => e.isPast && e.diff !== 0 && e.mode !== 'countup');
       }
 
