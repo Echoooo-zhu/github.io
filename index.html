@@ -60,6 +60,7 @@ html, body {
 .tool-icon.habit { background: #EFEAF6; color: #7B6F9E; }
 .tool-icon.jijhang { background: #E6F4EA; color: #5A9E5F; }
 .tool-icon.countdown { background: #E8F0FE; color: #4A7FBF; }
+.tool-icon.workout { background: #E0F2E9; color: #43A047; }
 .tool-icon.soon { background: #EEEDED; color: #B8B5B0; }
 
 .tool-body { flex: 1; min-width: 0; }
@@ -158,6 +159,14 @@ html, body {
       </div>
       <div class="tool-arrow"></div>
     </div>
+    <div class="tool-card" data-tool="workout">
+      <div class="tool-icon workout">&#x1F3CB;</div>
+      <div class="tool-body">
+        <div class="tool-name">周期打卡</div>
+        <div class="tool-desc">四周计划 · 逐项打卡 · 复盘</div>
+      </div>
+      <div class="tool-arrow"></div>
+    </div>
   </div>
 
   <div class="section-title">更多工具</div>
@@ -214,7 +223,8 @@ html, body {
   var tools = {
     habit:  { title: '慢瘦日记', src: 'habit-tracker.html' },
     jijhang: { title: '止付日记', src: 'jijhang.html' },
-    countdown: { title: '来日有期', src: 'countdown.html' }
+    countdown: { title: '来日有期', src: 'countdown.html' },
+    workout: { title: '周期打卡', src: 'home-workout.html' }
   };
 
   // ====== DOM refs ======
