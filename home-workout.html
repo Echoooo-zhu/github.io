@@ -129,6 +129,9 @@
   .type-WALK { background: linear-gradient(135deg, #26a69a, #00897b); }
   .type-REST { background: linear-gradient(135deg, #bdbdbd, #9e9e9e); }
   .type-STRETCH { background: linear-gradient(135deg, #ec407a, #d81b60); }
+  .type-MENS1, .type-MENS2, .type-MENS3, .type-MENS4, .type-MENS5 {
+    background: linear-gradient(135deg, #f48fb1, #e91e63);
+  }
 
   .day-title {
     font-size: 14px;
@@ -246,6 +249,58 @@
     border-color: #43a047;
     color: #fff;
   }
+  /* 博主课程卡片 */
+  .course-card {
+    background: rgba(255,255,255,0.75);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid #66bb6a;
+  }
+  .course-blogger {
+    font-size: 11px;
+    color: #43a047;
+    font-weight: 600;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .course-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 4px;
+  }
+  .course-meta {
+    font-size: 12px;
+    color: #78909c;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .course-tag {
+    background: rgba(67,160,71,0.1);
+    color: #43a047;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 11px;
+  }
+  .course-tag.menstrual {
+    background: rgba(233,30,99,0.1);
+    color: #e91e63;
+  }
+  .course-check {
+    width: 22px; height: 22px;
+    border: 1.5px solid #cfd8dc;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #b0bec5;
+    cursor: pointer; flex-shrink: 0; margin-left: 8px;
+  }
+  .course-card.done { border-left-color: #43a047; background: rgba(200,230,201,0.4); }
+  .course-card.done .course-check { background: #43a047; border-color: #43a047; color: #fff; }
+  .course-row { display: flex; align-items: flex-start; justify-content: space-between; }
 
   .tip {
     background: rgba(255, 248, 225, 0.7);
@@ -420,16 +475,42 @@
 
       <div v-for="(sec, sIdx) in selectedDay.sections" :key="sIdx" class="section">
         <div class="section-title">{{ sec.icon }} {{ sec.title }}</div>
-        <div v-for="(ex, eIdx) in sec.exercises" :key="eIdx"
-             :class="['exercise-item', { done: ex.done }]"
-             @click="toggleExercise(selectedDay, sIdx, eIdx)">
-          <div>
-            <div class="name">{{ ex.name }}</div>
-            <div class="spec">{{ ex.spec }}</div>
+      <div class="section">
+        <div class="section-title">{{ sec.icon }} {{ sec.title }}</div>
+        <template v-if="sec.type === 'course'">
+          <div v-for="(ex, eIdx) in sec.exercises" :key="eIdx"
+               :class="['course-card', { done: ex.done }]"
+               @click.stop="toggleExercise(selectedDay, sIdx, eIdx)">
+            <div class="course-row">
+              <div style="flex:1;min-width:0;">
+                <div class="course-blogger">
+                  <span>{{ ex.platform }}</span>
+                  <span>{{ ex.blogger }}</span>
+                  <span v-if="ex.menstrual" class="course-tag menstrual">🩸 姨妈期</span>
+                </div>
+                <div class="course-title">{{ ex.name }}</div>
+                <div class="course-meta">
+                  <span>⏱ {{ ex.spec }}</span>
+                  <span v-if="ex.tag" class="course-tag">{{ ex.tag }}</span>
+                </div>
+              </div>
+              <div class="course-check">{{ ex.done ? '✓' : '' }}</div>
+            </div>
           </div>
-          <div class="done">{{ ex.done ? '✓' : '' }}</div>
-        </div>
-        <div v-if="sec.tip" class="tip">💡 {{ sec.tip }}</div>
+          <div v-if="sec.tip" class="tip">💡 {{ sec.tip }}</div>
+        </template>
+        <template v-else>
+          <div v-for="(ex, eIdx) in sec.exercises" :key="eIdx"
+               :class="['exercise-item', { done: ex.done }]"
+               @click="toggleExercise(selectedDay, sIdx, eIdx)">
+            <div>
+              <div class="name">{{ ex.name }}</div>
+              <div class="spec">{{ ex.spec }}</div>
+            </div>
+            <div class="done">{{ ex.done ? '✓' : '' }}</div>
+          </div>
+          <div v-if="sec.tip" class="tip">💡 {{ sec.tip }}</div>
+        </template>
       </div>
 
       <div class="section">
@@ -459,25 +540,25 @@ const STORAGE_KEY = 'home_workout_checkin_v1';
 const PLAN = {
   weeks: [
     {
-      label: '第1周',
+      label: '第1周（生理期）',
       days: [
-        { date: '6/22', weekday: '周一', type: 'A', typeLabel: '下肢+臀', title: '训练A：下肢与臀部塑形', duration: '40分钟', note: '' },
-        { date: '6/23', weekday: '周二', type: 'WALK', typeLabel: '快走', title: '晚间快走 8-10公里', duration: '90-120分钟', note: '' },
-        { date: '6/24', weekday: '周三', type: 'B', typeLabel: '上肢+手臂', title: '训练B：手臂与肩背塑形', duration: '35分钟', note: '' },
-        { date: '6/25', weekday: '周四', type: 'WALK', typeLabel: '快走', title: '晚间快走 8-10公里', duration: '90-120分钟', note: '' },
-        { date: '6/26', weekday: '周五', type: 'C', typeLabel: '核心+腰腹', title: '训练C：腰腹与马甲线', duration: '30分钟', note: '' },
-        { date: '6/27', weekday: '周六', type: 'WALK', typeLabel: '徒步', title: '周末徒步 13-15公里', duration: '3-4小时', note: '' },
-        { date: '6/28', weekday: '周日', type: 'STRETCH', typeLabel: '拉伸恢复', title: '全身拉伸与泡沫轴放松', duration: '20分钟', note: '' }
+        { date: '6/22', weekday: '周一', type: 'MENS1', typeLabel: '生理期·轻柔', title: '🩸 生理期第1天 · 瑜伽+舒缓', duration: '20-30分钟', note: '今天是第1天，以舒缓为主' },
+        { date: '6/23', weekday: '周二', type: 'MENS2', typeLabel: '生理期·舒缓', title: '🩸 生理期第2天 · 拉伸放松', duration: '20分钟', note: '' },
+        { date: '6/24', weekday: '周三', type: 'MENS3', typeLabel: '生理期·低强度', title: '🩸 生理期第3天 · 低强度散步+瑜伽', duration: '30-40分钟', note: '' },
+        { date: '6/25', weekday: '周四', type: 'MENS4', typeLabel: '生理期·恢复', title: '🩸 生理期第4天 · 轻柔瑜伽+核心', duration: '30分钟', note: '' },
+        { date: '6/26', weekday: '周五', type: 'MENS5', typeLabel: '经期后期', title: '🩸 生理期第5天 · 恢复性有氧', duration: '40-60分钟', note: '' },
+        { date: '6/27', weekday: '周六', type: 'WALK', typeLabel: '轻量徒步', title: '经期恢复 · 轻量散步/短途徒步', duration: '60-90分钟', note: '视体感决定距离，不超过8km' },
+        { date: '6/28', weekday: '周日', type: 'REST', typeLabel: '休息', title: '完整休息日 · 经期过渡', duration: '0', note: '经期结束，调整状态，为第2周储能' }
       ]
     },
     {
       label: '第2周',
       days: [
-        { date: '6/29', weekday: '周一', type: 'A', typeLabel: '下肢+臀', title: '训练A：下肢与臀部（加重）', duration: '40分钟', note: '' },
+        { date: '6/29', weekday: '周一', type: 'A', typeLabel: '下肢+臀', title: '训练A：下肢与臀部塑形', duration: '40分钟', note: '' },
         { date: '6/30', weekday: '周二', type: 'WALK', typeLabel: '快走', title: '晚间快走 8-10公里', duration: '90-120分钟', note: '' },
-        { date: '7/01', weekday: '周三', type: 'B', typeLabel: '上肢+手臂', title: '训练B：手臂与肩背（加重）', duration: '35分钟', note: '' },
+        { date: '7/01', weekday: '周三', type: 'B', typeLabel: '上肢+手臂', title: '训练B：手臂与肩背塑形', duration: '35分钟', note: '' },
         { date: '7/02', weekday: '周四', type: 'WALK', typeLabel: '快走', title: '晚间快走 8-10公里', duration: '90-120分钟', note: '' },
-        { date: '7/03', weekday: '周五', type: 'C', typeLabel: '核心+腰腹', title: '训练C：腰腹与马甲线（升级）', duration: '30分钟', note: '' },
+        { date: '7/03', weekday: '周五', type: 'C', typeLabel: '核心+腰腹', title: '训练C：腰腹与马甲线', duration: '30分钟', note: '' },
         { date: '7/04', weekday: '周六', type: 'WALK', typeLabel: '徒步', title: '周末徒步 13-15公里', duration: '3-4小时', note: '' },
         { date: '7/05', weekday: '周日', type: 'REST', typeLabel: '休息', title: '完整休息日', duration: '0', note: '让身体在休息中超量恢复' }
       ]
@@ -510,166 +591,144 @@ const PLAN = {
 };
 
 const EXERCISE_LIBRARY = {
+  // === 生理期方案 ===
+  MENS1: [
+    {
+      title: '今日建议：舒缓瑜伽',
+      icon: '🩸',
+      type: 'course',
+      exercises: [
+        { platform: 'B站', blogger: '周六野Zoey', name: '10分钟全身放松拉伸 | 睡前舒缓，缓解肌肉酸痛', spec: '10分钟', tag: '全程卧姿', menstrual: true },
+        { platform: 'B站', blogger: '帕梅拉PamelaReif', name: '10 Min Stretching for Beginners | 全身舒缓拉伸', spec: '10分钟', tag: '零难度', menstrual: true }
+      ],
+      tip: '经期第1-2天，子宫收缩最强，避免腹压训练（卷腹/平板/深蹲）。做完一条即可打卡'
+    },
+    {
+      title: '加分项（体感好再做）',
+      icon: '🌿',
+      type: 'course',
+      exercises: [
+        { platform: 'B站', blogger: '周六野Zoey', name: '5分钟热身 | 居家跟练前必做，全程站立', spec: '5分钟', tag: '站立' }
+      ]
+    }
+  ],
+  MENS2: [
+    {
+      title: '今日建议：全身拉伸',
+      icon: '🩸',
+      type: 'course',
+      exercises: [
+        { platform: 'B站', blogger: '周六野Zoey', name: '10分钟提臀塑形训练 | 膝友好，高效激活臀部', spec: '10分钟', tag: '经期可做', menstrual: true },
+        { platform: '小红书/B站', blogger: '韩小四AprilHan', name: '生理期跟练 | 月经期专属低强度训练', spec: '15-20分钟', tag: '姨妈期专属', menstrual: true }
+      ],
+      tip: '第2天可以做低强度站立臀部激活，不做任何腹部施压动作'
+    }
+  ],
+  MENS3: [
+    {
+      title: '今日建议：低强度有氧+拉伸',
+      icon: '🩸',
+      type: 'course',
+      exercises: [
+        { platform: 'B站', blogger: '周六野Zoey', name: '30分钟全程站立有氧燃脂操 | 无跳跃·无深蹲·膝友好', spec: '30分钟', tag: '低强度' },
+        { platform: 'B站', blogger: '帕梅拉PamelaReif', name: 'No Jumping Full Body Workout | 无跳跃全身训练', spec: '20分钟', tag: '无跳跃' }
+      ],
+      tip: '第3天经血减少，可以恢复轻度有氧。快走30分钟以内也可替代'
+    }
+  ],
+  MENS4: [
+    {
+      title: '今日建议：恢复性力量',
+      icon: '🩸',
+      type: 'course',
+      exercises: [
+        { platform: 'B站', blogger: '周六野Zoey', name: '10分钟提臀塑形训练 | 膝友好，高效激活臀部', spec: '10分钟', tag: '臀部激活' },
+        { platform: 'B站', blogger: '欧阳春晓Aurora', name: '20分钟腰腹核心训练 | 居家跟练', spec: '20分钟', tag: '核心' }
+      ],
+      tip: '第4天开始可以恢复轻量核心，但力度减半，不做大幅度卷腹'
+    }
+  ],
+  MENS5: [
+    {
+      title: '今日建议：恢复性跟练',
+      icon: '🩸',
+      type: 'course',
+      exercises: [
+        { platform: 'B站', blogger: '周六野Zoey', name: '20分钟欢乐踏步燃脂有氧 | 2000步无深蹲跳跃，简单易跟', spec: '20分钟', tag: '经期友好' },
+        { platform: 'B站', blogger: 'Chloe Ting', name: 'Get a Smaller Waist | 腰腹塑形跟练（轻强度选段）', spec: '20分钟', tag: '轻强度' }
+      ],
+      tip: '第5天基本可以恢复正常训练，以中低强度开始，观察体感'
+    }
+  ],
+  // === 常规训练 ===
   A: [
     {
-      title: '热身（5分钟）',
-      icon: '🔥',
-      exercises: [
-        { name: '原地踏步', spec: '1分钟' },
-        { name: '髋关节转圈', spec: '1分钟' },
-        { name: '站立侧抬腿', spec: '1分钟' },
-        { name: '动态弓步', spec: '1分钟' },
-        { name: '脚踝绕环', spec: '1分钟' }
-      ]
-    },
-    {
-      title: '臀桥系列（臀部激活）',
+      title: '下肢+臀部跟练课程',
       icon: '🍑',
+      type: 'course',
       exercises: [
-        { name: '标准臀桥（双腿）', spec: '2组 × 15次 · 节奏2-1-2' },
-        { name: '单腿臀桥（左）', spec: '2组 × 10次' },
-        { name: '单腿臀桥（右）', spec: '2组 × 10次' },
-        { name: '弹力带蛤蜊式开合', spec: '2组 × 15次/侧' }
+        { platform: 'B站', blogger: '周六野Zoey', name: '10分钟提臀塑形训练 | 膝友好·高效激活臀部 | BV1RLVzzQEmK', spec: '10分钟', tag: '翘臀首选' },
+        { platform: 'B站', blogger: '周六野Zoey', name: '30分钟全程站立有氧燃脂操 | 无跳跃·无深蹲（臀腿段）', spec: '15分钟', tag: '臀腿联合' },
+        { platform: 'B站', blogger: '欧阳春晓Aurora', name: '25分钟下肢+臀部力量训练 | 居家无器械', spec: '25分钟', tag: '下肢综合' },
+        { platform: 'B站', blogger: 'Chloe Ting', name: 'Butt & Thigh Workout | 臀腿塑形20分钟居家跟练', spec: '20分钟', tag: '梨形专项' }
       ],
-      tip: '臀部主动发力，腰部不超伸；组间休息30秒'
+      tip: '选其中1-2个跟练即可，不必全做。搜索博主名+视频标题关键词找到视频'
     },
     {
-      title: '深蹲系列（大腿+臀）',
-      icon: '🦵',
+      title: '跟练后小哑铃强化（5分钟）',
+      icon: '🏋️',
+      type: 'course',
       exercises: [
-        { name: '徒手宽距深蹲', spec: '2组 × 12次' },
-        { name: '弹力带侧走', spec: '2组 × 12步/侧' },
-        { name: '哑铃相扑深蹲', spec: '2组 × 12次' },
-        { name: '交替弓步蹲', spec: '2组 × 10次/腿' }
-      ],
-      tip: '膝盖朝向脚尖方向，蹲到大腿与地面平行；组间休息45秒'
-    },
-    {
-      title: '单腿平衡 + 小腿',
-      icon: '⚖️',
-      exercises: [
-        { name: '站姿侧抬腿（弹力带）', spec: '2组 × 15次/侧' },
-        { name: '站立后抬腿（弹力带）', spec: '2组 × 12次/侧' },
-        { name: '站姿提踵', spec: '2组 × 20次' }
-      ]
-    },
-    {
-      title: '拉伸（5分钟）',
-      icon: '🧘',
-      exercises: [
-        { name: '大腿前侧拉伸', spec: '60秒/侧' },
-        { name: '臀大肌鸽子式', spec: '60秒/侧' },
-        { name: '髂腰肌弓步拉伸', spec: '45秒/侧' }
+        { platform: '自主完成', blogger: '哑铃补充', name: '哑铃相扑深蹲 2组×15次 + 站姿侧抬腿 2组×15次/侧', spec: '5分钟', tag: '1.5kg哑铃' }
       ]
     }
   ],
   B: [
     {
-      title: '热身（3分钟）',
-      icon: '🔥',
-      exercises: [
-        { name: '手臂绕环', spec: '30秒 × 2' },
-        { name: '肩胛骨内收', spec: '20次 × 2' }
-      ]
-    },
-    {
-      title: '手臂塑形（左侧多加1组纠正）',
+      title: '手臂+肩背跟练课程',
       icon: '💪',
+      type: 'course',
       exercises: [
-        { name: '左臂哑铃弯举', spec: '3组 × 12次 · 1.5kg' },
-        { name: '右臂哑铃弯举', spec: '2组 × 12次 · 1.5kg' },
-        { name: '左臂锤式弯举', spec: '3组 × 12次 · 1.5kg' },
-        { name: '右臂锤式弯举', spec: '2组 × 10次 · 1.5kg' },
-        { name: '哑铃侧平举（双臂）', spec: '3组 × 12次 · 各1.5kg' }
+        { platform: 'YouTube/B站', blogger: '韩小四AprilHan', name: '瘦手臂跟练 | 居家无器械·1亿播放代表作', spec: '10-15分钟', tag: '手臂首选' },
+        { platform: 'B站', blogger: '周六野Zoey', name: '练背跟练 | 居家弹力带背部训练', spec: '15分钟', tag: '背部体态' },
+        { platform: 'B站', blogger: '帕梅拉PamelaReif', name: 'Arm Workout No Equipment | 无器械手臂塑形', spec: '10分钟', tag: '瘦臂' }
       ],
-      tip: '肘部贴近腰部固定；侧平举不超过肩高'
+      tip: '选1-2个组合完成。韩小四瘦手臂课程搜索"韩小四瘦手臂"即可找到'
     },
     {
-      title: '肩背塑形（弹力带）',
-      icon: '🎯',
+      title: '左臂单独强化（纠正不对称）',
+      icon: '⚖️',
+      type: 'course',
       exercises: [
-        { name: '弹力带面拉', spec: '3组 × 15次' },
-        { name: '弹力带直立划船', spec: '3组 × 12次' },
-        { name: '弹力带单臂划船（左）', spec: '3组 × 12次' },
-        { name: '弹力带单臂划船（右）', spec: '2组 × 12次' }
+        { platform: '自主完成', blogger: '哑铃补充', name: '左臂哑铃弯举 3组×15次 + 左臂锤式弯举 3组×12次（右侧少1组）', spec: '5分钟', tag: '1.5kg哑铃' }
       ],
-      tip: '面拉拉到耳侧，肩胛主动收紧；改善圆肩体态'
-    },
-    {
-      title: '核心收尾（10分钟）',
-      icon: '🎯',
-      exercises: [
-        { name: '平板支撑', spec: '3组 × 45秒' },
-        { name: '侧平板支撑（左）', spec: '2组 × 30秒' },
-        { name: '侧平板支撑（右）', spec: '2组 × 30秒' }
-      ]
+      tip: '纠正右手臂比左手臂粗1cm的不对称问题，左侧必须多1组'
     }
   ],
   C: [
     {
-      title: '热身（3分钟）',
-      icon: '🔥',
-      exercises: [
-        { name: '猫牛式', spec: '1分钟' },
-        { name: '死虫式预备', spec: '1分钟' },
-        { name: '仰卧扭转', spec: '1分钟' }
-      ]
-    },
-    {
-      title: '核心循环（3轮）',
-      icon: '🔥',
-      exercises: [
-        { name: '卷腹', spec: '20次' },
-        { name: '自行车卷腹', spec: '20次（每侧10）' },
-        { name: '反向卷腹', spec: '15次' },
-        { name: '平板支撑', spec: '45秒' },
-        { name: '哑铃俄罗斯转体', spec: '20次（每侧10）' },
-        { name: '死虫式', spec: '12次（每侧6）' }
-      ],
-      tip: '循环完成，每轮之间休息60秒'
-    },
-    {
-      title: '马甲线专项',
+      title: '核心+腰腹马甲线跟练',
       icon: '✨',
+      type: 'course',
       exercises: [
-        { name: '仰卧举腿', spec: '15次' },
-        { name: 'V字卷腹', spec: '12次' },
-        { name: '登山跑', spec: '30秒' }
-      ]
+        { platform: 'B站', blogger: '欧阳春晓Aurora', name: '20分钟腰腹核心燃脂训练 | 居家马甲线', spec: '20分钟', tag: '马甲线首选' },
+        { platform: 'B站', blogger: 'Chloe Ting', name: '2 Weeks Shred Challenge · Core部分 | 腰腹塑形', spec: '15分钟', tag: '腰腹' },
+        { platform: 'B站', blogger: '周六野Zoey', name: '10分钟腹部燃脂训练 | 居家核心', spec: '10分钟', tag: '快速版' }
+      ],
+      tip: '搜索"欧阳春晓腰腹"即可找到相关合集。选做1-2个，配合泡沫轴收尾'
     }
   ],
   D: [
     {
-      title: '热身（5分钟）',
-      icon: '🔥',
-      exercises: [
-        { name: '开合跳', spec: '30秒' },
-        { name: '深蹲预热', spec: '10次' },
-        { name: '手臂绕环', spec: '30秒' },
-        { name: '弓步走', spec: '30秒' }
-      ]
-    },
-    {
-      title: '全身循环（4轮）',
+      title: '全身综合跟练课程',
       icon: '🔁',
+      type: 'course',
       exercises: [
-        { name: '深蹲', spec: '15次' },
-        { name: '弹力带侧抬腿', spec: '15次/侧' },
-        { name: '跪姿俯卧撑', spec: '10次' },
-        { name: '哑铃弯举', spec: '15次' },
-        { name: '卷腹', spec: '20次' },
-        { name: '平板支撑', spec: '40秒' },
-        { name: '弓步蹲', spec: '12次/腿' },
-        { name: '弹力带面拉', spec: '15次' }
+        { platform: 'B站', blogger: '周六野Zoey', name: '20分钟欢乐踏步燃脂有氧 | 2000步无深蹲跳跃，简单易跟', spec: '20分钟', tag: '全身有氧' },
+        { platform: 'B站', blogger: '帕梅拉PamelaReif', name: '30 Min Full Body Workout | 居家全身力量训练', spec: '30分钟', tag: '全身综合' },
+        { platform: 'B站', blogger: 'growwithjo（Jo姐）', name: '30 Minute Full Body Cardio | 低强度全身有氧跟练', spec: '30分钟', tag: '减脂' }
       ],
-      tip: '每轮间休息90秒，节奏紧凑、强度中高等'
-    },
-    {
-      title: '拉伸（5分钟）',
-      icon: '🧘',
-      exercises: [
-        { name: '全身静态拉伸', spec: '5分钟' }
-      ]
+      tip: '选择一个30分钟以上的全身课程，配合前后拉伸'
     }
   ],
   WALK: [
@@ -706,28 +765,12 @@ const EXERCISE_LIBRARY = {
       ]
     },
     {
-      title: '下肢拉伸',
+      title: '拉伸跟练推荐',
       icon: '🧘',
+      type: 'course',
       exercises: [
-        { name: '坐姿前屈', spec: '60秒' },
-        { name: '鸽子式（臀）', spec: '60秒/侧' },
-        { name: '侧腰拉伸', spec: '45秒/侧' }
-      ]
-    },
-    {
-      title: '上肢拉伸',
-      icon: '🧘',
-      exercises: [
-        { name: '肩膀交叉拉伸', spec: '45秒/侧' },
-        { name: '过头三角拉伸', spec: '45秒/侧' }
-      ]
-    },
-    {
-      title: '脊柱放松',
-      icon: '🌿',
-      exercises: [
-        { name: '猫牛式', spec: '10次' },
-        { name: '婴儿式', spec: '2分钟' }
+        { platform: 'B站', blogger: '周六野Zoey', name: '10分钟全身放松拉伸 | 运动后必做，缓解肌肉酸痛', spec: '10分钟', tag: '运动后必做' },
+        { platform: 'B站', blogger: '帕梅拉PamelaReif', name: '10 Min Full Body Stretching | 全身静态拉伸', spec: '10分钟', tag: '放松恢复' }
       ]
     }
   ],
@@ -746,7 +789,8 @@ const EXERCISE_LIBRARY = {
 };
 
 const CALORIES = {
-  A: 220, B: 180, C: 150, D: 280, WALK: 380, STRETCH: 60, REST: 0
+  A: 220, B: 180, C: 150, D: 280, WALK: 380, STRETCH: 60, REST: 0,
+  MENS1: 50, MENS2: 60, MENS3: 100, MENS4: 120, MENS5: 150
 };
 
 createApp({
